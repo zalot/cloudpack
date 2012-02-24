@@ -9,11 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
-import com.alibaba.hbase.replication.hlog.DefaultHLogOperatorImpl;
-import com.alibaba.hbase.replication.hlog.HLogOperator.EntryInfo;
-import com.alibaba.hbase.replication.hlog.HLogReader;
-import com.alibaba.hbase.replication.hlog.MultHLogOperatorImpl;
-import com.alibaba.hbase.replication.producer.HBaseReplicationClient;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -26,9 +21,16 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
+import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.alibaba.hbase.replication.hlog.DefaultHLogOperatorImpl;
+import com.alibaba.hbase.replication.hlog.HLogOperator.EntryInfo;
+import com.alibaba.hbase.replication.hlog.HLogReader;
+import com.alibaba.hbase.replication.hlog.MultThreadHLogOperatorImpl;
+import com.alibaba.hbase.replication.producer.HBaseReplicationClient;
 
 /**
  * 暂时未完善
@@ -48,7 +50,7 @@ public class MyReplactionTest extends MyBaseTest {
 	protected static final String COLB = "colB";
 	protected static HTablePool pool;
 	protected static DefaultHLogOperatorImpl defaultRep;
-	protected static MultHLogOperatorImpl muRep;
+	protected static MultThreadHLogOperatorImpl muRep;
 	
 	public static void createTable() throws Exception{
 		HBaseAdmin admin = new HBaseAdmin(test.getConfiguration());
@@ -84,7 +86,7 @@ public class MyReplactionTest extends MyBaseTest {
 		assert hbaseCluster.getRegionServerThreads().size() == hbaseClusterCount;
 		createTable();
 		defaultRep = new DefaultHLogOperatorImpl(test.getConfiguration());
-		muRep = new MultHLogOperatorImpl(test.getConfiguration());
+		muRep = new MultThreadHLogOperatorImpl(test.getConfiguration());
 		pool = new HTablePool(test.getConfiguration(), 20);
 	}
 	
@@ -239,7 +241,7 @@ public class MyReplactionTest extends MyBaseTest {
 	}
 	
 	public void testMultOperator() throws Exception{
-		EntryInfo ent ;
+		Entry ent ;
 //		while((ent = muRep.next()) != null){
 //			System.out.println(ent.getFileName() + "  " + ent.getPos()  + " | "  + Bytes.toString(ent.getEntry().getKey().getTablename()));
 //		}
