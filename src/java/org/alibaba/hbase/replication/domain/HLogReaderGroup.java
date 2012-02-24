@@ -1,10 +1,10 @@
-package org.alibaba.hbase.replication.domain;
+package com.alibaba.hbase.replication.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.alibaba.hbase.replication.hlog.HLogReader;
+import com.alibaba.hbase.replication.hlog.HLogReader;
 
 /**
  * HLog 组

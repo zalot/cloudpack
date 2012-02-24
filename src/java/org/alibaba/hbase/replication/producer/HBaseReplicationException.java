@@ -1,4 +1,4 @@
-package org.alibaba.hbase.replication.producer;
+package com.alibaba.hbase.replication.producer;
 
 public class HBaseReplicationException extends  Throwable{
 	/**

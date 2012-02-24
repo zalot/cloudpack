@@ -1,6 +1,6 @@
-package org.alibaba.hbase.replication.domain;
+package com.alibaba.hbase.replication.domain;
 
-import org.alibaba.hbase.replication.hlog.HLogOperator;
+import com.alibaba.hbase.replication.hlog.HLogOperator;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 

@@ -1,9 +1,9 @@
-package org.alibaba.hbase.replication.domain;
+package com.alibaba.hbase.replication.domain;
 
 import java.util.List;
 import java.util.Map;
 
-import org.alibaba.hbase.replication.domain.HLogInfo.HLogType;
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.fs.Path;
 

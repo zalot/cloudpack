@@ -1,4 +1,4 @@
-package org.alibaba.hbase.replication.plugin;
+package com.alibaba.hbase.replication.plugin;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

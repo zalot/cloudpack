@@ -1,9 +1,9 @@
-package org.alibaba.hbase.replication.hlog;
+package com.alibaba.hbase.replication.hlog;
 
 import java.io.IOException;
 
-import org.alibaba.hbase.replication.domain.HLogInfo;
-import org.alibaba.hbase.replication.domain.HLogInfo.HLogType;
+import com.alibaba.hbase.replication.domain.HLogInfo;
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;

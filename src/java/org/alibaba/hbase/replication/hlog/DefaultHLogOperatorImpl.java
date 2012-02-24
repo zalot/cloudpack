@@ -1,4 +1,4 @@
-package org.alibaba.hbase.replication.hlog;
+package com.alibaba.hbase.replication.hlog;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.alibaba.hbase.replication.domain.HLogInfo.HLogType;
-import org.alibaba.hbase.replication.domain.HLogZNode;
-import org.alibaba.hbase.replication.zookeeper.HLogZNodeOperator;
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
+import com.alibaba.hbase.replication.domain.HLogZNode;
+import com.alibaba.hbase.replication.zookeeper.HLogZNodeOperator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;

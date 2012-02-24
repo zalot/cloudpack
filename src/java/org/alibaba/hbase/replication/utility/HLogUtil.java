@@ -1,8 +1,8 @@
-package org.alibaba.hbase.replication.utility;
+package com.alibaba.hbase.replication.utility;
 
 import java.util.regex.Pattern;
 
-import org.alibaba.hbase.replication.domain.HLogInfo;
+import com.alibaba.hbase.replication.domain.HLogInfo;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 

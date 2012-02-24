@@ -1,12 +1,12 @@
-package org.alibaba.hbase.replication.domain;
+package com.alibaba.hbase.replication.domain;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.alibaba.hbase.replication.domain.HLogInfo.HLogType;
-import org.alibaba.hbase.replication.utility.HLogUtil;
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
+import com.alibaba.hbase.replication.utility.HLogUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 

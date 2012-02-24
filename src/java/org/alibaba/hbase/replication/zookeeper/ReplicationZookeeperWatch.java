@@ -1,4 +1,4 @@
-package org.alibaba.hbase.replication.zookeeper;
+package com.alibaba.hbase.replication.zookeeper;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;

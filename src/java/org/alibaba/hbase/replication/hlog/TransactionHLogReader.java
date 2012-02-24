@@ -1,6 +1,6 @@
-package org.alibaba.hbase.replication.hlog;
+package com.alibaba.hbase.replication.hlog;
 
-import org.alibaba.hbase.replication.domain.HLogInfo;
+import com.alibaba.hbase.replication.domain.HLogInfo;
 import org.apache.hadoop.fs.FileSystem;
 
 public class TransactionHLogReader extends LazyOpenHLogReader{

@@ -1,6 +1,6 @@
-package org.alibaba.hbase.replication.zookeeper;
+package com.alibaba.hbase.replication.zookeeper;
 
-import org.alibaba.hbase.replication.domain.HLogZNode;
+import com.alibaba.hbase.replication.domain.HLogZNode;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.zookeeper.KeeperException;

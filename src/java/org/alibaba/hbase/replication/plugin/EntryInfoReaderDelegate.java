@@ -1,4 +1,4 @@
-package org.alibaba.hbase.replication.plugin;
+package com.alibaba.hbase.replication.plugin;
 
 public interface EntryInfoReaderDelegate {
 	public void doEntryInfoReader();

@@ -1,6 +1,6 @@
-package org.alibaba.hbase.replication.domain;
+package com.alibaba.hbase.replication.domain;
 
-import org.alibaba.hbase.replication.domain.HLogInfo.HLogType;
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 import org.apache.hadoop.fs.Path;
 
 public class DefaultHLogZNode implements HLogZNode{
