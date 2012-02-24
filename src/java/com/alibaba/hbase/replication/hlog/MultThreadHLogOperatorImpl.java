@@ -3,20 +3,24 @@ package com.alibaba.hbase.replication.hlog;
 import java.io.IOException;
 import java.util.List;
 
-import com.alibaba.hbase.replication.domain.HLogReaderGroup;
-import com.alibaba.hbase.replication.hlog.MultHLogOperatorImpl.NoFoundEntryInfoException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.zookeeper.KeeperException;
 
-public class MultHLogOperatorImpl extends AbstractHLogOperator {
-	protected static final Log LOG = LogFactory.getLog(MultHLogOperatorImpl.class);
+/**
+ * 多线程的 HLogReader
+ * 
+ * @author zalot.zhaoh
+ *
+ */
+public class MultThreadHLogOperatorImpl extends AbstractHLogOperator {
+	protected static final Log LOG = LogFactory.getLog(MultThreadHLogOperatorImpl.class);
 	protected ThreadLocal<HLogReader> currentReader = new ThreadLocal<HLogReader>();
 	
 	boolean hasSync = false;
 
-	public MultHLogOperatorImpl(Configuration conf) throws IOException,
+	public MultThreadHLogOperatorImpl(Configuration conf) throws IOException,
 			KeeperException, InterruptedException {
 		super(conf, null);
 		sync();

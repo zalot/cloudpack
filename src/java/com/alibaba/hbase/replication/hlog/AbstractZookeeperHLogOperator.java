@@ -8,6 +8,12 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.zookeeper.KeeperException;
 
+/**
+ * 基础的 HLogOperator & Zookeeper 合并操作
+ * 
+ * @author zalot.zhaoh
+ *
+ */
 public abstract class AbstractZookeeperHLogOperator extends AbstractHLogOperator{
 	HLogZNodeOperator znodeOperator;
 	

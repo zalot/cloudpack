@@ -6,6 +6,12 @@ import com.alibaba.hbase.replication.domain.HLogInfo;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 
+/**
+ * 日志工具
+ * 
+ * @author zalot.zhaoh
+ *
+ */
 public class HLogUtil {
 	
 	// copy from HLog

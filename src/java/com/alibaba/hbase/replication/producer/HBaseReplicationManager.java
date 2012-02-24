@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.hbase.replication.hlog.HLogOperator;
-import com.alibaba.hbase.replication.hlog.MultHLogOperatorImpl;
+import com.alibaba.hbase.replication.hlog.MultThreadHLogOperatorImpl;
 import com.alibaba.hbase.replication.hlog.HLogOperator.EntryInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +36,7 @@ public class HBaseReplicationManager {
 	protected ThreadPoolExecutor threadPool;
 	public HBaseReplicationManager(Configuration conf) throws IOException, KeeperException, InterruptedException{
 		replication = new HBaseReplicationClient(conf);
-		hlogOperator = new MultHLogOperatorImpl(conf);
+		hlogOperator = new MultThreadHLogOperatorImpl(conf);
 		this.conf = conf;
 		init();
 	}

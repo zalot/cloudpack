@@ -5,6 +5,12 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.zookeeper.KeeperException;
 
+/**
+ * HLogZnode 操作
+ * 
+ * @author zalot.zhaoh
+ *
+ */
 public interface HLogZNodeOperator {
 	public void create(HLogZNode znode) throws KeeperException, InterruptedException;
 	public void update(HLogZNode znode) throws KeeperException, InterruptedException;

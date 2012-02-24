@@ -11,6 +11,12 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
+/**
+ * 默认 HLogZNode 操作类
+ * 
+ * @author zalot.zhaoh
+ *
+ */
 public class DefaultHLogZNodeOperator implements HLogZNodeOperator {
 	protected static final Log LOG = LogFactory.getLog(DefaultHLogZNodeOperator.class);
 	public static String REP_ZOO_BASE = "/alirep";

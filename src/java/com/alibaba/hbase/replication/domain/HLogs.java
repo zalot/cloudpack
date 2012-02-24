@@ -7,6 +7,10 @@ import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.fs.Path;
 
+/**
+ * @author zalot.zhaoh
+ *
+ */
 public interface HLogs extends Configurable {
 	public void put(Path path);
 
