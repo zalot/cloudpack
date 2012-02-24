@@ -14,6 +14,7 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.zookeeper.KeeperException;
 
 import com.alibaba.hbase.replication.domain.DefaultHLogs;
+import com.alibaba.hbase.replication.domain.HLogs;
 
 /**
  * 日志操作
@@ -47,7 +48,7 @@ public abstract class AbstractHLogOperator implements HLogOperator{
 	protected String dfsRoot;
 	protected Configuration conf;
 	protected FileSystem fs;
-	protected DefaultHLogs _hogs = new DefaultHLogs();
+	protected HLogs _hogs = new DefaultHLogs();
 	
 	public AbstractHLogOperator(Configuration conf) throws IOException, KeeperException, InterruptedException {
 		this(conf, null);
