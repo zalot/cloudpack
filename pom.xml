@@ -1,0 +1,110 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.alibaba</groupId>
+	<artifactId>hbase.replication</artifactId>
+	<packaging>jar</packaging>
+	<version>0.92.0</version>
+	<name>HBaseTest</name>
+	<url>http://maven.apache.org</url>
+	
+	<!-- 参数配置 -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.test.skip>true</maven.test.skip>
+		<downloadResouce>true</downloadResouce>
+		<downloadJavadocs>true</downloadJavadocs>
+	</properties>
+	
+	<!-- 构造项 -->
+	<build>
+		<!-- JAVA源码目录 -->
+		<sourceDirectory>src/java</sourceDirectory>
+
+		<!-- JAVA测试目录 -->
+		<testSourceDirectory>src/java.test</testSourceDirectory>
+
+		<!-- 脚本目录 -->
+		<scriptSourceDirectory>src/scripts</scriptSourceDirectory>
+
+		<!-- 资源依赖目录 -->
+		<resources>
+			<resource>
+				<directory>src/conf</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+
+		<!-- 测试资源依赖目录 -->
+		<testResources>
+			<testResource>
+				<directory>src/conf.test</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</testResource>
+		</testResources>
+		<plugins>
+			<!-- 编译器版本选择 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			
+			<!-- 源码输出Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<attach>true</attach>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- 报告输出目录 -->
+	<reporting>
+		<outputDirectory>report</outputDirectory>
+	</reporting>
+	
+	
+
+	<!-- dependencyManagement 依赖配置 -->
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.hbase</groupId>
+			<artifactId>hbase</artifactId>
+			<version>0.92.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hbase</groupId>
+			<artifactId>hbase-tests</artifactId>
+			<version>0.92.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.9</version>
+		</dependency>
+	</dependencies>
+</project>
