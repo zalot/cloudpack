@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.hadoop.fs.Path;
-
 /**
  * HLog 组
  * @author zalot.zhaoh
  * 
  */
-public class HLogGroup{
+public class HLogGroup {
 	String groupName;
 	boolean isOver = false;
-	protected List<Path> readers = new ArrayList<Path>();
+	protected List<HLogInfo> readers = new ArrayList<HLogInfo>();
 	
 	public HLogGroup(String name) {
 		this.groupName = name;

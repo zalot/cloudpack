@@ -42,15 +42,6 @@ public class LazyOpenHLogReader implements HLogReader{
 		isOpen = false;
 		LOG.debug("[HLogReader][Close][TYPE." + info.getType() +  "]" + Thread.currentThread().getName() + " [File] " + info.getPath().getName());
 	}
-	@Override
-	public int compareTo(HLogReader o) {
-		if(o == null || o.getHLogInfo().getPath() == null || o.getHLogInfo().getPath().getName() == null)
-			return -1;
-		if(HLog.validateHLogFilename(o.getHLogInfo().getPath().getName())){
-			
-		}
-		return 0;
-	}
 	
 	public long getPosition() throws IOException{
 		lazyOpen();

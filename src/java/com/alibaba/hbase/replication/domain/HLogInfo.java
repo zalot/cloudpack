@@ -1,10 +1,11 @@
 package com.alibaba.hbase.replication.domain;
 
-import com.alibaba.hbase.replication.hlog.HLogOperator;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 
-public class HLogInfo {
+import com.alibaba.hbase.replication.hlog.HLogOperator;
+
+public class HLogInfo implements Comparable<HLogInfo>{
 
 	/**
 	 * 日志类型
@@ -92,4 +93,12 @@ public class HLogInfo {
 		this.timestamp = timestamp;
 	}
 
+	@Override
+	public int compareTo(HLogInfo o) {
+		if(this.getTimestamp() > o.getTimestamp())
+			return 1;
+		if(o.getTimestamp() == this.getTimestamp())
+			return 0;
+		return -1;
+	}
 }

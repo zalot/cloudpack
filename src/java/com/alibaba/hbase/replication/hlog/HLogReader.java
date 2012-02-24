@@ -11,7 +11,7 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
  * @author zalot.zhaoh
  *
  */
-public interface HLogReader extends Comparable<HLogReader>{
+public interface HLogReader{
 	HLogInfo getHLogInfo();
     void close() throws IOException;
     void open() throws IOException;
