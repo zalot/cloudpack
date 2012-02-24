@@ -13,32 +13,13 @@ import org.apache.hadoop.fs.Path;
  */
 public interface HLogs extends Configurable {
 	public void put(Path path);
-
+	public void put(List<Path> paths);
 	// 通过名字取得 Group
-	public HLogReaderGroup getGroup(String name);
-
+	public HLogGroup getGroup(String name);
 	// 取得所有Groups
-	public List<HLogReaderGroup> getGroups();
-
-	public void put(Path path, HLogType type);
-
-	public void put(List<Path> paths, HLogType type);
-
+	public List<HLogGroup> getGroups();
 	public void clear();
-
-	public void logClear();
-
-	public void groupClear();
-
-	public int logSize();
-
-	public int groupSize();
-
 	public Map<String, Path> life();
-
 	public Map<String, Path> old();
-
 	public Path getPath(String name);
-
-	public boolean isOver();
 }

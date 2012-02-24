@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.hbase.replication.domain.DefaultHLogs;
-import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -14,6 +12,8 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.zookeeper.KeeperException;
+
+import com.alibaba.hbase.replication.domain.DefaultHLogs;
 
 /**
  * 日志操作
@@ -88,15 +88,17 @@ public abstract class AbstractHLogOperator implements HLogOperator{
 					LOG.debug("[SYNC][Start]----------------------------------------------");
 					// 取得当前HDFS下所有的HLog，并清理映射表
 					List<Path> lifeHLogsPaths = getLifeHLogs();
-					
 					// TODO 优化 5
+					// 无需要读到所有 OLD 的 日志
+					// 可以根据 清空来少读
 					List<Path> oldHLogsPaths = getOldHLogs();
 					//数据放入内存
 					_hogs.clear();
-					_hogs.put(lifeHLogsPaths, HLogType.LIFE);
-					
+					_hogs.put(lifeHLogsPaths);
 					// TODO 优化 5
-					_hogs.put(oldHLogsPaths, HLogType.LIFE);
+					// 无需要读到所有 OLD 的 日志
+					// 可以根据 清空来少读
+					_hogs.put(oldHLogsPaths);
 					lastSyncTime = System.currentTimeMillis();
 					LOG.debug("[SYNC][End][canRead"+ _hogs.size() +"]----------------------------------------------");
 					return true;

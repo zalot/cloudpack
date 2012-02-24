@@ -20,7 +20,8 @@ public class DefaultHLogs implements HLogs{
 	//             name , path
 	protected Map<String, Path> lifeHLogs = new ConcurrentHashMap<String, Path>();
 	protected Map<String, Path>	oldHLogs = new ConcurrentHashMap<String, Path>();
-	protected Map<String, HLogReaderGroup> groups = new ConcurrentHashMap<String, HLogReaderGroup>();
+	protected Map<String, HLogGroup> groups = new ConcurrentHashMap<String, HLogGroup>();
+	
 	protected Configuration conf = null;
 	
 	public Map<String, Path> get(HLogType type){
@@ -43,48 +44,29 @@ public class DefaultHLogs implements HLogs{
 	
 	public void put(Path path){
 		if(path == null || path.getName().length() <=0 ) return;
-		HLogType type = HLogType.toType(path);
-		if(HLogType.LIFE == type){
-			lifeHLogs.put(path.getName(), path);
-			putGroup(path, type);
-		}else if(HLogType.OLD == type){
-			oldHLogs.put(path.getName(), path);
-			putGroup(path, type);
+		HLogInfo info = HLogUtil.getHLogInfo(path);
+		if(info != null){
+			if(HLogType.LIFE == info.getType())
+				lifeHLogs.put(path.getName(), path);
+			else if(HLogType.OLD == info.getType())
+				oldHLogs.put(path.getName(), path);
+			putGroup(info);
 		}
 	}
 	
-	public void putGroup(Path path , HLogType type){
-		HLogInfo info = HLogUtil.getHLogInfo(path);
-		HLogReaderGroup group = groups.get(info.getName());
+	protected void putGroup(HLogInfo info){
+		HLogGroup group = groups.get(info.getName());
 		if(group == null)
 		{
-			group = new HLogReaderGroup(info.getName());
+			group = new HLogGroup(info.getName());
 			groups.put(info.getName(), group);
 		}
 	}
 	
-	public void put(Path path, HLogType type){
-		if(HLogType.LIFE == type){
-			lifeHLogs.put(path.getName(), path);
-			putGroup(path, type);
-		}else if(HLogType.OLD == type){
-			oldHLogs.put(path.getName(), path);
-			putGroup(path, type);
-		}
-	}
-	
-	public void put(List<Path> paths, HLogType type){
-		if(type == null || paths == null || paths.size() <= 0) return;
-		if(HLogType.LIFE == type){
-			for(Path path : paths){
-				lifeHLogs.put(path.getName(), path);
-				putGroup(path, type);
-			}
-		}else if(HLogType.OLD == type){
-			for(Path path : paths){
-				oldHLogs.put(path.getName(), path);
-				putGroup(path, type);
-			}
+	public void put(List<Path> paths){
+		if(paths == null || paths.size() <= 0) return;
+		for(Path path : paths){
+			put(path);
 		}
 	}
 	
@@ -106,46 +88,20 @@ public class DefaultHLogs implements HLogs{
 	}
 
 	@Override
-	public HLogReaderGroup getGroup(String name) {
+	public HLogGroup getGroup(String name) {
 		return null;
 	}
 
 	@Override
-	public List<HLogReaderGroup> getGroups() {
+	public List<HLogGroup> getGroups() {
 		return null;
-	}
-
-	@Override
-	public void logClear() {
-		lifeHLogs.clear();
-		oldHLogs.clear();
-	}
-
-	@Override
-	public void groupClear() {
-		
-	}
-
-	@Override
-	public int logSize() {
-		return 0;
-	}
-
-	@Override
-	public int groupSize() {
-		return 0;
 	}
 
 	@Override
 	public Path getPath(String name) {
 		return null;
 	}
-
-	@Override
-	public boolean isOver() {
-		return false;
-	}
-
+	
 	@Override
 	public void setConf(Configuration conf) {
 		this.conf = conf;

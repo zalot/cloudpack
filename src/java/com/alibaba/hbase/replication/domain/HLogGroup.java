@@ -4,24 +4,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.alibaba.hbase.replication.hlog.HLogReader;
+import org.apache.hadoop.fs.Path;
 
 /**
  * HLog 组
  * @author zalot.zhaoh
  * 
  */
-public class HLogReaderGroup{
+public class HLogGroup{
 	String groupName;
 	boolean isOver = false;
-	protected List<HLogReader> readers = new ArrayList<HLogReader>();
+	protected List<Path> readers = new ArrayList<Path>();
 	
-	public HLogReaderGroup(String name) {
+	public HLogGroup(String name) {
 		this.groupName = name;
-	}
-	
-	public void add(HLogReader reader) {
-		readers.add(reader);
 	}
 
 	@Override
@@ -32,7 +28,7 @@ public class HLogReaderGroup{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		HLogReaderGroup other = (HLogReaderGroup) obj;
+		HLogGroup other = (HLogGroup) obj;
 		if (groupName == null) {
 			if (other.groupName != null)
 				return false;
