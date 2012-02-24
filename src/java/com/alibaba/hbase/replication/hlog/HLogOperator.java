@@ -2,10 +2,12 @@ package com.alibaba.hbase.replication.hlog;
 
 import java.util.List;
 
-import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
+
+import com.alibaba.hbase.replication.domain.HLogInfo;
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 
 /**
  * 日志操作接口
@@ -57,8 +59,8 @@ public interface HLogOperator {
 		}
 	}
 
-	public EntryInfo next();
-	public boolean commit(EntryInfo entryInfo);
-	public boolean commit(List<EntryInfo> entryInfos);
+	public Entry next();
+	public HLogReader getReader(HLogInfo info);
+	public boolean commit();
 	public boolean sync();
 }

@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
-import com.alibaba.hbase.replication.domain.HLogZNode;
-import com.alibaba.hbase.replication.zookeeper.HLogZNodeOperator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
+import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.zookeeper.KeeperException;
+
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
+import com.alibaba.hbase.replication.domain.HLogZNode;
+import com.alibaba.hbase.replication.zookeeper.HLogZNodeOperator;
 
 /**
  * 暂时未实现完成，单线程HLogOperator
@@ -98,67 +100,58 @@ public class DefaultHLogOperatorImpl extends AbstractHLogOperator{
 		return reader;
 	}
 	
-	public EntryInfo next() {
-		try{
-			EntryInfo entryInfo = null;
-			HLogReader reader;
-			List<String> waitEnd = new ArrayList<String>();
-			for(String fileName : oldHLogsReader.keySet()){
-				LOG.debug("[Next] OldReader " + fileName);
-				reader = oldHLogsReader.get(fileName);
-				HLog.Entry entry = reader.next();
-				// 如果是 OLD 没读到数据，则判断是否从内存中删除该Reader，且把Zoo的状态改变
-				if(entry != null){
-					LOG.debug("[Next][-T-] Next OldReader " + fileName);
-					entryInfo = new EntryInfo(entry, HLogType.OLD, fileName, reader.getPosition());
-					break;
-				}else{
-					LOG.debug("[Next][-F-] Next OldReader " + fileName);
-					waitEnd.add(fileName);
-				}
-			}
-			
-			for(String fn : waitEnd){
-				tagEnd(fn);
-			}
-			
-			if(entryInfo == null){
-				for(String fileName : lifeHLogsReader.keySet()){
-					LOG.debug("[Next] Next LifeReader " + fileName);
-					reader = lifeHLogsReader.get(fileName);
-					HLog.Entry entry = reader.next();
-					if(entry != null){
-						LOG.debug("[Next][-T-] Next LifeReader " + fileName);
-						entryInfo = new EntryInfo(entry, HLogType.LIFE, fileName, reader.getPosition());
-						break;
-					}else{
-						LOG.debug("[Next][-F-] Next LifeReader " + fileName);
-					}
-				}
-			}
-			
-			//如果发现没有数据可以再read则更新缓存查看是否有新的日志出现
-			if(entryInfo == null)
-			{
-				sync();
-			}
-			
-			return entryInfo;
-		}catch(Exception e){
-			return null;
-		}
-	}
-	
-	public HLogReader getReader(Path path) throws IOException{
-		return getHLogReader(path);
-	}
-	
-	protected HLogReader getHLogReader(Path path) throws IOException{
-//		HLogZNode znode = getHLogZNodeByFileName(path.getName());
-//		HLogReader reader = new LazyOpenHLogReader(fs, path, getHLogType(path.getName()), conf);
-//		if(znode != null && znode.getPos() > 0){
-//			reader.seek(znode.getPos());
+	public Entry next() {
+//		try{
+//			HLogReader reader;
+//			List<String> waitEnd = new ArrayList<String>();
+//			for(String fileName : oldHLogsReader.keySet()){
+//				LOG.debug("[Next] OldReader " + fileName);
+//				reader = oldHLogsReader.get(fileName);
+//				HLog.Entry entry = reader.next();
+//				// 如果是 OLD 没读到数据，则判断是否从内存中删除该Reader，且把Zoo的状态改变
+//				if(entry != null){
+//					LOG.debug("[Next][-T-] Next OldReader " + fileName);
+//					return entry;
+//					break;
+//				}else{
+//					LOG.debug("[Next][-F-] Next OldReader " + fileName);
+//					waitEnd.add(fileName);
+//				}
+//			}
+//			
+//			for(String fn : waitEnd){
+//				tagEnd(fn);
+//			}
+//			
+////			if(entryInfo == null){
+////				for(String fileName : lifeHLogsReader.keySet()){
+////					LOG.debug("[Next] Next LifeReader " + fileName);
+////					reader = lifeHLogsReader.get(fileName);
+////					HLog.Entry entry = reader.next();
+////					if(entry != null){
+////						LOG.debug("[Next][-T-] Next LifeReader " + fileName);
+////						entryInfo = new EntryInfo(entry, HLogType.LIFE, fileName, reader.getPosition());
+////						break;
+////					}else{
+////						LOG.debug("[Next][-F-] Next LifeReader " + fileName);
+////					}
+////				}
+////			}
+////			
+////			//如果发现没有数据可以再read则更新缓存查看是否有新的日志出现
+////			if(entryInfo == null)
+////			{
+////				sync();
+////			}
+//			
+//			return null;
+//		}catch(Exception e){
+//			return null;
 //		}
+		return null;
+	}
+	
+	public HLogReader getReader(Path path){
 		return null;
 	}
 
@@ -176,4 +169,9 @@ public class DefaultHLogOperatorImpl extends AbstractHLogOperator{
 		return false;
 	}
 
+	@Override
+	public boolean commit() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

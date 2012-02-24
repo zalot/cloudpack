@@ -11,8 +11,9 @@ import java.util.List;
  */
 public class HLogGroup {
 	String groupName;
+	int index = 0;
 	boolean isOver = false;
-	protected List<HLogInfo> readers = new ArrayList<HLogInfo>();
+	protected List<HLogInfo> hlogInfos = new ArrayList<HLogInfo>();
 	
 	public HLogGroup(String name) {
 		this.groupName = name;
@@ -48,6 +49,14 @@ public class HLogGroup {
 	}
 
 	public void sort() {
-		Collections.sort(readers);
+		Collections.sort(hlogInfos);
+	}
+	
+	public List<HLogInfo> getHlogInfos(){
+		return hlogInfos;
+	}
+	
+	public HLogInfo next(){
+		return hlogInfos.get(index++);
 	}
 }

@@ -14,7 +14,9 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.zookeeper.KeeperException;
 
 import com.alibaba.hbase.replication.domain.DefaultHLogs;
+import com.alibaba.hbase.replication.domain.HLogInfo;
 import com.alibaba.hbase.replication.domain.HLogs;
+import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
  * 日志操作
@@ -23,6 +25,7 @@ import com.alibaba.hbase.replication.domain.HLogs;
  * 
  */
 public abstract class AbstractHLogOperator implements HLogOperator{
+	
 	protected static final Log LOG = LogFactory.getLog(AbstractHLogOperator.class);
 	protected long lastSyncTime = 0;
 	protected long minSyncTime = 10000;
@@ -202,4 +205,11 @@ public abstract class AbstractHLogOperator implements HLogOperator{
 //		LOG.info("[HLogReader.getReader][ZNode.TYPE."+ znode.getType() +"][HLog.TYPE." + type + "]" + reader);
 //		return reader;
 //	}
+	
+	@Override
+	public HLogReader getReader(HLogInfo info) {
+		if(info != null)
+			return new LazyOpenHLogReader(fs, info);
+		return null;
+	}
 }

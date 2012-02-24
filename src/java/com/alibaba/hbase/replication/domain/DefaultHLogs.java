@@ -1,14 +1,16 @@
 package com.alibaba.hbase.replication.domain;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
-import com.alibaba.hbase.replication.utility.HLogUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
+import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
  * 默认 HLogsDomain
@@ -89,19 +91,14 @@ public class DefaultHLogs implements HLogs{
 
 	@Override
 	public HLogGroup getGroup(String name) {
-		return null;
+		return groups.get(name);
 	}
 
 	@Override
-	public List<HLogGroup> getGroups() {
-		return null;
+	public Collection<HLogGroup> getGroups() {
+		return groups.values();
 	}
 
-	@Override
-	public Path getPath(String name) {
-		return null;
-	}
-	
 	@Override
 	public void setConf(Configuration conf) {
 		this.conf = conf;

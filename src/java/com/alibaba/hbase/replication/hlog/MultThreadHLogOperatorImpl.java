@@ -6,7 +6,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.zookeeper.KeeperException;
+
+import com.alibaba.hbase.replication.domain.HLogInfo;
 
 /**
  * 多线程的 HLogReader
@@ -14,8 +17,9 @@ import org.apache.zookeeper.KeeperException;
  * @author zalot.zhaoh
  *
  */
-public class MultThreadHLogOperatorImpl extends AbstractHLogOperator {
+public class MultThreadHLogOperatorImpl extends AbstractHLogOperator implements HLogOperatorTransaction{
 	protected static final Log LOG = LogFactory.getLog(MultThreadHLogOperatorImpl.class);
+	protected ThreadLocal<HLogInfo> currentHLog = new ThreadLocal<HLogInfo>();
 	protected ThreadLocal<HLogReader> currentReader = new ThreadLocal<HLogReader>();
 	
 	boolean hasSync = false;
@@ -34,7 +38,7 @@ public class MultThreadHLogOperatorImpl extends AbstractHLogOperator {
 		public NoFoundEntryInfoException(){}
 	}
 	
-	public HLogReader getNextReader() throws Exception {
+	public HLogReader getReader() throws Exception {
 //		if (!hasSync) {
 //			sync();
 //		}
@@ -56,11 +60,13 @@ public class MultThreadHLogOperatorImpl extends AbstractHLogOperator {
 //				throw new NoFoundEntryInfoException();
 //			}
 //		}
+//		_hogs.ge
+		
 		return currentReader.get();
 	}
 
 	@Override
-	public EntryInfo next() {
+	public Entry next() {
 //		HLogReader reader = null;
 //		while(true){
 //			try {
@@ -118,7 +124,7 @@ public class MultThreadHLogOperatorImpl extends AbstractHLogOperator {
 	
 
 	@Override
-	public boolean commit(List<EntryInfo> entryInfos) {
+	public boolean commit() {
 //		List<String> tmpFiles = new ArrayList<String>();
 //		for(EntryInfo info : entryInfos){
 //			if(!tmpFiles.contains(info.getFileName())){
@@ -150,8 +156,8 @@ public class MultThreadHLogOperatorImpl extends AbstractHLogOperator {
 		}
 	}
 	
-	@Override
-	public boolean commit(EntryInfo entryInfo) {
+//	@Override
+//	public boolean commit(Entry entry) {
 //		try{
 //			if(entryInfo == null || entryInfo.getEntry() == null || entryInfo.getPos() <=0 ) 
 //				return false;
@@ -167,7 +173,20 @@ public class MultThreadHLogOperatorImpl extends AbstractHLogOperator {
 //		}catch(Exception e){
 //			// TODO :: commit ERROR
 //		}
+//		return false;
+//	}
+
+	public boolean process(ReplicationCallBack call) {
+		Entry entry = next();
+		if(call.next(currentHLog.get(), entry)){
+			return commit();
+		}
 		return false;
 	}
-	
+
+	@Override
+	public boolean process(ReplicationCallBack call, int count) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

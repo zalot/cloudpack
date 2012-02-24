@@ -70,28 +70,28 @@ public class HBaseReplicationManager {
 		Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				EntryInfo entryInfo = null;
-				while(!isStop){
-					try {
-						entryInfo = hlogOperator.next();
-						if(entryInfo != null)
-						{
-							if(replication.put(entryInfo)){
-								if(listener != null)
-									listener.preCommit(entryInfo);
-								hlogOperator.commit(entryInfo);
-							}
-						}else{
-							Thread.sleep(10000);
-							if(!isStop)
-								hlogOperator.sync();
-							else
-								return;
-						}
-					} catch (Exception e) {
-						LOG.error(e);
-					}
-				}
+//				EntryInfo entryInfo = null;
+//				while(!isStop){
+//					try {
+//						entryInfo = hlogOperator.next();
+//						if(entryInfo != null)
+//						{
+//							if(replication.put(entryInfo)){
+//								if(listener != null)
+//									listener.preCommit(entryInfo);
+//								hlogOperator.commit(entryInfo);
+//							}
+//						}else{
+//							Thread.sleep(10000);
+//							if(!isStop)
+//								hlogOperator.sync();
+//							else
+//								return;
+//						}
+//					} catch (Exception e) {
+//						LOG.error(e);
+//					}
+//				}
 			}
 		};
 		return run;
@@ -101,22 +101,22 @@ public class HBaseReplicationManager {
 		Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				List<EntryInfo> entryInfos = null;
-				EntryInfo entryInfo = null;
-				while(!isStop){
-					try {
-						entryInfos = new ArrayList<EntryInfo>();
-						while((entryInfo = hlogOperator.next()) != null){
-							entryInfos.add(entryInfo);
-						}
-						if(replication.puts(entryInfos)){
-							hlogOperator.commit(entryInfo);
-							LOG.info("[ReplicationManager][Commits]" + entryInfos);
-						}
-					} catch (Exception e) {
-						LOG.error(e);
-					}
-				}
+//				List<EntryInfo> entryInfos = null;
+//				EntryInfo entryInfo = null;
+//				while(!isStop){
+//					try {
+//						entryInfos = new ArrayList<EntryInfo>();
+//						while((entryInfo = hlogOperator.next()) != null){
+//							entryInfos.add(entryInfo);
+//						}
+//						if(replication.puts(entryInfos)){
+//							hlogOperator.commit(entryInfo);
+//							LOG.info("[ReplicationManager][Commits]" + entryInfos);
+//						}
+//					} catch (Exception e) {
+//						LOG.error(e);
+//					}
+//				}
 			}
 		};
 		return run;
