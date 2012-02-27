@@ -6,10 +6,6 @@ import org.apache.hadoop.fs.Path;
 public class DefaultHLogZNode implements HLogZNode {
 	protected static final String SEPARATOR = ",";
 
-	public static HLogZNode create(Path path, HLogType type) {
-		return new DefaultHLogZNode(path, type, 0);
-	}
-
 	private Path path;
 
 	private long pos;
@@ -19,10 +15,12 @@ public class DefaultHLogZNode implements HLogZNode {
 	private int version;
 
 	public DefaultHLogZNode(Path path, byte[] data) {
-		String[] sdata = new String(data).split(SEPARATOR);
+		if(data != null){
+			String[] sdata = new String(data).split(SEPARATOR);
+			this.type = HLogType.toType(Integer.valueOf(sdata[0]));
+			this.pos = Long.valueOf(sdata[1]);
+		}
 		this.path = path;
-		this.type = HLogType.toType(Integer.valueOf(sdata[0]));
-		this.pos = Long.valueOf(sdata[1]);
 	}
 
 	public DefaultHLogZNode(Path path, HLogType type, long pos) {

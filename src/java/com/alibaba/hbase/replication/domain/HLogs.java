@@ -4,14 +4,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.fs.Path;
 
 /**
  * @author zalot.zhaoh
  * 
  */
-public interface HLogs extends Configurable {
+public interface HLogs{
 	public void put(Path path);
 
 	public void put(List<Path> paths);
@@ -29,4 +28,8 @@ public interface HLogs extends Configurable {
 	public Map<String, Path> life();
 
 	public Map<String, Path> old();
+	
+	public HLogInfo findByName(String name);
+	
+	public HLogGroup findGroup(Path path);
 }

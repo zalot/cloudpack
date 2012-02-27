@@ -63,6 +63,7 @@ public class DefaultHLogs implements HLogs{
 			group = new HLogGroup(info.getName());
 			groups.put(info.getName(), group);
 		}
+		group.put(info);
 	}
 	
 	public void put(List<Path> paths){
@@ -100,12 +101,14 @@ public class DefaultHLogs implements HLogs{
 	}
 
 	@Override
-	public void setConf(Configuration conf) {
-		this.conf = conf;
+	public HLogInfo findByName(String name) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public Configuration getConf() {
-		return this.conf;
+	public HLogGroup findGroup(Path path) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

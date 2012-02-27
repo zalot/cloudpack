@@ -1,7 +1,6 @@
 package com.alibaba.hbase.replication.hlog;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,7 +16,7 @@ import com.alibaba.hbase.replication.domain.HLogInfo;
  * @author zalot.zhaoh
  *
  */
-public class MultThreadHLogOperatorImpl extends AbstractHLogOperator implements HLogOperatorTransaction{
+public class MultThreadHLogOperatorImpl extends AbstractZookeeperHLogOperator implements HLogOperatorTransaction{
 	protected static final Log LOG = LogFactory.getLog(MultThreadHLogOperatorImpl.class);
 	protected ThreadLocal<HLogInfo> currentHLog = new ThreadLocal<HLogInfo>();
 	protected ThreadLocal<HLogReader> currentReader = new ThreadLocal<HLogReader>();
@@ -26,7 +25,7 @@ public class MultThreadHLogOperatorImpl extends AbstractHLogOperator implements 
 
 	public MultThreadHLogOperatorImpl(Configuration conf) throws IOException,
 			KeeperException, InterruptedException {
-		super(conf, null);
+		super(conf);
 		sync();
 	}
 
@@ -38,7 +37,7 @@ public class MultThreadHLogOperatorImpl extends AbstractHLogOperator implements 
 		public NoFoundEntryInfoException(){}
 	}
 	
-	public HLogReader getReader() throws Exception {
+	protected HLogReader getReader() throws Exception {
 //		if (!hasSync) {
 //			sync();
 //		}
@@ -186,7 +185,18 @@ public class MultThreadHLogOperatorImpl extends AbstractHLogOperator implements 
 
 	@Override
 	public boolean process(ReplicationCallBack call, int count) {
-		// TODO Auto-generated method stub
-		return false;
+		Entry entry = null;
+		int curCount = 0;
+		while(true){
+			if(curCount == count) break;
+			entry = next();
+			if(entry == null) break;
+			if(call.next(currentHLog.get(), entry)){ curCount++; break;}
+			else { return false; }
+		}
+		if(curCount > 0){
+			return commit();
+		}
+		return true;
 	}
 }

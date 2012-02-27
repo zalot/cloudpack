@@ -25,9 +25,7 @@ public abstract class AbstractZookeeperHLogOperator extends AbstractHLogOperator
 	}
 	
 	public boolean sync(){
-		if(super.sync()){
-		}
-		return false;
+		return super.sync();
 	}
 	
 	public HLogReader getReader(HLogInfo info){
@@ -50,4 +48,16 @@ public abstract class AbstractZookeeperHLogOperator extends AbstractHLogOperator
 		}
 		return null;
 	}
+	
+//	public boolean isLock(Path path){
+//		
+//	}
+//	
+//	public void lock(Path path){
+//		
+//	}
+//	
+//	public void unlock(Path path){
+//		
+//	}
 }

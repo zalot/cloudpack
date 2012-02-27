@@ -1,7 +1,8 @@
 package com.alibaba.hbase.replication.domain;
 
-import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 import org.apache.hadoop.fs.Path;
+
+import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
 
 
 /**

@@ -1,7 +1,5 @@
 package com.alibaba.hbase.replication.hlog;
 
-import java.util.List;
-
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;

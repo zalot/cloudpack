@@ -59,4 +59,8 @@ public class HLogGroup {
 	public HLogInfo next(){
 		return hlogInfos.get(index++);
 	}
+	
+	public void put(HLogInfo info){
+		hlogInfos.add(info);
+	}
 }
