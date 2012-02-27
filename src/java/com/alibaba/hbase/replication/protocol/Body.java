@@ -1,30 +1,81 @@
 package com.alibaba.hbase.replication.protocol;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
- * 
  * 类Body.java的实现描述：中间文件的文件体对象
+ * 
  * @author dongsh 2012-2-27 下午03:47:32
  */
 public class Body {
 
-    private final List<Edit> editList = new ArrayList<Body.Edit>();
+    /**
+     * UUID
+     */
+    private String                        clusterId;
 
-    public List<Edit> getEditList() {
-        return editList;
+    /**
+     * <tableName,editList>
+     */
+    private final Map<String, List<Edit>> editMap = new HashMap<String, List<Edit>>();
+
+    public Map<String, List<Edit>> getEditMap() {
+        return editMap;
+    }
+
+    /**
+     * @param clusterId not blank
+     */
+    public Body(String clusterId){
+        if (StringUtils.isBlank(clusterId)) {
+            throw new RuntimeException("Please init Body with a clusterId of the producer.");
+        }
+        this.clusterId = clusterId;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    /**
+     * thread-safe
+     * 
+     * @param tableName not blank
+     * @param edit not null
+     */
+    public void addEdit(String tableName, Edit edit) {
+        if (StringUtils.isBlank(tableName)) {
+            throw new RuntimeException("add Edit whit blank tableName. edit :" + edit);
+        }
+        if (edit != null) {
+            List<Edit> editList = editMap.get(tableName);
+            if (editList == null) {
+                synchronized (editMap) {
+                    if (editList == null) {
+                        // XXX CopyOnWriteArrayist？
+                        editList = new Vector<Body.Edit>();
+                        editMap.put(tableName, editList);
+                    }
+                }
+                editList = editMap.get(tableName);
+            }
+            editList.add(edit);
+        }
     }
 
     public static class Edit {
 
         private Type   type;
-        private String clusterId;
-        private String tableName;
-        private String rowKey;
-        private String family;
-        private String qualifier;
+        private byte[] rowKey;
+        private byte[] family;
+        private byte[] qualifier;
         private byte[] value;
+        private long   timeStamp;
 
         public Type getType() {
             return type;
@@ -34,35 +85,27 @@ public class Body {
             this.type = type;
         }
 
-        public String getClusterId() {
-            return clusterId;
-        }
-
-        public void setClusterId(String clusterId) {
-            this.clusterId = clusterId;
-        }
-
-        public String getRowKey() {
+        public byte[] getRowKey() {
             return rowKey;
         }
 
-        public void setRowKey(String rowKey) {
+        public void setRowKey(byte[] rowKey) {
             this.rowKey = rowKey;
         }
 
-        public String getFamily() {
+        public byte[] getFamily() {
             return family;
         }
 
-        public void setFamily(String family) {
+        public void setFamily(byte[] family) {
             this.family = family;
         }
 
-        public String getQualifier() {
+        public byte[] getQualifier() {
             return qualifier;
         }
 
-        public void setQualifier(String qualifier) {
+        public void setQualifier(byte[] qualifier) {
             this.qualifier = qualifier;
         }
 
@@ -74,19 +117,22 @@ public class Body {
             this.value = value;
         }
 
-        public String getTableName() {
-            return tableName;
+        public long getTimeStamp() {
+            return timeStamp;
         }
 
-        public void setTableName(String tableName) {
-            this.tableName = tableName;
+        public void setTimeStamp(long timeStamp) {
+            this.timeStamp = timeStamp;
         }
 
     }
 
     public static enum Type {
-        Put(0), Delete(1), DeleteColumn(2), DeleteFamily(3);
+        Put(1), Delete(2), DeleteColumn(3), DeleteFamily(4);
 
+        /**
+         * 0不使用，因爲這是protobuffer的int默認值
+         */
         int code;
 
         private Type(int code){
@@ -95,6 +141,15 @@ public class Body {
 
         public int getCode() {
             return code;
+        }
+
+        public static Type valueOfCode(int code) {
+            for (Type elem : values()) {
+                if (elem.getCode() == code) {
+                    return elem;
+                }
+            }
+            return null;
         }
     }
 

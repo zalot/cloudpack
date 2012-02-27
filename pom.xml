@@ -1,13 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<!-- <parent>
+		<groupId>com.alibaba</groupId>
+		<artifactId>pampas</artifactId>
+		<version>4</version>
+	</parent> -->
 	<groupId>com.alibaba</groupId>
 	<artifactId>hbase.replication</artifactId>
 	<packaging>jar</packaging>
 	<version>0.92.0</version>
 	<name>HBaseTest</name>
 	<url>http://maven.apache.org</url>
-	
+
 	<!-- 参数配置 -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,7 +20,7 @@
 		<downloadResouce>true</downloadResouce>
 		<downloadJavadocs>true</downloadJavadocs>
 	</properties>
-	
+
 	<!-- 构造项 -->
 	<build>
 		<!-- JAVA源码目录 -->
@@ -56,7 +61,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			
+
 			<!-- 源码输出Plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -81,8 +86,8 @@
 	<reporting>
 		<outputDirectory>report</outputDirectory>
 	</reporting>
-	
-	
+
+
 
 	<!-- dependencyManagement 依赖配置 -->
 	<dependencies>
@@ -102,9 +107,16 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>google.protobuf</artifactId>
+			<!-- TODO : try to upgrade to 2.4.1 -->
+			<version>2.2.0</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.9</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
