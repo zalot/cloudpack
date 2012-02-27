@@ -7,6 +7,9 @@ import java.util.Map;
 import org.apache.hadoop.fs.Path;
 
 /**
+ * HLog Java 结构对象
+ * 存储的 HLog的 Path ，并进行分组
+ * 
  * @author zalot.zhaoh
  * 
  */

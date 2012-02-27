@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * HLog 组
+ * HLog 组，给HLogs 使用
  * @author zalot.zhaoh
  * 
  */

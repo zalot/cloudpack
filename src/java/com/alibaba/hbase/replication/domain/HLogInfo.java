@@ -5,6 +5,12 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog;
 
 import com.alibaba.hbase.replication.hlog.HLogOperator;
 
+/**
+ * 描述一个 HLog 的基本信息
+ * 
+ * @author zalot.zhaoh
+ *
+ */
 public class HLogInfo implements Comparable<HLogInfo>{
 
 	/**
