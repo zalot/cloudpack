@@ -11,7 +11,12 @@ import java.util.List;
  */
 public class HLogGroup {
 	String groupName;
-	int index = 0;
+	
+    public String getGroupName() {
+        return groupName;
+    }
+
+    int index = 0;
 	boolean isOver = false;
 	protected List<HLogInfo> hlogInfos = new ArrayList<HLogInfo>();
 	
