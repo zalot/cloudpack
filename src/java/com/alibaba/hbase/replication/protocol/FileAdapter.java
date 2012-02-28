@@ -1,41 +1,48 @@
 package com.alibaba.hbase.replication.protocol;
 
 /**
- * 文件适配器
+ * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
  * 
- * 类FileAdapter.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
 public class FileAdapter implements ProtocolAdapter {
 
-    public static Head validataFileName(String fileName){
+    public static Head validataFileName(String fileName) {
         String[] info = fileName.split("\\.");
-        if(info.length == 6){
-            try{
+        if (info.length == 7) {
+            try {
                 Head head = new Head();
                 head.setVersion(Integer.parseInt(info[0]));
                 head.setGroupName(info[1]);
-                head.setTimestamp(Long.parseLong(info[2]));
-                head.setStartOffset(Integer.parseInt(info[3]));
-                head.setEndOffset(Integer.parseInt(info[4]));
-                head.setCount(Integer.parseInt(info[5]));
+                head.setFileTimestamp(Long.parseLong(info[2]));
+                head.setHeadTimestamp(Long.parseLong(info[3]));
+                head.setStartOffset(Integer.parseInt(info[4]));
+                head.setEndOffset(Integer.parseInt(info[5]));
+                head.setCount(Integer.parseInt(info[6]));
                 return head;
-            }catch(Exception e){
+            } catch (Exception e) {
                 return null;
             }
         }
         return null;
     }
-    
-    public static String head2FileName(Head head){
-        return head.version + "." + head.groupName + "." + head.timestamp + "." + head.startOffset + "." + head.endOffset;
+
+    public static String head2FileName(Head head) {
+        return   head.version + "."         // [0]
+               + head.groupName + "."       // [1]
+               + head.fileTimestamp + "."   // [2]
+               + head.headTimestamp + "."   // [3]
+               + head.startOffset + "."     // [4]
+               + head.endOffset+ "."        // [5]
+               + head.count+ "."            // [6]
+               ;           
     }
-    
+
     @Override
     public void write(MetaData data) {
         Body body = data.getBody();
         String fileName = head2FileName(data.getHead());
-        
+
     }
 
     @Override
