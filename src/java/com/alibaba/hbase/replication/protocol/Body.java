@@ -15,31 +15,12 @@ import org.apache.commons.lang.StringUtils;
 public class Body {
 
     /**
-     * UUID
-     */
-    private String                        clusterId;
-
-    /**
      * <tableName,editList>
      */
     private final Map<String, List<Edit>> editMap = new HashMap<String, List<Edit>>();
 
     public Map<String, List<Edit>> getEditMap() {
         return editMap;
-    }
-
-    /**
-     * @param clusterId not blank
-     */
-    public Body(String clusterId){
-        if (StringUtils.isBlank(clusterId)) {
-            throw new RuntimeException("Please init Body with a clusterId of the producer.");
-        }
-        this.clusterId = clusterId;
-    }
-
-    public String getClusterId() {
-        return clusterId;
     }
 
     /**

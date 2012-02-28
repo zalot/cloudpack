@@ -22,11 +22,11 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class BodySerializingHandler {
 
-    // private static Logger log = LoggerFactory.getLogger(BodySerializingHandler.class);
+    // private static Logger LOG = LoggerFactory.getLogger(BodySerializingHandler.class);
 
     public static Body deserialize(byte[] in) throws InvalidProtocolBufferException {
         BodyBinObject.bodyBinObject bodyBinObject = BodyBinObject.bodyBinObject.parseFrom(in);
-        Body body = new Body(bodyBinObject.getClusterId());
+        Body body = new Body();
         List<BodyBinObject.tableBinObject> tableBinObjectList = bodyBinObject.getTableBinObjectListList();
         if (CollectionUtils.isNotEmpty(tableBinObjectList)) {
             for (BodyBinObject.tableBinObject tableBinObject : tableBinObjectList) {
@@ -49,7 +49,6 @@ public class BodySerializingHandler {
     public static byte[] serialize(Body body) {
         // FIXME NPE
         BodyBinObject.bodyBinObject.Builder bodyBinObject = BodyBinObject.bodyBinObject.newBuilder();
-        bodyBinObject.setClusterId(body.getClusterId());
         for (String tableName : body.getEditMap().keySet()) {
             BodyBinObject.tableBinObject.Builder tableBinObject = BodyBinObject.tableBinObject.newBuilder();
             tableBinObject.setTableName(tableName);

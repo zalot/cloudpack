@@ -4,8 +4,7 @@ option java_package = "com.alibaba.hbase.replication.protocol.protobuf";
 option java_outer_classname = "BodyBinObject";
 
 message bodyBinObject {
-required string clusterId = 1;
-repeated tableBinObject tableBinObjectList=2;
+repeated tableBinObject tableBinObjectList=1;
 }
 
 message tableBinObject {

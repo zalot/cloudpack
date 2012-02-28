@@ -1,6 +1,7 @@
 package com.alibaba.hbase.replication.protocol;
 
-import org.apache.hadoop.conf.Configuration;
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
@@ -15,6 +16,9 @@ public class FileAdapter implements ProtocolAdapter {
             try {
                 Head head = new Head();
                 head.setVersion(Integer.parseInt(info[0]));
+                if(StringUtils.isBlank(info[1])){
+                    return null;
+                }
                 head.setGroupName(info[1]);
                 head.setFileTimestamp(Long.parseLong(info[2]));
                 head.setHeadTimestamp(Long.parseLong(info[3]));

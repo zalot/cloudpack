@@ -1,11 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<!-- <parent>
-		<groupId>com.alibaba</groupId>
-		<artifactId>pampas</artifactId>
-		<version>4</version>
-	</parent> -->
+	<!-- <parent> <groupId>com.alibaba</groupId> <artifactId>pampas</artifactId> 
+		<version>4</version> </parent> -->
 	<groupId>com.alibaba</groupId>
 	<artifactId>hbase.replication</artifactId>
 	<packaging>jar</packaging>
@@ -19,6 +16,7 @@
 		<maven.test.skip>true</maven.test.skip>
 		<downloadResouce>true</downloadResouce>
 		<downloadJavadocs>true</downloadJavadocs>
+		<springframework_version>2.5.6.SEC02</springframework_version>
 	</properties>
 
 	<!-- 构造项 -->
@@ -111,6 +109,17 @@
 			<artifactId>google.protobuf</artifactId>
 			<!-- TODO : try to upgrade to 2.4.1 -->
 			<version>2.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>sourceforge.spring</artifactId>
+			<version>${springframework_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>sourceforge.spring.modules.test</artifactId>
+			<version>${springframework_version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
