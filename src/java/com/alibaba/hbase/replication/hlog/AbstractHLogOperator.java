@@ -1,6 +1,7 @@
 package com.alibaba.hbase.replication.hlog;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,8 +13,6 @@ import org.apache.zookeeper.KeeperException;
 import com.alibaba.hbase.replication.domain.DefaultHLogs;
 import com.alibaba.hbase.replication.domain.HLogInfo;
 import com.alibaba.hbase.replication.domain.HLogs;
-import com.alibaba.hbase.replication.hlog.reader.DefaultHLogReader;
-import com.alibaba.hbase.replication.hlog.reader.HLogReader;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
@@ -22,18 +21,15 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
  * @author zalot.zhaoh
  */
 public abstract class AbstractHLogOperator implements HLogOperator {
-    
-    @Override
-    public boolean isClosed() {
-        return false;
-    }
 
-    protected static final Log LOG = LogFactory.getLog(AbstractHLogOperator.class);
-
+    protected static final Log LOG          = LogFactory.getLog(AbstractHLogOperator.class);
     protected Configuration    conf;
     protected FileSystem       fs;
     protected Path             logsPath;
     protected Path             oldLogsPath;
+    protected boolean          isClosed     = false;
+    protected AtomicInteger    openFileSize = new AtomicInteger(0);
+
     public AbstractHLogOperator(Configuration conf) throws IOException, KeeperException, InterruptedException{
         this(conf, null);
     }
@@ -47,14 +43,17 @@ public abstract class AbstractHLogOperator implements HLogOperator {
     }
 
     @Override
-    public void close() {
-        // TODO Auto-generated method stub
+    public synchronized void close() {
+        isClosed = true;
+    }
 
+    @Override
+    public void commit(HLogReader reader) throws Exception {
+        openFileSize.getAndDecrement();
     }
 
     @Override
     public boolean flush() {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -76,8 +75,18 @@ public abstract class AbstractHLogOperator implements HLogOperator {
         }
     }
 
+    @Override
+    public int getOpenFileSize() {
+        return openFileSize.get();
+    }
+
     public HLogReader getReader(HLogInfo info) throws Exception {
-        if (info != null) return new DefaultHLogReader();
+        if (info != null) {
+            DefaultHLogReader reader = new DefaultHLogReader();
+            reader.init(this, info);
+            openFileSize.getAndIncrement();
+            return reader;
+        }
         return null;
     }
 
@@ -86,6 +95,11 @@ public abstract class AbstractHLogOperator implements HLogOperator {
         if (logPath != null) _hogs.put(HLogUtil.getHLogsByHDFS(fs, logPath));
         if (oldPath != null) _hogs.put(HLogUtil.getHLogsByHDFS(fs, oldPath));
         return _hogs;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return false;
     }
 
     @Override

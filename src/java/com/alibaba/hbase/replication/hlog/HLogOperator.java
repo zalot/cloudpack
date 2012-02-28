@@ -5,7 +5,6 @@ import org.apache.hadoop.fs.FileSystem;
 
 import com.alibaba.hbase.replication.domain.HLogInfo;
 import com.alibaba.hbase.replication.domain.HLogs;
-import com.alibaba.hbase.replication.hlog.reader.HLogReader;
 
 /**
  * 日志操作接口
@@ -26,4 +25,5 @@ public interface HLogOperator {
     public void close();
     public void open();
     public boolean isClosed();
+    public int getOpenFileSize();
 }

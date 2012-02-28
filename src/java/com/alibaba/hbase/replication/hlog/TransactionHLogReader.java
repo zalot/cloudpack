@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.hlog.reader;
+package com.alibaba.hbase.replication.hlog;
 
 import com.alibaba.hbase.replication.domain.HLogInfo;
 import org.apache.hadoop.fs.FileSystem;

@@ -8,7 +8,6 @@ import org.apache.zookeeper.KeeperException;
 
 import com.alibaba.hbase.replication.domain.HLogInfo;
 import com.alibaba.hbase.replication.domain.HLogZNode;
-import com.alibaba.hbase.replication.hlog.reader.HLogReader;
 import com.alibaba.hbase.replication.zookeeper.HLogZNodeOperator;
 
 /**
