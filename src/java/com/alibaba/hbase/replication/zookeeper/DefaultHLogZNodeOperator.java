@@ -10,7 +10,6 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import com.alibaba.hbase.replication.domain.DomainFactory;
 import com.alibaba.hbase.replication.domain.HLogZNode;
 
 /**
@@ -63,8 +62,8 @@ public class DefaultHLogZNodeOperator implements HLogZNodeOperator {
 		Stat stat = zoo.exists(strPath, false);
 		if (stat != null) {
 			byte[] data = zoo.getData(strPath, false, stat);
-			HLogZNode znode = DomainFactory.createHLogZNode(path, data,
-					stat.getVersion());
+			HLogZNode znode = new HLogZNode(path, data);
+			znode.setVersion(stat.getVersion());
 			return znode;
 		}
 		return null;

@@ -10,13 +10,14 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.zookeeper.KeeperException;
 
-import com.alibaba.hbase.replication.domain.DefaultHLogs;
-import com.alibaba.hbase.replication.domain.HLogInfo;
-import com.alibaba.hbase.replication.domain.HLogs;
+import com.alibaba.hbase.replication.hlog.domain.DefaultHLogs;
+import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
+import com.alibaba.hbase.replication.hlog.domain.HLogs;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
  * 日志操作
+ * 1. 统一管理 HLogReader
  * 
  * @author zalot.zhaoh
  */

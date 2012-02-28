@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.domain;
+package com.alibaba.hbase.replication.hlog.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,5 +67,12 @@ public class HLogGroup {
 	
 	public void put(HLogInfo info){
 		hlogInfos.add(info);
+	}
+	
+	public boolean hasMoreGroup(){
+	    if(index + 1 < hlogInfos.size()){
+	        return true;
+	    }
+	    return false;
 	}
 }

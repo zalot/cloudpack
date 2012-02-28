@@ -10,8 +10,6 @@ package com.alibaba.hbase.replication.protocol.protobuf;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.alibaba.hbase.replication.protocol.Body;
 import com.google.protobuf.ByteString;
@@ -26,7 +24,7 @@ public class BodySerializingHandler {
 
     // private static Logger log = LoggerFactory.getLogger(BodySerializingHandler.class);
 
-    public Body deserialize(byte[] in) throws InvalidProtocolBufferException {
+    public static Body deserialize(byte[] in) throws InvalidProtocolBufferException {
         BodyBinObject.bodyBinObject bodyBinObject = BodyBinObject.bodyBinObject.parseFrom(in);
         Body body = new Body(bodyBinObject.getClusterId());
         List<BodyBinObject.tableBinObject> tableBinObjectList = bodyBinObject.getTableBinObjectListList();
@@ -48,7 +46,7 @@ public class BodySerializingHandler {
         return body;
     }
 
-    public byte[] serialize(Body body) {
+    public static byte[] serialize(Body body) {
         // FIXME NPE
         BodyBinObject.bodyBinObject.Builder bodyBinObject = BodyBinObject.bodyBinObject.newBuilder();
         bodyBinObject.setClusterId(body.getClusterId());

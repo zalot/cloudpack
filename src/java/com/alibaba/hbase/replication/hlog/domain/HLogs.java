@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.domain;
+package com.alibaba.hbase.replication.hlog.domain;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.hadoop.fs.Path;
 
 /**
- * HLog Java 结构对象
- * 存储的 HLog的 Path ，并进行分组
+ * HLog Java 数据结构对象
+ * 1. 存储的 HLog 的 Path
+ * 2. 根据存储的 Path 并进行分组
+ * 3. 分组内容排序
  * 
  * @author zalot.zhaoh
  * 

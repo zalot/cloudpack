@@ -6,8 +6,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.zookeeper.KeeperException;
 
-import com.alibaba.hbase.replication.domain.HLogInfo;
 import com.alibaba.hbase.replication.domain.HLogZNode;
+import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
 import com.alibaba.hbase.replication.zookeeper.HLogZNodeOperator;
 
 /**

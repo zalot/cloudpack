@@ -4,20 +4,18 @@ public class Version1 implements MetaData{
     protected Body body;
     protected Head head;
     
-    public void setHead(){
-        
-    }
-    public void setBody(){
-        
+    public Version1(Head head, Body body){
+        this.head = head;
+        this.body = body;
     }
     
 	@Override
 	public Head getHead() {
-		return null;
+		return head;
 	}
 
 	@Override
 	public Body getBody() {
-		return null;
+		return body;
 	}
 }

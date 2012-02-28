@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
-import com.alibaba.hbase.replication.domain.HLogInfo;
+import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
 
 
 /**

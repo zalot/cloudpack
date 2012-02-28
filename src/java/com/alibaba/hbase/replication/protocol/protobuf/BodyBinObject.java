@@ -4,2007 +4,2061 @@
 package com.alibaba.hbase.replication.protocol.protobuf;
 
 public final class BodyBinObject {
-  private BodyBinObject() {}
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
-  }
-  public interface bodyBinObjectOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required string clusterId = 1;
-    boolean hasClusterId();
-    String getClusterId();
-    
-    // repeated .com.alibaba.hbase.replication.protocol.protobuf.tableBinObject tableBinObjectList = 2;
-    java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> 
-        getTableBinObjectListList();
-    com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject getTableBinObjectList(int index);
-    int getTableBinObjectListCount();
-    java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> 
-        getTableBinObjectListOrBuilderList();
-    com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder getTableBinObjectListOrBuilder(
-        int index);
-  }
-  public static final class bodyBinObject extends
-      com.google.protobuf.GeneratedMessage
-      implements bodyBinObjectOrBuilder {
-    // Use bodyBinObject.newBuilder() to construct.
-    private bodyBinObject(Builder builder) {
-      super(builder);
+
+    private BodyBinObject(){
     }
-    private bodyBinObject(boolean noInit) {}
-    
-    private static final bodyBinObject defaultInstance;
-    public static bodyBinObject getDefaultInstance() {
-      return defaultInstance;
+
+    public static void registerAllExtensions(com.google.protobuf.ExtensionRegistry registry) {
     }
-    
-    public bodyBinObject getDefaultInstanceForType() {
-      return defaultInstance;
+
+    public interface bodyBinObjectOrBuilder extends com.google.protobuf.MessageOrBuilder {
+
+        // required string clusterId = 1;
+        boolean hasClusterId();
+
+        String getClusterId();
+
+        // repeated .com.alibaba.hbase.replication.protocol.protobuf.tableBinObject tableBinObjectList = 2;
+        java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> getTableBinObjectListList();
+
+        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject getTableBinObjectList(int index);
+
+        int getTableBinObjectListCount();
+
+        java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> getTableBinObjectListOrBuilderList();
+
+        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder getTableBinObjectListOrBuilder(int index);
     }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_fieldAccessorTable;
-    }
-    
-    private int bitField0_;
-    // required string clusterId = 1;
-    public static final int CLUSTERID_FIELD_NUMBER = 1;
-    private java.lang.Object clusterId_;
-    public boolean hasClusterId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    public String getClusterId() {
-      java.lang.Object ref = clusterId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          clusterId_ = s;
+
+    public static final class bodyBinObject extends com.google.protobuf.GeneratedMessage implements bodyBinObjectOrBuilder {
+
+        // Use bodyBinObject.newBuilder() to construct.
+        private bodyBinObject(Builder builder){
+            super(builder);
         }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getClusterIdBytes() {
-      java.lang.Object ref = clusterId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        clusterId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // repeated .com.alibaba.hbase.replication.protocol.protobuf.tableBinObject tableBinObjectList = 2;
-    public static final int TABLEBINOBJECTLIST_FIELD_NUMBER = 2;
-    private java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> tableBinObjectList_;
-    public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> getTableBinObjectListList() {
-      return tableBinObjectList_;
-    }
-    public java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> 
-        getTableBinObjectListOrBuilderList() {
-      return tableBinObjectList_;
-    }
-    public int getTableBinObjectListCount() {
-      return tableBinObjectList_.size();
-    }
-    public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject getTableBinObjectList(int index) {
-      return tableBinObjectList_.get(index);
-    }
-    public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder getTableBinObjectListOrBuilder(
-        int index) {
-      return tableBinObjectList_.get(index);
-    }
-    
-    private void initFields() {
-      clusterId_ = "";
-      tableBinObjectList_ = java.util.Collections.emptyList();
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
-      if (!hasClusterId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      for (int i = 0; i < getTableBinObjectListCount(); i++) {
-        if (!getTableBinObjectList(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
+
+        private bodyBinObject(boolean noInit){
         }
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getClusterIdBytes());
-      }
-      for (int i = 0; i < tableBinObjectList_.size(); i++) {
-        output.writeMessage(2, tableBinObjectList_.get(i));
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getClusterIdBytes());
-      }
-      for (int i = 0; i < tableBinObjectList_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, tableBinObjectList_.get(i));
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-    
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObjectOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_fieldAccessorTable;
-      }
-      
-      // Construct using com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-      
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getTableBinObjectListFieldBuilder();
+
+        private static final bodyBinObject defaultInstance;
+
+        public static bodyBinObject getDefaultInstance() {
+            return defaultInstance;
         }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-      
-      public Builder clear() {
-        super.clear();
-        clusterId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (tableBinObjectListBuilder_ == null) {
-          tableBinObjectList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        } else {
-          tableBinObjectListBuilder_.clear();
+
+        public bodyBinObject getDefaultInstanceForType() {
+            return defaultInstance;
         }
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.getDescriptor();
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject getDefaultInstanceForType() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.getDefaultInstance();
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject build() {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
+
+        public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+            return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor;
         }
-        return result;
-      }
-      
-      private com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
+
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable internalGetFieldAccessorTable() {
+            return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_fieldAccessorTable;
         }
-        return result;
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject buildPartial() {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject result = new com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
+
+        private int              bitField0_;
+        // required string clusterId = 1;
+        public static final int  CLUSTERID_FIELD_NUMBER = 1;
+        private java.lang.Object clusterId_;
+
+        public boolean hasClusterId() {
+            return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        result.clusterId_ = clusterId_;
-        if (tableBinObjectListBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
-            tableBinObjectList_ = java.util.Collections.unmodifiableList(tableBinObjectList_);
-            bitField0_ = (bitField0_ & ~0x00000002);
-          }
-          result.tableBinObjectList_ = tableBinObjectList_;
-        } else {
-          result.tableBinObjectList_ = tableBinObjectListBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject) {
-          return mergeFrom((com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject other) {
-        if (other == com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.getDefaultInstance()) return this;
-        if (other.hasClusterId()) {
-          setClusterId(other.getClusterId());
-        }
-        if (tableBinObjectListBuilder_ == null) {
-          if (!other.tableBinObjectList_.isEmpty()) {
-            if (tableBinObjectList_.isEmpty()) {
-              tableBinObjectList_ = other.tableBinObjectList_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+
+        public String getClusterId() {
+            java.lang.Object ref = clusterId_;
+            if (ref instanceof String) {
+                return (String) ref;
             } else {
-              ensureTableBinObjectListIsMutable();
-              tableBinObjectList_.addAll(other.tableBinObjectList_);
+                com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+                String s = bs.toStringUtf8();
+                if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+                    clusterId_ = s;
+                }
+                return s;
             }
-            onChanged();
-          }
-        } else {
-          if (!other.tableBinObjectList_.isEmpty()) {
-            if (tableBinObjectListBuilder_.isEmpty()) {
-              tableBinObjectListBuilder_.dispose();
-              tableBinObjectListBuilder_ = null;
-              tableBinObjectList_ = other.tableBinObjectList_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-              tableBinObjectListBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getTableBinObjectListFieldBuilder() : null;
+        }
+
+        private com.google.protobuf.ByteString getClusterIdBytes() {
+            java.lang.Object ref = clusterId_;
+            if (ref instanceof String) {
+                com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+                clusterId_ = b;
+                return b;
             } else {
-              tableBinObjectListBuilder_.addAllMessages(other.tableBinObjectList_);
+                return (com.google.protobuf.ByteString) ref;
             }
-          }
         }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public final boolean isInitialized() {
-        if (!hasClusterId()) {
-          
-          return false;
+
+        // repeated .com.alibaba.hbase.replication.protocol.protobuf.tableBinObject tableBinObjectList = 2;
+        public static final int                                                                              TABLEBINOBJECTLIST_FIELD_NUMBER = 2;
+        private java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> tableBinObjectList_;
+
+        public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> getTableBinObjectListList() {
+            return tableBinObjectList_;
         }
-        for (int i = 0; i < getTableBinObjectListCount(); i++) {
-          if (!getTableBinObjectList(i).isInitialized()) {
-            
-            return false;
-          }
+
+        public java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> getTableBinObjectListOrBuilderList() {
+            return tableBinObjectList_;
         }
-        return true;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
+
+        public int getTableBinObjectListCount() {
+            return tableBinObjectList_.size();
+        }
+
+        public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject getTableBinObjectList(int index) {
+            return tableBinObjectList_.get(index);
+        }
+
+        public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder getTableBinObjectListOrBuilder(int index) {
+            return tableBinObjectList_.get(index);
+        }
+
+        private void initFields() {
+            clusterId_ = "";
+            tableBinObjectList_ = java.util.Collections.emptyList();
+        }
+
+        private byte memoizedIsInitialized = -1;
+
+        public final boolean isInitialized() {
+            byte isInitialized = memoizedIsInitialized;
+            if (isInitialized != -1) return isInitialized == 1;
+
+            if (!hasClusterId()) {
+                memoizedIsInitialized = 0;
+                return false;
+            }
+            for (int i = 0; i < getTableBinObjectListCount(); i++) {
+                if (!getTableBinObjectList(i).isInitialized()) {
+                    memoizedIsInitialized = 0;
+                    return false;
+                }
+            }
+            memoizedIsInitialized = 1;
+            return true;
+        }
+
+        public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+            getSerializedSize();
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                output.writeBytes(1, getClusterIdBytes());
+            }
+            for (int i = 0; i < tableBinObjectList_.size(); i++) {
+                output.writeMessage(2, tableBinObjectList_.get(i));
+            }
+            getUnknownFields().writeTo(output);
+        }
+
+        private int memoizedSerializedSize = -1;
+
+        public int getSerializedSize() {
+            int size = memoizedSerializedSize;
+            if (size != -1) return size;
+
+            size = 0;
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                size += com.google.protobuf.CodedOutputStream.computeBytesSize(1, getClusterIdBytes());
+            }
+            for (int i = 0; i < tableBinObjectList_.size(); i++) {
+                size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, tableBinObjectList_.get(i));
+            }
+            size += getUnknownFields().getSerializedSize();
+            memoizedSerializedSize = size;
+            return size;
+        }
+
+        private static final long serialVersionUID = 0L;
+
+        @java.lang.Override
+        protected java.lang.Object writeReplace() throws java.io.ObjectStreamException {
+            return super.writeReplace();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(com.google.protobuf.ByteString data)
+                                                                                                                                                throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(com.google.protobuf.ByteString data,
+                                                                                                            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                        throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(byte[] data)
+                                                                                                                        throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(byte[] data,
+                                                                                                            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                        throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(java.io.InputStream input)
+                                                                                                                                      throws java.io.IOException {
+            return newBuilder().mergeFrom(input).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(java.io.InputStream input,
+                                                                                                            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                        throws java.io.IOException {
+            return newBuilder().mergeFrom(input, extensionRegistry).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseDelimitedFrom(java.io.InputStream input)
+                                                                                                                                               throws java.io.IOException {
+            Builder builder = newBuilder();
+            if (builder.mergeDelimitedFrom(input)) {
+                return builder.buildParsed();
+            } else {
+                return null;
+            }
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseDelimitedFrom(java.io.InputStream input,
+                                                                                                                     com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                                 throws java.io.IOException {
+            Builder builder = newBuilder();
+            if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+                return builder.buildParsed();
+            } else {
+                return null;
+            }
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(com.google.protobuf.CodedInputStream input)
+                                                                                                                                                       throws java.io.IOException {
+            return newBuilder().mergeFrom(input).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject parseFrom(com.google.protobuf.CodedInputStream input,
+                                                                                                            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                        throws java.io.IOException {
+            return newBuilder().mergeFrom(input, extensionRegistry).buildParsed();
+        }
+
+        public static Builder newBuilder() {
+            return Builder.create();
+        }
+
+        public Builder newBuilderForType() {
+            return newBuilder();
+        }
+
+        public static Builder newBuilder(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject prototype) {
+            return newBuilder().mergeFrom(prototype);
+        }
+
+        public Builder toBuilder() {
+            return newBuilder(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+            Builder builder = new Builder(parent);
+            return builder;
+        }
+
+        public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder> implements com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObjectOrBuilder {
+
+            public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor;
+            }
+
+            protected com.google.protobuf.GeneratedMessage.FieldAccessorTable internalGetFieldAccessorTable() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_fieldAccessorTable;
+            }
+
+            // Construct using com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.newBuilder()
+            private Builder(){
+                maybeForceBuilderInitialization();
+            }
+
+            private Builder(BuilderParent parent){
+                super(parent);
+                maybeForceBuilderInitialization();
+            }
+
+            private void maybeForceBuilderInitialization() {
+                if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+                    getTableBinObjectListFieldBuilder();
+                }
+            }
+
+            private static Builder create() {
+                return new Builder();
+            }
+
+            public Builder clear() {
+                super.clear();
+                clusterId_ = "";
+                bitField0_ = (bitField0_ & ~0x00000001);
+                if (tableBinObjectListBuilder_ == null) {
+                    tableBinObjectList_ = java.util.Collections.emptyList();
+                    bitField0_ = (bitField0_ & ~0x00000002);
+                } else {
+                    tableBinObjectListBuilder_.clear();
+                }
+                return this;
+            }
+
+            public Builder clone() {
+                return create().mergeFrom(buildPartial());
+            }
+
+            public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.getDescriptor();
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject getDefaultInstanceForType() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.getDefaultInstance();
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject build() {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result);
+                }
+                return result;
+            }
+
+            private com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject buildParsed()
+                                                                                                             throws com.google.protobuf.InvalidProtocolBufferException {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result).asInvalidProtocolBufferException();
+                }
+                return result;
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject buildPartial() {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject result = new com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject(
+                                                                                                                                                                                     this);
+                int from_bitField0_ = bitField0_;
+                int to_bitField0_ = 0;
+                if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+                    to_bitField0_ |= 0x00000001;
+                }
+                result.clusterId_ = clusterId_;
+                if (tableBinObjectListBuilder_ == null) {
+                    if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                        tableBinObjectList_ = java.util.Collections.unmodifiableList(tableBinObjectList_);
+                        bitField0_ = (bitField0_ & ~0x00000002);
+                    }
+                    result.tableBinObjectList_ = tableBinObjectList_;
+                } else {
+                    result.tableBinObjectList_ = tableBinObjectListBuilder_.build();
+                }
+                result.bitField0_ = to_bitField0_;
+                onBuilt();
+                return result;
+            }
+
+            public Builder mergeFrom(com.google.protobuf.Message other) {
+                if (other instanceof com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject) {
+                    return mergeFrom((com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject) other);
+                } else {
+                    super.mergeFrom(other);
+                    return this;
+                }
+            }
+
+            public Builder mergeFrom(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject other) {
+                if (other == com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.getDefaultInstance()) return this;
+                if (other.hasClusterId()) {
+                    setClusterId(other.getClusterId());
+                }
+                if (tableBinObjectListBuilder_ == null) {
+                    if (!other.tableBinObjectList_.isEmpty()) {
+                        if (tableBinObjectList_.isEmpty()) {
+                            tableBinObjectList_ = other.tableBinObjectList_;
+                            bitField0_ = (bitField0_ & ~0x00000002);
+                        } else {
+                            ensureTableBinObjectListIsMutable();
+                            tableBinObjectList_.addAll(other.tableBinObjectList_);
+                        }
+                        onChanged();
+                    }
+                } else {
+                    if (!other.tableBinObjectList_.isEmpty()) {
+                        if (tableBinObjectListBuilder_.isEmpty()) {
+                            tableBinObjectListBuilder_.dispose();
+                            tableBinObjectListBuilder_ = null;
+                            tableBinObjectList_ = other.tableBinObjectList_;
+                            bitField0_ = (bitField0_ & ~0x00000002);
+                            tableBinObjectListBuilder_ = com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ? getTableBinObjectListFieldBuilder() : null;
+                        } else {
+                            tableBinObjectListBuilder_.addAllMessages(other.tableBinObjectList_);
+                        }
+                    }
+                }
+                this.mergeUnknownFields(other.getUnknownFields());
+                return this;
+            }
+
+            public final boolean isInitialized() {
+                if (!hasClusterId()) {
+
+                    return false;
+                }
+                for (int i = 0; i < getTableBinObjectListCount(); i++) {
+                    if (!getTableBinObjectList(i).isInitialized()) {
+
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+                                     com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                 throws java.io.IOException {
+                com.google.protobuf.UnknownFieldSet.Builder unknownFields = com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
+                while (true) {
+                    int tag = input.readTag();
+                    switch (tag) {
+                        case 0:
+                            this.setUnknownFields(unknownFields.build());
+                            onChanged();
+                            return this;
+                        default: {
+                            if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                onChanged();
+                                return this;
+                            }
+                            break;
+                        }
+                        case 10: {
+                            bitField0_ |= 0x00000001;
+                            clusterId_ = input.readBytes();
+                            break;
+                        }
+                        case 18: {
+                            com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder subBuilder = com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.newBuilder();
+                            input.readMessage(subBuilder, extensionRegistry);
+                            addTableBinObjectList(subBuilder.buildPartial());
+                            break;
+                        }
+                    }
+                }
+            }
+
+            private int              bitField0_;
+
+            // required string clusterId = 1;
+            private java.lang.Object clusterId_ = "";
+
+            public boolean hasClusterId() {
+                return ((bitField0_ & 0x00000001) == 0x00000001);
+            }
+
+            public String getClusterId() {
+                java.lang.Object ref = clusterId_;
+                if (!(ref instanceof String)) {
+                    String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+                    clusterId_ = s;
+                    return s;
+                } else {
+                    return (String) ref;
+                }
+            }
+
+            public Builder setClusterId(String value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                bitField0_ |= 0x00000001;
+                clusterId_ = value;
                 onChanged();
                 return this;
-              }
-              break;
             }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              clusterId_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder subBuilder = com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addTableBinObjectList(subBuilder.buildPartial());
-              break;
-            }
-          }
-        }
-      }
-      
-      private int bitField0_;
-      
-      // required string clusterId = 1;
-      private java.lang.Object clusterId_ = "";
-      public boolean hasClusterId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      public String getClusterId() {
-        java.lang.Object ref = clusterId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          clusterId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      public Builder setClusterId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        clusterId_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearClusterId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        clusterId_ = getDefaultInstance().getClusterId();
-        onChanged();
-        return this;
-      }
-      void setClusterId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        clusterId_ = value;
-        onChanged();
-      }
-      
-      // repeated .com.alibaba.hbase.replication.protocol.protobuf.tableBinObject tableBinObjectList = 2;
-      private java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> tableBinObjectList_ =
-        java.util.Collections.emptyList();
-      private void ensureTableBinObjectListIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          tableBinObjectList_ = new java.util.ArrayList<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject>(tableBinObjectList_);
-          bitField0_ |= 0x00000002;
-         }
-      }
-      
-      private com.google.protobuf.RepeatedFieldBuilder<
-          com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> tableBinObjectListBuilder_;
-      
-      public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> getTableBinObjectListList() {
-        if (tableBinObjectListBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(tableBinObjectList_);
-        } else {
-          return tableBinObjectListBuilder_.getMessageList();
-        }
-      }
-      public int getTableBinObjectListCount() {
-        if (tableBinObjectListBuilder_ == null) {
-          return tableBinObjectList_.size();
-        } else {
-          return tableBinObjectListBuilder_.getCount();
-        }
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject getTableBinObjectList(int index) {
-        if (tableBinObjectListBuilder_ == null) {
-          return tableBinObjectList_.get(index);
-        } else {
-          return tableBinObjectListBuilder_.getMessage(index);
-        }
-      }
-      public Builder setTableBinObjectList(
-          int index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject value) {
-        if (tableBinObjectListBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTableBinObjectListIsMutable();
-          tableBinObjectList_.set(index, value);
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      public Builder setTableBinObjectList(
-          int index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder builderForValue) {
-        if (tableBinObjectListBuilder_ == null) {
-          ensureTableBinObjectListIsMutable();
-          tableBinObjectList_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addTableBinObjectList(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject value) {
-        if (tableBinObjectListBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTableBinObjectListIsMutable();
-          tableBinObjectList_.add(value);
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      public Builder addTableBinObjectList(
-          int index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject value) {
-        if (tableBinObjectListBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTableBinObjectListIsMutable();
-          tableBinObjectList_.add(index, value);
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      public Builder addTableBinObjectList(
-          com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder builderForValue) {
-        if (tableBinObjectListBuilder_ == null) {
-          ensureTableBinObjectListIsMutable();
-          tableBinObjectList_.add(builderForValue.build());
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addTableBinObjectList(
-          int index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder builderForValue) {
-        if (tableBinObjectListBuilder_ == null) {
-          ensureTableBinObjectListIsMutable();
-          tableBinObjectList_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addAllTableBinObjectList(
-          java.lang.Iterable<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> values) {
-        if (tableBinObjectListBuilder_ == null) {
-          ensureTableBinObjectListIsMutable();
-          super.addAll(values, tableBinObjectList_);
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      public Builder clearTableBinObjectList() {
-        if (tableBinObjectListBuilder_ == null) {
-          tableBinObjectList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.clear();
-        }
-        return this;
-      }
-      public Builder removeTableBinObjectList(int index) {
-        if (tableBinObjectListBuilder_ == null) {
-          ensureTableBinObjectListIsMutable();
-          tableBinObjectList_.remove(index);
-          onChanged();
-        } else {
-          tableBinObjectListBuilder_.remove(index);
-        }
-        return this;
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder getTableBinObjectListBuilder(
-          int index) {
-        return getTableBinObjectListFieldBuilder().getBuilder(index);
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder getTableBinObjectListOrBuilder(
-          int index) {
-        if (tableBinObjectListBuilder_ == null) {
-          return tableBinObjectList_.get(index);  } else {
-          return tableBinObjectListBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      public java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> 
-           getTableBinObjectListOrBuilderList() {
-        if (tableBinObjectListBuilder_ != null) {
-          return tableBinObjectListBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(tableBinObjectList_);
-        }
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder addTableBinObjectListBuilder() {
-        return getTableBinObjectListFieldBuilder().addBuilder(
-            com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDefaultInstance());
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder addTableBinObjectListBuilder(
-          int index) {
-        return getTableBinObjectListFieldBuilder().addBuilder(
-            index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDefaultInstance());
-      }
-      public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder> 
-           getTableBinObjectListBuilderList() {
-        return getTableBinObjectListFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> 
-          getTableBinObjectListFieldBuilder() {
-        if (tableBinObjectListBuilder_ == null) {
-          tableBinObjectListBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder>(
-                  tableBinObjectList_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
-                  getParentForChildren(),
-                  isClean());
-          tableBinObjectList_ = null;
-        }
-        return tableBinObjectListBuilder_;
-      }
-      
-      // @@protoc_insertion_point(builder_scope:com.alibaba.hbase.replication.protocol.protobuf.bodyBinObject)
-    }
-    
-    static {
-      defaultInstance = new bodyBinObject(true);
-      defaultInstance.initFields();
-    }
-    
-    // @@protoc_insertion_point(class_scope:com.alibaba.hbase.replication.protocol.protobuf.bodyBinObject)
-  }
-  
-  public interface tableBinObjectOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required string tableName = 1;
-    boolean hasTableName();
-    String getTableName();
-    
-    // repeated .com.alibaba.hbase.replication.protocol.protobuf.editBinObject editBinObjectList = 2;
-    java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> 
-        getEditBinObjectListList();
-    com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject getEditBinObjectList(int index);
-    int getEditBinObjectListCount();
-    java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> 
-        getEditBinObjectListOrBuilderList();
-    com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder getEditBinObjectListOrBuilder(
-        int index);
-  }
-  public static final class tableBinObject extends
-      com.google.protobuf.GeneratedMessage
-      implements tableBinObjectOrBuilder {
-    // Use tableBinObject.newBuilder() to construct.
-    private tableBinObject(Builder builder) {
-      super(builder);
-    }
-    private tableBinObject(boolean noInit) {}
-    
-    private static final tableBinObject defaultInstance;
-    public static tableBinObject getDefaultInstance() {
-      return defaultInstance;
-    }
-    
-    public tableBinObject getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_fieldAccessorTable;
-    }
-    
-    private int bitField0_;
-    // required string tableName = 1;
-    public static final int TABLENAME_FIELD_NUMBER = 1;
-    private java.lang.Object tableName_;
-    public boolean hasTableName() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    public String getTableName() {
-      java.lang.Object ref = tableName_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          tableName_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getTableNameBytes() {
-      java.lang.Object ref = tableName_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        tableName_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // repeated .com.alibaba.hbase.replication.protocol.protobuf.editBinObject editBinObjectList = 2;
-    public static final int EDITBINOBJECTLIST_FIELD_NUMBER = 2;
-    private java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> editBinObjectList_;
-    public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> getEditBinObjectListList() {
-      return editBinObjectList_;
-    }
-    public java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> 
-        getEditBinObjectListOrBuilderList() {
-      return editBinObjectList_;
-    }
-    public int getEditBinObjectListCount() {
-      return editBinObjectList_.size();
-    }
-    public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject getEditBinObjectList(int index) {
-      return editBinObjectList_.get(index);
-    }
-    public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder getEditBinObjectListOrBuilder(
-        int index) {
-      return editBinObjectList_.get(index);
-    }
-    
-    private void initFields() {
-      tableName_ = "";
-      editBinObjectList_ = java.util.Collections.emptyList();
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
-      if (!hasTableName()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      for (int i = 0; i < getEditBinObjectListCount(); i++) {
-        if (!getEditBinObjectList(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getTableNameBytes());
-      }
-      for (int i = 0; i < editBinObjectList_.size(); i++) {
-        output.writeMessage(2, editBinObjectList_.get(i));
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getTableNameBytes());
-      }
-      for (int i = 0; i < editBinObjectList_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, editBinObjectList_.get(i));
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-    
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_fieldAccessorTable;
-      }
-      
-      // Construct using com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-      
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getEditBinObjectListFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-      
-      public Builder clear() {
-        super.clear();
-        tableName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (editBinObjectListBuilder_ == null) {
-          editBinObjectList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        } else {
-          editBinObjectListBuilder_.clear();
-        }
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDescriptor();
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject getDefaultInstanceForType() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDefaultInstance();
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject build() {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-      
-      private com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject buildPartial() {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject result = new com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.tableName_ = tableName_;
-        if (editBinObjectListBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
-            editBinObjectList_ = java.util.Collections.unmodifiableList(editBinObjectList_);
-            bitField0_ = (bitField0_ & ~0x00000002);
-          }
-          result.editBinObjectList_ = editBinObjectList_;
-        } else {
-          result.editBinObjectList_ = editBinObjectListBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject) {
-          return mergeFrom((com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject other) {
-        if (other == com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDefaultInstance()) return this;
-        if (other.hasTableName()) {
-          setTableName(other.getTableName());
-        }
-        if (editBinObjectListBuilder_ == null) {
-          if (!other.editBinObjectList_.isEmpty()) {
-            if (editBinObjectList_.isEmpty()) {
-              editBinObjectList_ = other.editBinObjectList_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-            } else {
-              ensureEditBinObjectListIsMutable();
-              editBinObjectList_.addAll(other.editBinObjectList_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.editBinObjectList_.isEmpty()) {
-            if (editBinObjectListBuilder_.isEmpty()) {
-              editBinObjectListBuilder_.dispose();
-              editBinObjectListBuilder_ = null;
-              editBinObjectList_ = other.editBinObjectList_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-              editBinObjectListBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getEditBinObjectListFieldBuilder() : null;
-            } else {
-              editBinObjectListBuilder_.addAllMessages(other.editBinObjectList_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public final boolean isInitialized() {
-        if (!hasTableName()) {
-          
-          return false;
-        }
-        for (int i = 0; i < getEditBinObjectListCount(); i++) {
-          if (!getEditBinObjectList(i).isInitialized()) {
-            
-            return false;
-          }
-        }
-        return true;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
+
+            public Builder clearClusterId() {
+                bitField0_ = (bitField0_ & ~0x00000001);
+                clusterId_ = getDefaultInstance().getClusterId();
                 onChanged();
                 return this;
-              }
-              break;
             }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              tableName_ = input.readBytes();
-              break;
+
+            void setClusterId(com.google.protobuf.ByteString value) {
+                bitField0_ |= 0x00000001;
+                clusterId_ = value;
+                onChanged();
             }
-            case 18: {
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder subBuilder = com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addEditBinObjectList(subBuilder.buildPartial());
-              break;
+
+            // repeated .com.alibaba.hbase.replication.protocol.protobuf.tableBinObject tableBinObjectList = 2;
+            private java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> tableBinObjectList_ = java.util.Collections.emptyList();
+
+            private void ensureTableBinObjectListIsMutable() {
+                if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+                    tableBinObjectList_ = new java.util.ArrayList<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject>(
+                                                                                                                                                tableBinObjectList_);
+                    bitField0_ |= 0x00000002;
+                }
             }
-          }
+
+            private com.google.protobuf.RepeatedFieldBuilder<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> tableBinObjectListBuilder_;
+
+            public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> getTableBinObjectListList() {
+                if (tableBinObjectListBuilder_ == null) {
+                    return java.util.Collections.unmodifiableList(tableBinObjectList_);
+                } else {
+                    return tableBinObjectListBuilder_.getMessageList();
+                }
+            }
+
+            public int getTableBinObjectListCount() {
+                if (tableBinObjectListBuilder_ == null) {
+                    return tableBinObjectList_.size();
+                } else {
+                    return tableBinObjectListBuilder_.getCount();
+                }
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject getTableBinObjectList(int index) {
+                if (tableBinObjectListBuilder_ == null) {
+                    return tableBinObjectList_.get(index);
+                } else {
+                    return tableBinObjectListBuilder_.getMessage(index);
+                }
+            }
+
+            public Builder setTableBinObjectList(int index,
+                                                 com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject value) {
+                if (tableBinObjectListBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureTableBinObjectListIsMutable();
+                    tableBinObjectList_.set(index, value);
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.setMessage(index, value);
+                }
+                return this;
+            }
+
+            public Builder setTableBinObjectList(int index,
+                                                 com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder builderForValue) {
+                if (tableBinObjectListBuilder_ == null) {
+                    ensureTableBinObjectListIsMutable();
+                    tableBinObjectList_.set(index, builderForValue.build());
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.setMessage(index, builderForValue.build());
+                }
+                return this;
+            }
+
+            public Builder addTableBinObjectList(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject value) {
+                if (tableBinObjectListBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureTableBinObjectListIsMutable();
+                    tableBinObjectList_.add(value);
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.addMessage(value);
+                }
+                return this;
+            }
+
+            public Builder addTableBinObjectList(int index,
+                                                 com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject value) {
+                if (tableBinObjectListBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureTableBinObjectListIsMutable();
+                    tableBinObjectList_.add(index, value);
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.addMessage(index, value);
+                }
+                return this;
+            }
+
+            public Builder addTableBinObjectList(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder builderForValue) {
+                if (tableBinObjectListBuilder_ == null) {
+                    ensureTableBinObjectListIsMutable();
+                    tableBinObjectList_.add(builderForValue.build());
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.addMessage(builderForValue.build());
+                }
+                return this;
+            }
+
+            public Builder addTableBinObjectList(int index,
+                                                 com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder builderForValue) {
+                if (tableBinObjectListBuilder_ == null) {
+                    ensureTableBinObjectListIsMutable();
+                    tableBinObjectList_.add(index, builderForValue.build());
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.addMessage(index, builderForValue.build());
+                }
+                return this;
+            }
+
+            public Builder addAllTableBinObjectList(java.lang.Iterable<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject> values) {
+                if (tableBinObjectListBuilder_ == null) {
+                    ensureTableBinObjectListIsMutable();
+                    super.addAll(values, tableBinObjectList_);
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.addAllMessages(values);
+                }
+                return this;
+            }
+
+            public Builder clearTableBinObjectList() {
+                if (tableBinObjectListBuilder_ == null) {
+                    tableBinObjectList_ = java.util.Collections.emptyList();
+                    bitField0_ = (bitField0_ & ~0x00000002);
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.clear();
+                }
+                return this;
+            }
+
+            public Builder removeTableBinObjectList(int index) {
+                if (tableBinObjectListBuilder_ == null) {
+                    ensureTableBinObjectListIsMutable();
+                    tableBinObjectList_.remove(index);
+                    onChanged();
+                } else {
+                    tableBinObjectListBuilder_.remove(index);
+                }
+                return this;
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder getTableBinObjectListBuilder(int index) {
+                return getTableBinObjectListFieldBuilder().getBuilder(index);
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder getTableBinObjectListOrBuilder(int index) {
+                if (tableBinObjectListBuilder_ == null) {
+                    return tableBinObjectList_.get(index);
+                } else {
+                    return tableBinObjectListBuilder_.getMessageOrBuilder(index);
+                }
+            }
+
+            public java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> getTableBinObjectListOrBuilderList() {
+                if (tableBinObjectListBuilder_ != null) {
+                    return tableBinObjectListBuilder_.getMessageOrBuilderList();
+                } else {
+                    return java.util.Collections.unmodifiableList(tableBinObjectList_);
+                }
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder addTableBinObjectListBuilder() {
+                return getTableBinObjectListFieldBuilder().addBuilder(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDefaultInstance());
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder addTableBinObjectListBuilder(int index) {
+                return getTableBinObjectListFieldBuilder().addBuilder(index,
+                                                                      com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDefaultInstance());
+            }
+
+            public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder> getTableBinObjectListBuilderList() {
+                return getTableBinObjectListFieldBuilder().getBuilderList();
+            }
+
+            private com.google.protobuf.RepeatedFieldBuilder<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder> getTableBinObjectListFieldBuilder() {
+                if (tableBinObjectListBuilder_ == null) {
+                    tableBinObjectListBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder>(
+                                                                                                                                                                                                                                                                                                                                                         tableBinObjectList_,
+                                                                                                                                                                                                                                                                                                                                                         ((bitField0_ & 0x00000002) == 0x00000002),
+                                                                                                                                                                                                                                                                                                                                                         getParentForChildren(),
+                                                                                                                                                                                                                                                                                                                                                         isClean());
+                    tableBinObjectList_ = null;
+                }
+                return tableBinObjectListBuilder_;
+            }
+
+            // @@protoc_insertion_point(builder_scope:com.alibaba.hbase.replication.protocol.protobuf.bodyBinObject)
         }
-      }
-      
-      private int bitField0_;
-      
-      // required string tableName = 1;
-      private java.lang.Object tableName_ = "";
-      public boolean hasTableName() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      public String getTableName() {
-        java.lang.Object ref = tableName_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          tableName_ = s;
-          return s;
-        } else {
-          return (String) ref;
+
+        static {
+            defaultInstance = new bodyBinObject(true);
+            defaultInstance.initFields();
         }
-      }
-      public Builder setTableName(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        tableName_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearTableName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        tableName_ = getDefaultInstance().getTableName();
-        onChanged();
-        return this;
-      }
-      void setTableName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        tableName_ = value;
-        onChanged();
-      }
-      
-      // repeated .com.alibaba.hbase.replication.protocol.protobuf.editBinObject editBinObjectList = 2;
-      private java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> editBinObjectList_ =
-        java.util.Collections.emptyList();
-      private void ensureEditBinObjectListIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          editBinObjectList_ = new java.util.ArrayList<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject>(editBinObjectList_);
-          bitField0_ |= 0x00000002;
-         }
-      }
-      
-      private com.google.protobuf.RepeatedFieldBuilder<
-          com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> editBinObjectListBuilder_;
-      
-      public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> getEditBinObjectListList() {
-        if (editBinObjectListBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(editBinObjectList_);
-        } else {
-          return editBinObjectListBuilder_.getMessageList();
+
+        // @@protoc_insertion_point(class_scope:com.alibaba.hbase.replication.protocol.protobuf.bodyBinObject)
+    }
+
+    public interface tableBinObjectOrBuilder extends com.google.protobuf.MessageOrBuilder {
+
+        // required string tableName = 1;
+        boolean hasTableName();
+
+        String getTableName();
+
+        // repeated .com.alibaba.hbase.replication.protocol.protobuf.editBinObject editBinObjectList = 2;
+        java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> getEditBinObjectListList();
+
+        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject getEditBinObjectList(int index);
+
+        int getEditBinObjectListCount();
+
+        java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> getEditBinObjectListOrBuilderList();
+
+        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder getEditBinObjectListOrBuilder(int index);
+    }
+
+    public static final class tableBinObject extends com.google.protobuf.GeneratedMessage implements tableBinObjectOrBuilder {
+
+        // Use tableBinObject.newBuilder() to construct.
+        private tableBinObject(Builder builder){
+            super(builder);
         }
-      }
-      public int getEditBinObjectListCount() {
-        if (editBinObjectListBuilder_ == null) {
-          return editBinObjectList_.size();
-        } else {
-          return editBinObjectListBuilder_.getCount();
+
+        private tableBinObject(boolean noInit){
         }
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject getEditBinObjectList(int index) {
-        if (editBinObjectListBuilder_ == null) {
-          return editBinObjectList_.get(index);
-        } else {
-          return editBinObjectListBuilder_.getMessage(index);
+
+        private static final tableBinObject defaultInstance;
+
+        public static tableBinObject getDefaultInstance() {
+            return defaultInstance;
         }
-      }
-      public Builder setEditBinObjectList(
-          int index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject value) {
-        if (editBinObjectListBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureEditBinObjectListIsMutable();
-          editBinObjectList_.set(index, value);
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.setMessage(index, value);
+
+        public tableBinObject getDefaultInstanceForType() {
+            return defaultInstance;
         }
-        return this;
-      }
-      public Builder setEditBinObjectList(
-          int index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder builderForValue) {
-        if (editBinObjectListBuilder_ == null) {
-          ensureEditBinObjectListIsMutable();
-          editBinObjectList_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.setMessage(index, builderForValue.build());
+
+        public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+            return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor;
         }
-        return this;
-      }
-      public Builder addEditBinObjectList(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject value) {
-        if (editBinObjectListBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureEditBinObjectListIsMutable();
-          editBinObjectList_.add(value);
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.addMessage(value);
+
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable internalGetFieldAccessorTable() {
+            return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_fieldAccessorTable;
         }
-        return this;
-      }
-      public Builder addEditBinObjectList(
-          int index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject value) {
-        if (editBinObjectListBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureEditBinObjectListIsMutable();
-          editBinObjectList_.add(index, value);
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.addMessage(index, value);
+
+        private int              bitField0_;
+        // required string tableName = 1;
+        public static final int  TABLENAME_FIELD_NUMBER = 1;
+        private java.lang.Object tableName_;
+
+        public boolean hasTableName() {
+            return ((bitField0_ & 0x00000001) == 0x00000001);
         }
-        return this;
-      }
-      public Builder addEditBinObjectList(
-          com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder builderForValue) {
-        if (editBinObjectListBuilder_ == null) {
-          ensureEditBinObjectListIsMutable();
-          editBinObjectList_.add(builderForValue.build());
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.addMessage(builderForValue.build());
+
+        public String getTableName() {
+            java.lang.Object ref = tableName_;
+            if (ref instanceof String) {
+                return (String) ref;
+            } else {
+                com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+                String s = bs.toStringUtf8();
+                if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+                    tableName_ = s;
+                }
+                return s;
+            }
         }
-        return this;
-      }
-      public Builder addEditBinObjectList(
-          int index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder builderForValue) {
-        if (editBinObjectListBuilder_ == null) {
-          ensureEditBinObjectListIsMutable();
-          editBinObjectList_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.addMessage(index, builderForValue.build());
+
+        private com.google.protobuf.ByteString getTableNameBytes() {
+            java.lang.Object ref = tableName_;
+            if (ref instanceof String) {
+                com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+                tableName_ = b;
+                return b;
+            } else {
+                return (com.google.protobuf.ByteString) ref;
+            }
         }
-        return this;
-      }
-      public Builder addAllEditBinObjectList(
-          java.lang.Iterable<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> values) {
-        if (editBinObjectListBuilder_ == null) {
-          ensureEditBinObjectListIsMutable();
-          super.addAll(values, editBinObjectList_);
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.addAllMessages(values);
+
+        // repeated .com.alibaba.hbase.replication.protocol.protobuf.editBinObject editBinObjectList = 2;
+        public static final int                                                                             EDITBINOBJECTLIST_FIELD_NUMBER = 2;
+        private java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> editBinObjectList_;
+
+        public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> getEditBinObjectListList() {
+            return editBinObjectList_;
         }
-        return this;
-      }
-      public Builder clearEditBinObjectList() {
-        if (editBinObjectListBuilder_ == null) {
-          editBinObjectList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.clear();
+
+        public java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> getEditBinObjectListOrBuilderList() {
+            return editBinObjectList_;
         }
-        return this;
-      }
-      public Builder removeEditBinObjectList(int index) {
-        if (editBinObjectListBuilder_ == null) {
-          ensureEditBinObjectListIsMutable();
-          editBinObjectList_.remove(index);
-          onChanged();
-        } else {
-          editBinObjectListBuilder_.remove(index);
+
+        public int getEditBinObjectListCount() {
+            return editBinObjectList_.size();
         }
-        return this;
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder getEditBinObjectListBuilder(
-          int index) {
-        return getEditBinObjectListFieldBuilder().getBuilder(index);
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder getEditBinObjectListOrBuilder(
-          int index) {
-        if (editBinObjectListBuilder_ == null) {
-          return editBinObjectList_.get(index);  } else {
-          return editBinObjectListBuilder_.getMessageOrBuilder(index);
+
+        public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject getEditBinObjectList(int index) {
+            return editBinObjectList_.get(index);
         }
-      }
-      public java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> 
-           getEditBinObjectListOrBuilderList() {
-        if (editBinObjectListBuilder_ != null) {
-          return editBinObjectListBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(editBinObjectList_);
+
+        public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder getEditBinObjectListOrBuilder(int index) {
+            return editBinObjectList_.get(index);
         }
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder addEditBinObjectListBuilder() {
-        return getEditBinObjectListFieldBuilder().addBuilder(
-            com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDefaultInstance());
-      }
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder addEditBinObjectListBuilder(
-          int index) {
-        return getEditBinObjectListFieldBuilder().addBuilder(
-            index, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDefaultInstance());
-      }
-      public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder> 
-           getEditBinObjectListBuilderList() {
-        return getEditBinObjectListFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> 
-          getEditBinObjectListFieldBuilder() {
-        if (editBinObjectListBuilder_ == null) {
-          editBinObjectListBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder>(
-                  editBinObjectList_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
-                  getParentForChildren(),
-                  isClean());
-          editBinObjectList_ = null;
+
+        private void initFields() {
+            tableName_ = "";
+            editBinObjectList_ = java.util.Collections.emptyList();
         }
-        return editBinObjectListBuilder_;
-      }
-      
-      // @@protoc_insertion_point(builder_scope:com.alibaba.hbase.replication.protocol.protobuf.tableBinObject)
-    }
-    
-    static {
-      defaultInstance = new tableBinObject(true);
-      defaultInstance.initFields();
-    }
-    
-    // @@protoc_insertion_point(class_scope:com.alibaba.hbase.replication.protocol.protobuf.tableBinObject)
-  }
-  
-  public interface editBinObjectOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required int32 type = 1;
-    boolean hasType();
-    int getType();
-    
-    // optional bytes rowKey = 2;
-    boolean hasRowKey();
-    com.google.protobuf.ByteString getRowKey();
-    
-    // optional bytes family = 3;
-    boolean hasFamily();
-    com.google.protobuf.ByteString getFamily();
-    
-    // optional bytes qualifier = 4;
-    boolean hasQualifier();
-    com.google.protobuf.ByteString getQualifier();
-    
-    // optional bytes value = 5;
-    boolean hasValue();
-    com.google.protobuf.ByteString getValue();
-  }
-  public static final class editBinObject extends
-      com.google.protobuf.GeneratedMessage
-      implements editBinObjectOrBuilder {
-    // Use editBinObject.newBuilder() to construct.
-    private editBinObject(Builder builder) {
-      super(builder);
-    }
-    private editBinObject(boolean noInit) {}
-    
-    private static final editBinObject defaultInstance;
-    public static editBinObject getDefaultInstance() {
-      return defaultInstance;
-    }
-    
-    public editBinObject getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_fieldAccessorTable;
-    }
-    
-    private int bitField0_;
-    // required int32 type = 1;
-    public static final int TYPE_FIELD_NUMBER = 1;
-    private int type_;
-    public boolean hasType() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    public int getType() {
-      return type_;
-    }
-    
-    // optional bytes rowKey = 2;
-    public static final int ROWKEY_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString rowKey_;
-    public boolean hasRowKey() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public com.google.protobuf.ByteString getRowKey() {
-      return rowKey_;
-    }
-    
-    // optional bytes family = 3;
-    public static final int FAMILY_FIELD_NUMBER = 3;
-    private com.google.protobuf.ByteString family_;
-    public boolean hasFamily() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public com.google.protobuf.ByteString getFamily() {
-      return family_;
-    }
-    
-    // optional bytes qualifier = 4;
-    public static final int QUALIFIER_FIELD_NUMBER = 4;
-    private com.google.protobuf.ByteString qualifier_;
-    public boolean hasQualifier() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    public com.google.protobuf.ByteString getQualifier() {
-      return qualifier_;
-    }
-    
-    // optional bytes value = 5;
-    public static final int VALUE_FIELD_NUMBER = 5;
-    private com.google.protobuf.ByteString value_;
-    public boolean hasValue() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    public com.google.protobuf.ByteString getValue() {
-      return value_;
-    }
-    
-    private void initFields() {
-      type_ = 0;
-      rowKey_ = com.google.protobuf.ByteString.EMPTY;
-      family_ = com.google.protobuf.ByteString.EMPTY;
-      qualifier_ = com.google.protobuf.ByteString.EMPTY;
-      value_ = com.google.protobuf.ByteString.EMPTY;
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
-      if (!hasType()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, type_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, rowKey_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, family_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, qualifier_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, value_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, type_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, rowKey_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, family_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, qualifier_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, value_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-    
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_fieldAccessorTable;
-      }
-      
-      // Construct using com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-      
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+
+        private byte memoizedIsInitialized = -1;
+
+        public final boolean isInitialized() {
+            byte isInitialized = memoizedIsInitialized;
+            if (isInitialized != -1) return isInitialized == 1;
+
+            if (!hasTableName()) {
+                memoizedIsInitialized = 0;
+                return false;
+            }
+            for (int i = 0; i < getEditBinObjectListCount(); i++) {
+                if (!getEditBinObjectList(i).isInitialized()) {
+                    memoizedIsInitialized = 0;
+                    return false;
+                }
+            }
+            memoizedIsInitialized = 1;
+            return true;
         }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-      
-      public Builder clear() {
-        super.clear();
-        type_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        rowKey_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        family_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        qualifier_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        value_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDescriptor();
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject getDefaultInstanceForType() {
-        return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDefaultInstance();
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject build() {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
+
+        public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+            getSerializedSize();
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                output.writeBytes(1, getTableNameBytes());
+            }
+            for (int i = 0; i < editBinObjectList_.size(); i++) {
+                output.writeMessage(2, editBinObjectList_.get(i));
+            }
+            getUnknownFields().writeTo(output);
         }
-        return result;
-      }
-      
-      private com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
+
+        private int memoizedSerializedSize = -1;
+
+        public int getSerializedSize() {
+            int size = memoizedSerializedSize;
+            if (size != -1) return size;
+
+            size = 0;
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                size += com.google.protobuf.CodedOutputStream.computeBytesSize(1, getTableNameBytes());
+            }
+            for (int i = 0; i < editBinObjectList_.size(); i++) {
+                size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, editBinObjectList_.get(i));
+            }
+            size += getUnknownFields().getSerializedSize();
+            memoizedSerializedSize = size;
+            return size;
         }
-        return result;
-      }
-      
-      public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject buildPartial() {
-        com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject result = new com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
+
+        private static final long serialVersionUID = 0L;
+
+        @java.lang.Override
+        protected java.lang.Object writeReplace() throws java.io.ObjectStreamException {
+            return super.writeReplace();
         }
-        result.type_ = type_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(com.google.protobuf.ByteString data)
+                                                                                                                                                 throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data).buildParsed();
         }
-        result.rowKey_ = rowKey_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(com.google.protobuf.ByteString data,
+                                                                                                             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                         throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
-        result.family_ = family_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(byte[] data)
+                                                                                                                         throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data).buildParsed();
         }
-        result.qualifier_ = qualifier_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(byte[] data,
+                                                                                                             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                         throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
-        result.value_ = value_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject) {
-          return mergeFrom((com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(java.io.InputStream input)
+                                                                                                                                       throws java.io.IOException {
+            return newBuilder().mergeFrom(input).buildParsed();
         }
-      }
-      
-      public Builder mergeFrom(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject other) {
-        if (other == com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDefaultInstance()) return this;
-        if (other.hasType()) {
-          setType(other.getType());
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(java.io.InputStream input,
+                                                                                                             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                         throws java.io.IOException {
+            return newBuilder().mergeFrom(input, extensionRegistry).buildParsed();
         }
-        if (other.hasRowKey()) {
-          setRowKey(other.getRowKey());
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseDelimitedFrom(java.io.InputStream input)
+                                                                                                                                                throws java.io.IOException {
+            Builder builder = newBuilder();
+            if (builder.mergeDelimitedFrom(input)) {
+                return builder.buildParsed();
+            } else {
+                return null;
+            }
         }
-        if (other.hasFamily()) {
-          setFamily(other.getFamily());
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseDelimitedFrom(java.io.InputStream input,
+                                                                                                                      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                                  throws java.io.IOException {
+            Builder builder = newBuilder();
+            if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+                return builder.buildParsed();
+            } else {
+                return null;
+            }
         }
-        if (other.hasQualifier()) {
-          setQualifier(other.getQualifier());
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(com.google.protobuf.CodedInputStream input)
+                                                                                                                                                        throws java.io.IOException {
+            return newBuilder().mergeFrom(input).buildParsed();
         }
-        if (other.hasValue()) {
-          setValue(other.getValue());
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject parseFrom(com.google.protobuf.CodedInputStream input,
+                                                                                                             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                         throws java.io.IOException {
+            return newBuilder().mergeFrom(input, extensionRegistry).buildParsed();
         }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public final boolean isInitialized() {
-        if (!hasType()) {
-          
-          return false;
+
+        public static Builder newBuilder() {
+            return Builder.create();
         }
-        return true;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
+
+        public Builder newBuilderForType() {
+            return newBuilder();
+        }
+
+        public static Builder newBuilder(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject prototype) {
+            return newBuilder().mergeFrom(prototype);
+        }
+
+        public Builder toBuilder() {
+            return newBuilder(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+            Builder builder = new Builder(parent);
+            return builder;
+        }
+
+        public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder> implements com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObjectOrBuilder {
+
+            public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor;
+            }
+
+            protected com.google.protobuf.GeneratedMessage.FieldAccessorTable internalGetFieldAccessorTable() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_fieldAccessorTable;
+            }
+
+            // Construct using com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.newBuilder()
+            private Builder(){
+                maybeForceBuilderInitialization();
+            }
+
+            private Builder(BuilderParent parent){
+                super(parent);
+                maybeForceBuilderInitialization();
+            }
+
+            private void maybeForceBuilderInitialization() {
+                if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+                    getEditBinObjectListFieldBuilder();
+                }
+            }
+
+            private static Builder create() {
+                return new Builder();
+            }
+
+            public Builder clear() {
+                super.clear();
+                tableName_ = "";
+                bitField0_ = (bitField0_ & ~0x00000001);
+                if (editBinObjectListBuilder_ == null) {
+                    editBinObjectList_ = java.util.Collections.emptyList();
+                    bitField0_ = (bitField0_ & ~0x00000002);
+                } else {
+                    editBinObjectListBuilder_.clear();
+                }
+                return this;
+            }
+
+            public Builder clone() {
+                return create().mergeFrom(buildPartial());
+            }
+
+            public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDescriptor();
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject getDefaultInstanceForType() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDefaultInstance();
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject build() {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result);
+                }
+                return result;
+            }
+
+            private com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject buildParsed()
+                                                                                                              throws com.google.protobuf.InvalidProtocolBufferException {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result).asInvalidProtocolBufferException();
+                }
+                return result;
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject buildPartial() {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject result = new com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject(
+                                                                                                                                                                                       this);
+                int from_bitField0_ = bitField0_;
+                int to_bitField0_ = 0;
+                if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+                    to_bitField0_ |= 0x00000001;
+                }
+                result.tableName_ = tableName_;
+                if (editBinObjectListBuilder_ == null) {
+                    if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                        editBinObjectList_ = java.util.Collections.unmodifiableList(editBinObjectList_);
+                        bitField0_ = (bitField0_ & ~0x00000002);
+                    }
+                    result.editBinObjectList_ = editBinObjectList_;
+                } else {
+                    result.editBinObjectList_ = editBinObjectListBuilder_.build();
+                }
+                result.bitField0_ = to_bitField0_;
+                onBuilt();
+                return result;
+            }
+
+            public Builder mergeFrom(com.google.protobuf.Message other) {
+                if (other instanceof com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject) {
+                    return mergeFrom((com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject) other);
+                } else {
+                    super.mergeFrom(other);
+                    return this;
+                }
+            }
+
+            public Builder mergeFrom(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject other) {
+                if (other == com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.getDefaultInstance()) return this;
+                if (other.hasTableName()) {
+                    setTableName(other.getTableName());
+                }
+                if (editBinObjectListBuilder_ == null) {
+                    if (!other.editBinObjectList_.isEmpty()) {
+                        if (editBinObjectList_.isEmpty()) {
+                            editBinObjectList_ = other.editBinObjectList_;
+                            bitField0_ = (bitField0_ & ~0x00000002);
+                        } else {
+                            ensureEditBinObjectListIsMutable();
+                            editBinObjectList_.addAll(other.editBinObjectList_);
+                        }
+                        onChanged();
+                    }
+                } else {
+                    if (!other.editBinObjectList_.isEmpty()) {
+                        if (editBinObjectListBuilder_.isEmpty()) {
+                            editBinObjectListBuilder_.dispose();
+                            editBinObjectListBuilder_ = null;
+                            editBinObjectList_ = other.editBinObjectList_;
+                            bitField0_ = (bitField0_ & ~0x00000002);
+                            editBinObjectListBuilder_ = com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ? getEditBinObjectListFieldBuilder() : null;
+                        } else {
+                            editBinObjectListBuilder_.addAllMessages(other.editBinObjectList_);
+                        }
+                    }
+                }
+                this.mergeUnknownFields(other.getUnknownFields());
+                return this;
+            }
+
+            public final boolean isInitialized() {
+                if (!hasTableName()) {
+
+                    return false;
+                }
+                for (int i = 0; i < getEditBinObjectListCount(); i++) {
+                    if (!getEditBinObjectList(i).isInitialized()) {
+
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+                                     com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                 throws java.io.IOException {
+                com.google.protobuf.UnknownFieldSet.Builder unknownFields = com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
+                while (true) {
+                    int tag = input.readTag();
+                    switch (tag) {
+                        case 0:
+                            this.setUnknownFields(unknownFields.build());
+                            onChanged();
+                            return this;
+                        default: {
+                            if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                onChanged();
+                                return this;
+                            }
+                            break;
+                        }
+                        case 10: {
+                            bitField0_ |= 0x00000001;
+                            tableName_ = input.readBytes();
+                            break;
+                        }
+                        case 18: {
+                            com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder subBuilder = com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.newBuilder();
+                            input.readMessage(subBuilder, extensionRegistry);
+                            addEditBinObjectList(subBuilder.buildPartial());
+                            break;
+                        }
+                    }
+                }
+            }
+
+            private int              bitField0_;
+
+            // required string tableName = 1;
+            private java.lang.Object tableName_ = "";
+
+            public boolean hasTableName() {
+                return ((bitField0_ & 0x00000001) == 0x00000001);
+            }
+
+            public String getTableName() {
+                java.lang.Object ref = tableName_;
+                if (!(ref instanceof String)) {
+                    String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+                    tableName_ = s;
+                    return s;
+                } else {
+                    return (String) ref;
+                }
+            }
+
+            public Builder setTableName(String value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                bitField0_ |= 0x00000001;
+                tableName_ = value;
                 onChanged();
                 return this;
-              }
-              break;
             }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              type_ = input.readInt32();
-              break;
+
+            public Builder clearTableName() {
+                bitField0_ = (bitField0_ & ~0x00000001);
+                tableName_ = getDefaultInstance().getTableName();
+                onChanged();
+                return this;
             }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              rowKey_ = input.readBytes();
-              break;
+
+            void setTableName(com.google.protobuf.ByteString value) {
+                bitField0_ |= 0x00000001;
+                tableName_ = value;
+                onChanged();
             }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              family_ = input.readBytes();
-              break;
+
+            // repeated .com.alibaba.hbase.replication.protocol.protobuf.editBinObject editBinObjectList = 2;
+            private java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> editBinObjectList_ = java.util.Collections.emptyList();
+
+            private void ensureEditBinObjectListIsMutable() {
+                if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+                    editBinObjectList_ = new java.util.ArrayList<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject>(
+                                                                                                                                              editBinObjectList_);
+                    bitField0_ |= 0x00000002;
+                }
             }
-            case 34: {
-              bitField0_ |= 0x00000008;
-              qualifier_ = input.readBytes();
-              break;
+
+            private com.google.protobuf.RepeatedFieldBuilder<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> editBinObjectListBuilder_;
+
+            public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> getEditBinObjectListList() {
+                if (editBinObjectListBuilder_ == null) {
+                    return java.util.Collections.unmodifiableList(editBinObjectList_);
+                } else {
+                    return editBinObjectListBuilder_.getMessageList();
+                }
             }
-            case 42: {
-              bitField0_ |= 0x00000010;
-              value_ = input.readBytes();
-              break;
+
+            public int getEditBinObjectListCount() {
+                if (editBinObjectListBuilder_ == null) {
+                    return editBinObjectList_.size();
+                } else {
+                    return editBinObjectListBuilder_.getCount();
+                }
             }
-          }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject getEditBinObjectList(int index) {
+                if (editBinObjectListBuilder_ == null) {
+                    return editBinObjectList_.get(index);
+                } else {
+                    return editBinObjectListBuilder_.getMessage(index);
+                }
+            }
+
+            public Builder setEditBinObjectList(int index,
+                                                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject value) {
+                if (editBinObjectListBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureEditBinObjectListIsMutable();
+                    editBinObjectList_.set(index, value);
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.setMessage(index, value);
+                }
+                return this;
+            }
+
+            public Builder setEditBinObjectList(int index,
+                                                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder builderForValue) {
+                if (editBinObjectListBuilder_ == null) {
+                    ensureEditBinObjectListIsMutable();
+                    editBinObjectList_.set(index, builderForValue.build());
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.setMessage(index, builderForValue.build());
+                }
+                return this;
+            }
+
+            public Builder addEditBinObjectList(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject value) {
+                if (editBinObjectListBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureEditBinObjectListIsMutable();
+                    editBinObjectList_.add(value);
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.addMessage(value);
+                }
+                return this;
+            }
+
+            public Builder addEditBinObjectList(int index,
+                                                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject value) {
+                if (editBinObjectListBuilder_ == null) {
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    ensureEditBinObjectListIsMutable();
+                    editBinObjectList_.add(index, value);
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.addMessage(index, value);
+                }
+                return this;
+            }
+
+            public Builder addEditBinObjectList(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder builderForValue) {
+                if (editBinObjectListBuilder_ == null) {
+                    ensureEditBinObjectListIsMutable();
+                    editBinObjectList_.add(builderForValue.build());
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.addMessage(builderForValue.build());
+                }
+                return this;
+            }
+
+            public Builder addEditBinObjectList(int index,
+                                                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder builderForValue) {
+                if (editBinObjectListBuilder_ == null) {
+                    ensureEditBinObjectListIsMutable();
+                    editBinObjectList_.add(index, builderForValue.build());
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.addMessage(index, builderForValue.build());
+                }
+                return this;
+            }
+
+            public Builder addAllEditBinObjectList(java.lang.Iterable<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject> values) {
+                if (editBinObjectListBuilder_ == null) {
+                    ensureEditBinObjectListIsMutable();
+                    super.addAll(values, editBinObjectList_);
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.addAllMessages(values);
+                }
+                return this;
+            }
+
+            public Builder clearEditBinObjectList() {
+                if (editBinObjectListBuilder_ == null) {
+                    editBinObjectList_ = java.util.Collections.emptyList();
+                    bitField0_ = (bitField0_ & ~0x00000002);
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.clear();
+                }
+                return this;
+            }
+
+            public Builder removeEditBinObjectList(int index) {
+                if (editBinObjectListBuilder_ == null) {
+                    ensureEditBinObjectListIsMutable();
+                    editBinObjectList_.remove(index);
+                    onChanged();
+                } else {
+                    editBinObjectListBuilder_.remove(index);
+                }
+                return this;
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder getEditBinObjectListBuilder(int index) {
+                return getEditBinObjectListFieldBuilder().getBuilder(index);
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder getEditBinObjectListOrBuilder(int index) {
+                if (editBinObjectListBuilder_ == null) {
+                    return editBinObjectList_.get(index);
+                } else {
+                    return editBinObjectListBuilder_.getMessageOrBuilder(index);
+                }
+            }
+
+            public java.util.List<? extends com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> getEditBinObjectListOrBuilderList() {
+                if (editBinObjectListBuilder_ != null) {
+                    return editBinObjectListBuilder_.getMessageOrBuilderList();
+                } else {
+                    return java.util.Collections.unmodifiableList(editBinObjectList_);
+                }
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder addEditBinObjectListBuilder() {
+                return getEditBinObjectListFieldBuilder().addBuilder(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDefaultInstance());
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder addEditBinObjectListBuilder(int index) {
+                return getEditBinObjectListFieldBuilder().addBuilder(index,
+                                                                     com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDefaultInstance());
+            }
+
+            public java.util.List<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder> getEditBinObjectListBuilderList() {
+                return getEditBinObjectListFieldBuilder().getBuilderList();
+            }
+
+            private com.google.protobuf.RepeatedFieldBuilder<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder> getEditBinObjectListFieldBuilder() {
+                if (editBinObjectListBuilder_ == null) {
+                    editBinObjectListBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder, com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder>(
+                                                                                                                                                                                                                                                                                                                                                     editBinObjectList_,
+                                                                                                                                                                                                                                                                                                                                                     ((bitField0_ & 0x00000002) == 0x00000002),
+                                                                                                                                                                                                                                                                                                                                                     getParentForChildren(),
+                                                                                                                                                                                                                                                                                                                                                     isClean());
+                    editBinObjectList_ = null;
+                }
+                return editBinObjectListBuilder_;
+            }
+
+            // @@protoc_insertion_point(builder_scope:com.alibaba.hbase.replication.protocol.protobuf.tableBinObject)
         }
-      }
-      
-      private int bitField0_;
-      
-      // required int32 type = 1;
-      private int type_ ;
-      public boolean hasType() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      public int getType() {
-        return type_;
-      }
-      public Builder setType(int value) {
-        bitField0_ |= 0x00000001;
-        type_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearType() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        type_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // optional bytes rowKey = 2;
-      private com.google.protobuf.ByteString rowKey_ = com.google.protobuf.ByteString.EMPTY;
-      public boolean hasRowKey() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      public com.google.protobuf.ByteString getRowKey() {
-        return rowKey_;
-      }
-      public Builder setRowKey(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        rowKey_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearRowKey() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        rowKey_ = getDefaultInstance().getRowKey();
-        onChanged();
-        return this;
-      }
-      
-      // optional bytes family = 3;
-      private com.google.protobuf.ByteString family_ = com.google.protobuf.ByteString.EMPTY;
-      public boolean hasFamily() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      public com.google.protobuf.ByteString getFamily() {
-        return family_;
-      }
-      public Builder setFamily(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        family_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearFamily() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        family_ = getDefaultInstance().getFamily();
-        onChanged();
-        return this;
-      }
-      
-      // optional bytes qualifier = 4;
-      private com.google.protobuf.ByteString qualifier_ = com.google.protobuf.ByteString.EMPTY;
-      public boolean hasQualifier() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      public com.google.protobuf.ByteString getQualifier() {
-        return qualifier_;
-      }
-      public Builder setQualifier(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        qualifier_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearQualifier() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        qualifier_ = getDefaultInstance().getQualifier();
-        onChanged();
-        return this;
-      }
-      
-      // optional bytes value = 5;
-      private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
-      public boolean hasValue() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      public com.google.protobuf.ByteString getValue() {
-        return value_;
-      }
-      public Builder setValue(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
-        value_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearValue() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        value_ = getDefaultInstance().getValue();
-        onChanged();
-        return this;
-      }
-      
-      // @@protoc_insertion_point(builder_scope:com.alibaba.hbase.replication.protocol.protobuf.editBinObject)
+
+        static {
+            defaultInstance = new tableBinObject(true);
+            defaultInstance.initFields();
+        }
+
+        // @@protoc_insertion_point(class_scope:com.alibaba.hbase.replication.protocol.protobuf.tableBinObject)
     }
-    
+
+    public interface editBinObjectOrBuilder extends com.google.protobuf.MessageOrBuilder {
+
+        // required int32 type = 1;
+        boolean hasType();
+
+        int getType();
+
+        // optional bytes rowKey = 2;
+        boolean hasRowKey();
+
+        com.google.protobuf.ByteString getRowKey();
+
+        // optional bytes family = 3;
+        boolean hasFamily();
+
+        com.google.protobuf.ByteString getFamily();
+
+        // optional bytes qualifier = 4;
+        boolean hasQualifier();
+
+        com.google.protobuf.ByteString getQualifier();
+
+        // optional bytes value = 5;
+        boolean hasValue();
+
+        com.google.protobuf.ByteString getValue();
+    }
+
+    public static final class editBinObject extends com.google.protobuf.GeneratedMessage implements editBinObjectOrBuilder {
+
+        // Use editBinObject.newBuilder() to construct.
+        private editBinObject(Builder builder){
+            super(builder);
+        }
+
+        private editBinObject(boolean noInit){
+        }
+
+        private static final editBinObject defaultInstance;
+
+        public static editBinObject getDefaultInstance() {
+            return defaultInstance;
+        }
+
+        public editBinObject getDefaultInstanceForType() {
+            return defaultInstance;
+        }
+
+        public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+            return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor;
+        }
+
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable internalGetFieldAccessorTable() {
+            return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_fieldAccessorTable;
+        }
+
+        private int             bitField0_;
+        // required int32 type = 1;
+        public static final int TYPE_FIELD_NUMBER = 1;
+        private int             type_;
+
+        public boolean hasType() {
+            return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+
+        public int getType() {
+            return type_;
+        }
+
+        // optional bytes rowKey = 2;
+        public static final int                ROWKEY_FIELD_NUMBER = 2;
+        private com.google.protobuf.ByteString rowKey_;
+
+        public boolean hasRowKey() {
+            return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+
+        public com.google.protobuf.ByteString getRowKey() {
+            return rowKey_;
+        }
+
+        // optional bytes family = 3;
+        public static final int                FAMILY_FIELD_NUMBER = 3;
+        private com.google.protobuf.ByteString family_;
+
+        public boolean hasFamily() {
+            return ((bitField0_ & 0x00000004) == 0x00000004);
+        }
+
+        public com.google.protobuf.ByteString getFamily() {
+            return family_;
+        }
+
+        // optional bytes qualifier = 4;
+        public static final int                QUALIFIER_FIELD_NUMBER = 4;
+        private com.google.protobuf.ByteString qualifier_;
+
+        public boolean hasQualifier() {
+            return ((bitField0_ & 0x00000008) == 0x00000008);
+        }
+
+        public com.google.protobuf.ByteString getQualifier() {
+            return qualifier_;
+        }
+
+        // optional bytes value = 5;
+        public static final int                VALUE_FIELD_NUMBER = 5;
+        private com.google.protobuf.ByteString value_;
+
+        public boolean hasValue() {
+            return ((bitField0_ & 0x00000010) == 0x00000010);
+        }
+
+        public com.google.protobuf.ByteString getValue() {
+            return value_;
+        }
+
+        private void initFields() {
+            type_ = 0;
+            rowKey_ = com.google.protobuf.ByteString.EMPTY;
+            family_ = com.google.protobuf.ByteString.EMPTY;
+            qualifier_ = com.google.protobuf.ByteString.EMPTY;
+            value_ = com.google.protobuf.ByteString.EMPTY;
+        }
+
+        private byte memoizedIsInitialized = -1;
+
+        public final boolean isInitialized() {
+            byte isInitialized = memoizedIsInitialized;
+            if (isInitialized != -1) return isInitialized == 1;
+
+            if (!hasType()) {
+                memoizedIsInitialized = 0;
+                return false;
+            }
+            memoizedIsInitialized = 1;
+            return true;
+        }
+
+        public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+            getSerializedSize();
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                output.writeInt32(1, type_);
+            }
+            if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                output.writeBytes(2, rowKey_);
+            }
+            if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                output.writeBytes(3, family_);
+            }
+            if (((bitField0_ & 0x00000008) == 0x00000008)) {
+                output.writeBytes(4, qualifier_);
+            }
+            if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                output.writeBytes(5, value_);
+            }
+            getUnknownFields().writeTo(output);
+        }
+
+        private int memoizedSerializedSize = -1;
+
+        public int getSerializedSize() {
+            int size = memoizedSerializedSize;
+            if (size != -1) return size;
+
+            size = 0;
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                size += com.google.protobuf.CodedOutputStream.computeInt32Size(1, type_);
+            }
+            if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                size += com.google.protobuf.CodedOutputStream.computeBytesSize(2, rowKey_);
+            }
+            if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                size += com.google.protobuf.CodedOutputStream.computeBytesSize(3, family_);
+            }
+            if (((bitField0_ & 0x00000008) == 0x00000008)) {
+                size += com.google.protobuf.CodedOutputStream.computeBytesSize(4, qualifier_);
+            }
+            if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                size += com.google.protobuf.CodedOutputStream.computeBytesSize(5, value_);
+            }
+            size += getUnknownFields().getSerializedSize();
+            memoizedSerializedSize = size;
+            return size;
+        }
+
+        private static final long serialVersionUID = 0L;
+
+        @java.lang.Override
+        protected java.lang.Object writeReplace() throws java.io.ObjectStreamException {
+            return super.writeReplace();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(com.google.protobuf.ByteString data)
+                                                                                                                                                throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(com.google.protobuf.ByteString data,
+                                                                                                            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                        throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(byte[] data)
+                                                                                                                        throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(byte[] data,
+                                                                                                            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                        throws com.google.protobuf.InvalidProtocolBufferException {
+            return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(java.io.InputStream input)
+                                                                                                                                      throws java.io.IOException {
+            return newBuilder().mergeFrom(input).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(java.io.InputStream input,
+                                                                                                            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                        throws java.io.IOException {
+            return newBuilder().mergeFrom(input, extensionRegistry).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseDelimitedFrom(java.io.InputStream input)
+                                                                                                                                               throws java.io.IOException {
+            Builder builder = newBuilder();
+            if (builder.mergeDelimitedFrom(input)) {
+                return builder.buildParsed();
+            } else {
+                return null;
+            }
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseDelimitedFrom(java.io.InputStream input,
+                                                                                                                     com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                                 throws java.io.IOException {
+            Builder builder = newBuilder();
+            if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+                return builder.buildParsed();
+            } else {
+                return null;
+            }
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(com.google.protobuf.CodedInputStream input)
+                                                                                                                                                       throws java.io.IOException {
+            return newBuilder().mergeFrom(input).buildParsed();
+        }
+
+        public static com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject parseFrom(com.google.protobuf.CodedInputStream input,
+                                                                                                            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                                                                                        throws java.io.IOException {
+            return newBuilder().mergeFrom(input, extensionRegistry).buildParsed();
+        }
+
+        public static Builder newBuilder() {
+            return Builder.create();
+        }
+
+        public Builder newBuilderForType() {
+            return newBuilder();
+        }
+
+        public static Builder newBuilder(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject prototype) {
+            return newBuilder().mergeFrom(prototype);
+        }
+
+        public Builder toBuilder() {
+            return newBuilder(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+            Builder builder = new Builder(parent);
+            return builder;
+        }
+
+        public static final class Builder extends com.google.protobuf.GeneratedMessage.Builder<Builder> implements com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObjectOrBuilder {
+
+            public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor;
+            }
+
+            protected com.google.protobuf.GeneratedMessage.FieldAccessorTable internalGetFieldAccessorTable() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_fieldAccessorTable;
+            }
+
+            // Construct using com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.newBuilder()
+            private Builder(){
+                maybeForceBuilderInitialization();
+            }
+
+            private Builder(BuilderParent parent){
+                super(parent);
+                maybeForceBuilderInitialization();
+            }
+
+            private void maybeForceBuilderInitialization() {
+                if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+                }
+            }
+
+            private static Builder create() {
+                return new Builder();
+            }
+
+            public Builder clear() {
+                super.clear();
+                type_ = 0;
+                bitField0_ = (bitField0_ & ~0x00000001);
+                rowKey_ = com.google.protobuf.ByteString.EMPTY;
+                bitField0_ = (bitField0_ & ~0x00000002);
+                family_ = com.google.protobuf.ByteString.EMPTY;
+                bitField0_ = (bitField0_ & ~0x00000004);
+                qualifier_ = com.google.protobuf.ByteString.EMPTY;
+                bitField0_ = (bitField0_ & ~0x00000008);
+                value_ = com.google.protobuf.ByteString.EMPTY;
+                bitField0_ = (bitField0_ & ~0x00000010);
+                return this;
+            }
+
+            public Builder clone() {
+                return create().mergeFrom(buildPartial());
+            }
+
+            public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDescriptor();
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject getDefaultInstanceForType() {
+                return com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDefaultInstance();
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject build() {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result);
+                }
+                return result;
+            }
+
+            private com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject buildParsed()
+                                                                                                             throws com.google.protobuf.InvalidProtocolBufferException {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject result = buildPartial();
+                if (!result.isInitialized()) {
+                    throw newUninitializedMessageException(result).asInvalidProtocolBufferException();
+                }
+                return result;
+            }
+
+            public com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject buildPartial() {
+                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject result = new com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject(
+                                                                                                                                                                                     this);
+                int from_bitField0_ = bitField0_;
+                int to_bitField0_ = 0;
+                if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+                    to_bitField0_ |= 0x00000001;
+                }
+                result.type_ = type_;
+                if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+                    to_bitField0_ |= 0x00000002;
+                }
+                result.rowKey_ = rowKey_;
+                if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+                    to_bitField0_ |= 0x00000004;
+                }
+                result.family_ = family_;
+                if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+                    to_bitField0_ |= 0x00000008;
+                }
+                result.qualifier_ = qualifier_;
+                if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+                    to_bitField0_ |= 0x00000010;
+                }
+                result.value_ = value_;
+                result.bitField0_ = to_bitField0_;
+                onBuilt();
+                return result;
+            }
+
+            public Builder mergeFrom(com.google.protobuf.Message other) {
+                if (other instanceof com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject) {
+                    return mergeFrom((com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject) other);
+                } else {
+                    super.mergeFrom(other);
+                    return this;
+                }
+            }
+
+            public Builder mergeFrom(com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject other) {
+                if (other == com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.getDefaultInstance()) return this;
+                if (other.hasType()) {
+                    setType(other.getType());
+                }
+                if (other.hasRowKey()) {
+                    setRowKey(other.getRowKey());
+                }
+                if (other.hasFamily()) {
+                    setFamily(other.getFamily());
+                }
+                if (other.hasQualifier()) {
+                    setQualifier(other.getQualifier());
+                }
+                if (other.hasValue()) {
+                    setValue(other.getValue());
+                }
+                this.mergeUnknownFields(other.getUnknownFields());
+                return this;
+            }
+
+            public final boolean isInitialized() {
+                if (!hasType()) {
+
+                    return false;
+                }
+                return true;
+            }
+
+            public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+                                     com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                 throws java.io.IOException {
+                com.google.protobuf.UnknownFieldSet.Builder unknownFields = com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
+                while (true) {
+                    int tag = input.readTag();
+                    switch (tag) {
+                        case 0:
+                            this.setUnknownFields(unknownFields.build());
+                            onChanged();
+                            return this;
+                        default: {
+                            if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                onChanged();
+                                return this;
+                            }
+                            break;
+                        }
+                        case 8: {
+                            bitField0_ |= 0x00000001;
+                            type_ = input.readInt32();
+                            break;
+                        }
+                        case 18: {
+                            bitField0_ |= 0x00000002;
+                            rowKey_ = input.readBytes();
+                            break;
+                        }
+                        case 26: {
+                            bitField0_ |= 0x00000004;
+                            family_ = input.readBytes();
+                            break;
+                        }
+                        case 34: {
+                            bitField0_ |= 0x00000008;
+                            qualifier_ = input.readBytes();
+                            break;
+                        }
+                        case 42: {
+                            bitField0_ |= 0x00000010;
+                            value_ = input.readBytes();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            private int bitField0_;
+
+            // required int32 type = 1;
+            private int type_;
+
+            public boolean hasType() {
+                return ((bitField0_ & 0x00000001) == 0x00000001);
+            }
+
+            public int getType() {
+                return type_;
+            }
+
+            public Builder setType(int value) {
+                bitField0_ |= 0x00000001;
+                type_ = value;
+                onChanged();
+                return this;
+            }
+
+            public Builder clearType() {
+                bitField0_ = (bitField0_ & ~0x00000001);
+                type_ = 0;
+                onChanged();
+                return this;
+            }
+
+            // optional bytes rowKey = 2;
+            private com.google.protobuf.ByteString rowKey_ = com.google.protobuf.ByteString.EMPTY;
+
+            public boolean hasRowKey() {
+                return ((bitField0_ & 0x00000002) == 0x00000002);
+            }
+
+            public com.google.protobuf.ByteString getRowKey() {
+                return rowKey_;
+            }
+
+            public Builder setRowKey(com.google.protobuf.ByteString value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                bitField0_ |= 0x00000002;
+                rowKey_ = value;
+                onChanged();
+                return this;
+            }
+
+            public Builder clearRowKey() {
+                bitField0_ = (bitField0_ & ~0x00000002);
+                rowKey_ = getDefaultInstance().getRowKey();
+                onChanged();
+                return this;
+            }
+
+            // optional bytes family = 3;
+            private com.google.protobuf.ByteString family_ = com.google.protobuf.ByteString.EMPTY;
+
+            public boolean hasFamily() {
+                return ((bitField0_ & 0x00000004) == 0x00000004);
+            }
+
+            public com.google.protobuf.ByteString getFamily() {
+                return family_;
+            }
+
+            public Builder setFamily(com.google.protobuf.ByteString value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                bitField0_ |= 0x00000004;
+                family_ = value;
+                onChanged();
+                return this;
+            }
+
+            public Builder clearFamily() {
+                bitField0_ = (bitField0_ & ~0x00000004);
+                family_ = getDefaultInstance().getFamily();
+                onChanged();
+                return this;
+            }
+
+            // optional bytes qualifier = 4;
+            private com.google.protobuf.ByteString qualifier_ = com.google.protobuf.ByteString.EMPTY;
+
+            public boolean hasQualifier() {
+                return ((bitField0_ & 0x00000008) == 0x00000008);
+            }
+
+            public com.google.protobuf.ByteString getQualifier() {
+                return qualifier_;
+            }
+
+            public Builder setQualifier(com.google.protobuf.ByteString value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                bitField0_ |= 0x00000008;
+                qualifier_ = value;
+                onChanged();
+                return this;
+            }
+
+            public Builder clearQualifier() {
+                bitField0_ = (bitField0_ & ~0x00000008);
+                qualifier_ = getDefaultInstance().getQualifier();
+                onChanged();
+                return this;
+            }
+
+            // optional bytes value = 5;
+            private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
+
+            public boolean hasValue() {
+                return ((bitField0_ & 0x00000010) == 0x00000010);
+            }
+
+            public com.google.protobuf.ByteString getValue() {
+                return value_;
+            }
+
+            public Builder setValue(com.google.protobuf.ByteString value) {
+                if (value == null) {
+                    throw new NullPointerException();
+                }
+                bitField0_ |= 0x00000010;
+                value_ = value;
+                onChanged();
+                return this;
+            }
+
+            public Builder clearValue() {
+                bitField0_ = (bitField0_ & ~0x00000010);
+                value_ = getDefaultInstance().getValue();
+                onChanged();
+                return this;
+            }
+
+            // @@protoc_insertion_point(builder_scope:com.alibaba.hbase.replication.protocol.protobuf.editBinObject)
+        }
+
+        static {
+            defaultInstance = new editBinObject(true);
+            defaultInstance.initFields();
+        }
+
+        // @@protoc_insertion_point(class_scope:com.alibaba.hbase.replication.protocol.protobuf.editBinObject)
+    }
+
+    private static com.google.protobuf.Descriptors.Descriptor              internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor;
+    private static com.google.protobuf.GeneratedMessage.FieldAccessorTable internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_fieldAccessorTable;
+    private static com.google.protobuf.Descriptors.Descriptor              internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor;
+    private static com.google.protobuf.GeneratedMessage.FieldAccessorTable internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_fieldAccessorTable;
+    private static com.google.protobuf.Descriptors.Descriptor              internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor;
+    private static com.google.protobuf.GeneratedMessage.FieldAccessorTable internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_fieldAccessorTable;
+
+    public static com.google.protobuf.Descriptors.FileDescriptor getDescriptor() {
+        return descriptor;
+    }
+
+    private static com.google.protobuf.Descriptors.FileDescriptor descriptor;
     static {
-      defaultInstance = new editBinObject(true);
-      defaultInstance.initFields();
+        java.lang.String[] descriptorData = {
+            "\n\nbody.proto\022/com.alibaba.hbase.replicat" + "ion.protocol.protobuf\"\177\n\rbodyBinObject\022\021"
+                    + "\n\tclusterId\030\001 \002(\t\022[\n\022tableBinObjectList\030"
+                    + "\002 \003(\0132?.com.alibaba.hbase.replication.pr"
+                    + "otocol.protobuf.tableBinObject\"~\n\016tableB"
+                    + "inObject\022\021\n\ttableName\030\001 \002(\t\022Y\n\021editBinOb"
+                    + "jectList\030\002 \003(\0132>.com.alibaba.hbase.repli"
+                    + "cation.protocol.protobuf.editBinObject\"_"
+                    + "\n\reditBinObject\022\014\n\004type\030\001 \002(\005\022\016\n\006rowKey\030"
+                    + "\002 \001(\014\022\016\n\006family\030\003 \001(\014\022\021\n\tqualifier\030\004 \001(\014",
+            "\022\r\n\005value\030\005 \001(\014B@\n/com.alibaba.hbase.rep"
+                    + "lication.protocol.protobufB\rBodyBinObjec" + "t" };
+        com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner = new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
+
+            public com.google.protobuf.ExtensionRegistry assignDescriptors(com.google.protobuf.Descriptors.FileDescriptor root) {
+                descriptor = root;
+                internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor = getDescriptor().getMessageTypes().get(0);
+                internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_fieldAccessorTable = new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+                                                                                                                                                                               internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor,
+                                                                                                                                                                               new java.lang.String[] {
+            "ClusterId", "TableBinObjectList",                                                                                                                                },
+                                                                                                                                                                               com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.class,
+                                                                                                                                                                               com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.Builder.class);
+                internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor = getDescriptor().getMessageTypes().get(1);
+                internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_fieldAccessorTable = new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+                                                                                                                                                                                internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor,
+                                                                                                                                                                                new java.lang.String[] {
+            "TableName", "EditBinObjectList",                                                                                                                                  },
+                                                                                                                                                                                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.class,
+                                                                                                                                                                                com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder.class);
+                internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor = getDescriptor().getMessageTypes().get(2);
+                internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_fieldAccessorTable = new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+                                                                                                                                                                               internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor,
+                                                                                                                                                                               new java.lang.String[] {
+            "Type", "RowKey", "Family", "Qualifier", "Value",                                                                                                                 },
+                                                                                                                                                                               com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.class,
+                                                                                                                                                                               com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder.class);
+                return null;
+            }
+        };
+        com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(descriptorData,
+                                                                                      new com.google.protobuf.Descriptors.FileDescriptor[] {},
+                                                                                      assigner);
     }
-    
-    // @@protoc_insertion_point(class_scope:com.alibaba.hbase.replication.protocol.protobuf.editBinObject)
-  }
-  
-  private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_fieldAccessorTable;
-  
-  public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
-    return descriptor;
-  }
-  private static com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
-  static {
-    java.lang.String[] descriptorData = {
-      "\n\nbody.proto\022/com.alibaba.hbase.replicat" +
-      "ion.protocol.protobuf\"\177\n\rbodyBinObject\022\021" +
-      "\n\tclusterId\030\001 \002(\t\022[\n\022tableBinObjectList\030" +
-      "\002 \003(\0132?.com.alibaba.hbase.replication.pr" +
-      "otocol.protobuf.tableBinObject\"~\n\016tableB" +
-      "inObject\022\021\n\ttableName\030\001 \002(\t\022Y\n\021editBinOb" +
-      "jectList\030\002 \003(\0132>.com.alibaba.hbase.repli" +
-      "cation.protocol.protobuf.editBinObject\"_" +
-      "\n\reditBinObject\022\014\n\004type\030\001 \002(\005\022\016\n\006rowKey\030" +
-      "\002 \001(\014\022\016\n\006family\030\003 \001(\014\022\021\n\tqualifier\030\004 \001(\014",
-      "\022\r\n\005value\030\005 \001(\014B@\n/com.alibaba.hbase.rep" +
-      "lication.protocol.protobufB\rBodyBinObjec" +
-      "t"
-    };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-        public com.google.protobuf.ExtensionRegistry assignDescriptors(
-            com.google.protobuf.Descriptors.FileDescriptor root) {
-          descriptor = root;
-          internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor =
-            getDescriptor().getMessageTypes().get(0);
-          internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_com_alibaba_hbase_replication_protocol_protobuf_bodyBinObject_descriptor,
-              new java.lang.String[] { "ClusterId", "TableBinObjectList", },
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.class,
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.bodyBinObject.Builder.class);
-          internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor =
-            getDescriptor().getMessageTypes().get(1);
-          internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_com_alibaba_hbase_replication_protocol_protobuf_tableBinObject_descriptor,
-              new java.lang.String[] { "TableName", "EditBinObjectList", },
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.class,
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.tableBinObject.Builder.class);
-          internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor =
-            getDescriptor().getMessageTypes().get(2);
-          internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_com_alibaba_hbase_replication_protocol_protobuf_editBinObject_descriptor,
-              new java.lang.String[] { "Type", "RowKey", "Family", "Qualifier", "Value", },
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.class,
-              com.alibaba.hbase.replication.protocol.protobuf.BodyBinObject.editBinObject.Builder.class);
-          return null;
-        }
-      };
-    com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
-        new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
-  }
-  
-  // @@protoc_insertion_point(outer_class_scope)
+
+    // @@protoc_insertion_point(outer_class_scope)
 }

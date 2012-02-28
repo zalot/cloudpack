@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
-import com.alibaba.hbase.replication.domain.HLogInfo;
+import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
 
 /**
  * 负责日志细节的读取工作，该类被 HLogOperator 统一管理

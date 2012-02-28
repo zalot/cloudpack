@@ -2,7 +2,7 @@ package com.alibaba.hbase.replication.producer;
 
 import java.util.List;
 
-import com.alibaba.hbase.replication.hlog.HLogOperator.EntryInfo;
+import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
 /**
  * 复制
@@ -11,6 +11,6 @@ import com.alibaba.hbase.replication.hlog.HLogOperator.EntryInfo;
  *
  */
 public interface HBaseReplication {
-	public boolean put(EntryInfo info);
-	public boolean puts(List<EntryInfo> infos);
+	public boolean put(Entry info);
+	public boolean puts(List<Entry> infos);
 }

@@ -2,27 +2,28 @@ package com.alibaba.hbase.replication.domain;
 
 import org.apache.hadoop.fs.Path;
 
-import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
-
+import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
+import com.alibaba.hbase.replication.hlog.domain.HLogInfo.HLogType;
 
 /**
  * HLog 用于 Zookeeper 序列化节点
+ * 
  * @author zalot.zhaoh
- *
  */
 public class HLogZNode {
+
     protected static final String SEPARATOR = ",";
 
-    private Path path;
+    private Path                  path;
 
-    private long pos;
+    private long                  pos;
 
-    private HLogType type;
+    private HLogType              type;
 
-    private int version;
+    private int                   version;
 
-    public HLogZNode(Path path, byte[] data) {
-        if(data != null){
+    public HLogZNode(Path path, byte[] data){
+        if (data != null) {
             String[] sdata = new String(data).split(SEPARATOR);
             this.type = HLogType.toType(Integer.valueOf(sdata[0]));
             this.pos = Long.valueOf(sdata[1]);
@@ -30,7 +31,7 @@ public class HLogZNode {
         this.path = path;
     }
 
-    public HLogZNode(HLogInfo info, long pos) {
+    public HLogZNode(HLogInfo info, long pos){
         this.path = info.getPath();
         this.type = info.getType();
         this.pos = pos;
@@ -75,8 +76,7 @@ public class HLogZNode {
 
     @Override
     public String toString() {
-        return "HLogZNode [type=" + type + ", pos=" + pos + ", path=" + path
-                + "]";
+        return "HLogZNode [type=" + type + ", pos=" + pos + ", path=" + path + "]";
     }
 
 }

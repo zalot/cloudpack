@@ -1,5 +1,7 @@
 package com.alibaba.hbase.replication.protocol;
 
+import org.apache.hadoop.conf.Configuration;
+
 /**
  * 协议适配器
  * 
@@ -9,4 +11,5 @@ package com.alibaba.hbase.replication.protocol;
 public interface ProtocolAdapter {
     public void write(MetaData data) throws Exception;
     public MetaData read(Head head) throws Exception;
+    public void init(Configuration conf);
 }
