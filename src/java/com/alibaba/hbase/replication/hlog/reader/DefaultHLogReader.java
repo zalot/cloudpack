@@ -11,8 +11,9 @@ import com.alibaba.hbase.replication.domain.HLogInfo;
 import com.alibaba.hbase.replication.hlog.HLogOperator;
 
 /**
- * 延迟打开的接口 类LazyOpenHLogReader.java的实现描述：TODO 类实现描述
- * 
+ * 负责日志细节的读取工作，该类被 HLogOperator 统一管理
+ * 1. 被 HLogOperator 统一管理读取的类 
+ * 2. 延迟打开
  * @author zalot.zhaoh Feb 28, 2012 2:28:25 PM
  */
 public class DefaultHLogReader implements HLogReader {
