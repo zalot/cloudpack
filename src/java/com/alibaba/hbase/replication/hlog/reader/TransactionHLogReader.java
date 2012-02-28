@@ -9,7 +9,7 @@ import org.apache.hadoop.fs.FileSystem;
  * @author zalot.zhaoh
  *
  */
-public class TransactionHLogReader extends LazyOpenHLogReader{
+public class TransactionHLogReader extends DefaultHLogReader{
 
 	public TransactionHLogReader(FileSystem fs, HLogInfo info) {
 	}

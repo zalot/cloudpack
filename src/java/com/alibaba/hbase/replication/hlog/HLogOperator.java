@@ -1,64 +1,29 @@
 package com.alibaba.hbase.replication.hlog;
 
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.regionserver.wal.HLog;
-import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 
 import com.alibaba.hbase.replication.domain.HLogInfo;
-import com.alibaba.hbase.replication.domain.HLogInfo.HLogType;
+import com.alibaba.hbase.replication.domain.HLogs;
+import com.alibaba.hbase.replication.hlog.reader.HLogReader;
 
 /**
  * 日志操作接口
  * 
  * @author zalot.zhaoh
- *
  */
 public interface HLogOperator {
-	public static final String HBASE_LOG = ".logs";
-	public static final String HBASE_OLDLOG = ".oldlogs";
-	public static final String SYMBOL = "/";
-	
-	public static class EntryInfo {
-		@Override
-		public String toString() {
-			return "EntryInfo [entry=" + entry + ", type=" + type + ", pos="
-					+ pos + ", fileName=" + fileName + "]";
-		}
-
-		HLog.Entry entry = null;
-		HLogType type;
-		long pos;
-		String fileName;
-
-		public String getFileName() {
-			return fileName;
-		}
-
-		public HLog.Entry getEntry() {
-			return entry;
-		}
-
-		public HLogType getType() {
-			return type;
-		}
-
-		public long getPos() {
-			return pos;
-		}
-
-		public EntryInfo(Entry entry, HLogType type, String fileName, long pos) {
-			this.entry = entry;
-			this.type = type;
-			this.pos = pos;
-			this.fileName = fileName;
-		}
-
-		public EntryInfo(Entry entry, Path path, long pos) {
-		}
-	}
-
-	public Entry next();
-	public HLogReader getReader(HLogInfo info);
-	public boolean commit();
-	public boolean sync();
+    public static String HBASE_LOG    = ".logs";
+    public static String HBASE_OLDLOG = ".oldlogs";
+    public static final String SYMBOL       = "/";
+    
+    public HLogReader getReader(HLogInfo info) throws Exception;
+    public void commit(HLogReader reader) throws Exception;
+    public FileSystem getFileSystem();
+    public Configuration getConf();
+    public HLogs getHLogs();
+    public boolean flush();
+    public void close();
+    public void open();
+    public boolean isClosed();
 }
