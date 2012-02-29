@@ -21,12 +21,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Server {
 
     private static final Logger LOG         = LoggerFactory.getLogger(Server.class);
-    private static final String CONFIG_PATH = "classpath*:META-INF/spring/replication-*.xml";
+    private static final String SPRING_PATH = "classpath*:META-INF/spring/replication-*.xml";
+    //private static final String CONFIG_PATH = "classpath*:META-INF/configuration.xml";
 
     public static void main(String args[]) {
         try {
             // 启动Server
-            final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(CONFIG_PATH);
+            final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(SPRING_PATH);
             context.start();
             // 钩子
             Runtime.getRuntime().addShutdownHook(new Thread() {

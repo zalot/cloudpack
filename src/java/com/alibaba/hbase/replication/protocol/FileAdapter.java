@@ -1,7 +1,8 @@
 package com.alibaba.hbase.replication.protocol;
 
 import org.apache.commons.lang.StringUtils;
-
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 
 /**
  * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
@@ -9,14 +10,16 @@ import org.apache.commons.lang.StringUtils;
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
 public class FileAdapter implements ProtocolAdapter {
+
     protected String filePath;
+
     public static Head validataFileName(String fileName) {
         String[] info = fileName.split("\\.");
         if (info.length == 7) {
             try {
                 Head head = new Head();
                 head.setVersion(Integer.parseInt(info[0]));
-                if(StringUtils.isBlank(info[1])){
+                if (StringUtils.isBlank(info[1])) {
                     return null;
                 }
                 head.setGroupName(info[1]);
@@ -34,25 +37,24 @@ public class FileAdapter implements ProtocolAdapter {
     }
 
     public static String head2FileName(Head head) {
-        return   head.version + "."         // [0]
-               + head.groupName + "."       // [1]
-               + head.fileTimestamp + "."   // [2]
-               + head.headTimestamp + "."   // [3]
-               + head.startOffset + "."     // [4]
-               + head.endOffset+ "."        // [5]
-               + head.count+ "."            // [6]
-               ;           
+        return head.version + "." // [0]
+               + head.groupName + "." // [1]
+               + head.fileTimestamp + "." // [2]
+               + head.headTimestamp + "." // [3]
+               + head.startOffset + "." // [4]
+               + head.endOffset + "." // [5]
+               + head.count + "." // [6]
+        ;
     }
 
     @Override
     public void write(MetaData data) throws Exception {
         Body body = data.getBody();
         String fileName = head2FileName(data.getHead());
-        
+
     }
 
-    @Override
-    public MetaData read(Head head) {
+    public static MetaData read(Head head, FileSystem fs) {
         // TODO 读取文件
         return null;
     }
