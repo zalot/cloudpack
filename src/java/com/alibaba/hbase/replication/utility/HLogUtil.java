@@ -14,7 +14,7 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
+import com.alibaba.hbase.replication.domain.HLogEntry;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Body.Edit;
 
@@ -35,17 +35,6 @@ public class HLogUtil {
 
     public static boolean isCusTable(byte[] tableName) {
         return !isRootRegion(tableName) && !isMetaRegion(tableName);
-    }
-
-    // copy from HLog
-    // private static final Pattern pattern = Pattern.compile(".*\\.\\d*");
-
-    public static HLogInfo getHLogInfo(Path path) {
-        if (HLog.validateHLogFilename(path.getName())) {
-            String[] str = path.getName().split("\\.");
-            return new HLogInfo(str[0], Long.parseLong(str[1]), path);
-        }
-        return null;
     }
 
     public static List<Path> getHLogsByHDFS(FileSystem fs, Path path) throws IOException {
@@ -70,7 +59,7 @@ public class HLogUtil {
             String strTableName = Bytes.toString(tableName);
             List<KeyValue> kvs = entry.getEdit().getKeyValues();
             for (KeyValue kv : kvs) {
-                if(kv.matchingFamily(HLog.METAFAMILY)) continue;
+                if (kv.matchingFamily(HLog.METAFAMILY)) continue;
                 edit = new Edit();
                 switch (Type.codeToType(kv.getType())) {
                     case DeleteFamily:
@@ -93,5 +82,19 @@ public class HLogUtil {
                 body.addEdit(strTableName, edit);
             }
         }
+    }
+    
+    public static Path getPathByHLogEntry(FileSystem fs, String rootPath,  HLogEntry entry) throws IOException{
+        String filePath = "";
+        if(entry.getType() == HLogEntry.Type.LIFE){
+            filePath = rootPath + "/.logs/" + entry.getGroupName() + "/" + entry.getName();
+        }else if(entry.getType() == HLogEntry.Type.OLD){
+            filePath = rootPath + "/.oldlogs/" + entry.getName();
+        }
+        Path path = new Path(filePath);
+        if(fs.exists(path)){
+            return path;
+        }
+        return null;
     }
 }
