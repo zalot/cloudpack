@@ -4,6 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 
+import com.alibaba.hbase.replication.protocol.exception.FileNotFoundException;
+import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
+
 /**
  * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
  * 
@@ -15,7 +18,7 @@ public class FileAdapter implements ProtocolAdapter {
 
     public static Head validataFileName(String fileName) {
         String[] info = fileName.split("\\.");
-        if (info.length == 7) {
+        if (info.length == 8) {
             try {
                 Head head = new Head();
                 head.setVersion(Integer.parseInt(info[0]));
@@ -28,6 +31,7 @@ public class FileAdapter implements ProtocolAdapter {
                 head.setStartOffset(Integer.parseInt(info[4]));
                 head.setEndOffset(Integer.parseInt(info[5]));
                 head.setCount(Integer.parseInt(info[6]));
+                head.setRetry(Integer.parseInt(info[7]));
                 return head;
             } catch (Exception e) {
                 return null;
@@ -44,6 +48,7 @@ public class FileAdapter implements ProtocolAdapter {
                + head.startOffset + "." // [4]
                + head.endOffset + "." // [5]
                + head.count + "." // [6]
+               + head.retry + "." // [7]
         ;
     }
 
@@ -54,7 +59,7 @@ public class FileAdapter implements ProtocolAdapter {
 
     }
 
-    public static MetaData read(Head head, FileSystem fs) {
+    public static MetaData read(Head head, FileSystem fs) throws FileParsingException {
         // TODO 读取文件
         return null;
     }
@@ -62,5 +67,27 @@ public class FileAdapter implements ProtocolAdapter {
     @Override
     public void init(Configuration conf) {
         conf.get("");
+    }
+
+    /**
+     * 清理producer端已处理的中间文件和slave端的临时文件
+     * 
+     * @param fileHead 中间文件文件名
+     * @param fs
+     */
+    public static void clean(Head fileHead, FileSystem fs) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * 中间文件处理失败，退回重做
+     * 
+     * @param fileHead 中间文件文件名
+     * @param fs
+     */
+    public static void reject(Head fileHead, FileSystem fs) {
+        // TODO Auto-generated method stub
+
     }
 }

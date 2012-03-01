@@ -58,6 +58,7 @@ public class FileChannelManager {
     protected ThreadPoolExecutor   fileChannelPool;
     @Autowired
     protected int                  coreFileChannelPoolSize = 10;
+    @Autowired
     protected int                  maxFileChannelPoolSize  = 10;
     @Autowired
     protected int                  queueSize               = 100;
@@ -66,6 +67,8 @@ public class FileChannelManager {
     @Autowired
     @Qualifier("consumerConf")
     protected Configuration        conf;
+    @Autowired
+    protected DataLoadingManager   dataLoadingManager;
     protected FileSystem           fs;
     protected RecoverableZooKeeper zoo;
 
@@ -86,7 +89,9 @@ public class FileChannelManager {
             LOG.info("FileChannelManager starts.");
         }
         scanProducerFilesAndAddToZK();
-        createFileChannelRunnable();
+        for(int i=1;i<maxFileChannelPoolSize;i++){
+            fileChannelPool.execute(new FileChannelRunnable(conf, dataLoadingManager, stopflag));
+        }
     }
 
     public void stop() {
@@ -94,14 +99,7 @@ public class FileChannelManager {
             LOG.info("FileChannelManager is pendding to stop.");
         }
         stopflag.set(true);
-    }
-
-    /**
-     * 
-     */
-    private void createFileChannelRunnable() {
-        // TODO Auto-generated method stub
-
+        fileChannelPool.shutdown();
     }
 
     /**

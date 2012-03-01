@@ -22,12 +22,26 @@ import java.io.Serializable;
 public class ConsumerZNode implements Serializable {
 
     private static final long serialVersionUID = -8921421815693312454L;
+    private String            groupName;
     private String            fileName;
-    private Status            status;
     private long              fileLastModified;
     private long              statusLastModified;
     private String            processorName;
     private int               version;
+
+    /**
+     * @return the groupName
+     */
+    public String getGroupName() {
+        return groupName;
+    }
+
+    /**
+     * @param groupName the groupName to set
+     */
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
     public String getFileName() {
         return fileName;
@@ -35,14 +49,6 @@ public class ConsumerZNode implements Serializable {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public long getFileLastModified() {
