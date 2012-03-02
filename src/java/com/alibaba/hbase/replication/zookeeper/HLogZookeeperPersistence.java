@@ -1,8 +1,10 @@
 package com.alibaba.hbase.replication.zookeeper;
 
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -22,9 +24,21 @@ public class HLogZookeeperPersistence implements HLogPersistence {
 
     protected RecoverableZooKeeper zoo;
     protected String               baseDir;
+    protected String               name = UUID.randomUUID().toString().substring(0, 10);
+
+    // public ArrayList<ACL> perms;
+
+    
+    public String getName() {
+        return name;
+    }
 
     public void setZookeeper(RecoverableZooKeeper zoo) {
         this.zoo = zoo;
+    }
+
+    public RecoverableZooKeeper getZookeeper() {
+        return zoo;
     }
 
     @Override
@@ -112,8 +126,7 @@ public class HLogZookeeperPersistence implements HLogPersistence {
 
     @Override
     public void createGroup(HLogEntryGroup group, boolean createChild) throws Exception {
-        zoo.create(getGroupPath(group.getGroupName()), getGroupData(group), Ids.OPEN_ACL_UNSAFE,
-                   CreateMode.PERSISTENT);
+        zoo.create(getGroupPath(group.getGroupName()), getGroupData(group), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         if (createChild) {
             for (HLogEntry entry : group.getEntrys()) {
                 createEntry(entry);
@@ -148,9 +161,29 @@ public class HLogZookeeperPersistence implements HLogPersistence {
 
     @Override
     public void updateGroup(HLogEntryGroup group, boolean updateChild) throws Exception {
+        String path = getGroupPath(group.getGroupName());
+        Stat stat = zoo.exists(path, false);
+        if (stat != null) {
+            zoo.setData(path, getGroupData(group), stat.getVersion());
+            if (updateChild) {
+                HLogEntry tmpEntry;
+                for (HLogEntry entry : group.getEntrys()) {
+                    tmpEntry = getHLogEntry(entry.getGroupName(), entry.getName());
+                    if (tmpEntry == null) {
+                        createEntry(entry);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void createOrUpdateGroup(HLogEntryGroup group, boolean updateChild) throws Exception {
         HLogEntryGroup tmpGroup = getGroupByName(group.getGroupName(), false);
         if (tmpGroup == null) {
-
+            createGroup(group, updateChild);
+        } else {
+            updateGroup(group, updateChild);
         }
     }
 
@@ -166,9 +199,18 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     @Override
     public boolean lockGroup(String groupName) throws Exception {
         if (!isLockGroup(groupName)) {
-            zoo.create(groupName + AliHBaseConstants.ZOO_PERSISTENCE_HLOG_GROUP_LOCK, null, Ids.OPEN_ACL_UNSAFE,
-                       CreateMode.EPHEMERAL);
-            return true;
+            try {
+                zoo.create(getGroupLockPath(groupName), null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                // String lockPath = getGroupLockPath(groupName);
+                // String seqPath = zoo.create(lockPath, null, Ids.OPEN_ACL_UNSAFE , CreateMode.EPHEMERAL);
+                // if(getLockSeq(lockPath, seqPath) != 0){
+                // zoo.delete(seqPath, 0);
+                // return false;
+                // }
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
         }
         return false;
     }
@@ -177,7 +219,11 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     public void unlockGroup(String groupName) throws Exception {
         Stat stat = getLockGroupStat(groupName);
         if (stat == null) return;
-        zoo.delete(getGroupLockPath(groupName), stat.getVersion());
+        try {
+            zoo.delete(getGroupLockPath(groupName), stat.getVersion());
+        } catch (Exception e) {
+            return;
+        }
     }
 
     //
@@ -242,4 +288,15 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         return null;
     }
 
+    protected long getLockSeq(String lockPath, String seqPath) {
+        try {
+            String tmpLockPath = lockPath + ManagementFactory.getRuntimeMXBean().getName();
+            int idx = seqPath.indexOf(tmpLockPath);
+            if (idx == 0) {
+                return Long.parseLong(seqPath.substring(tmpLockPath.length() + 1, seqPath.length()));
+            }
+        } catch (Exception e) {
+        }
+        return -1;
+    }
 }
