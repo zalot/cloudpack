@@ -3,7 +3,7 @@ package com.alibaba.hbase.replication.domain;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 
-import com.alibaba.hbase.replication.hlog.HLogOperator;
+import com.alibaba.hbase.replication.utility.AliHBaseConstants;
 
 public class HLogEntry implements Comparable<HLogEntry> {
 
@@ -35,9 +35,9 @@ public class HLogEntry implements Comparable<HLogEntry> {
         public static Type toType(Path path) {
             if (path != null && HLog.validateHLogFilename(path.getName())) {
                 String url = path.toUri().getRawPath();
-                if (url.indexOf(HLogOperator.HBASE_OLDLOG) > 0) {
+                if (url.indexOf(AliHBaseConstants.PATH_BASE_HLOG) > 0) {
                     return Type.OLD;
-                } else if (url.indexOf(HLogOperator.HBASE_LOG) > 0) {
+                } else if (url.indexOf(AliHBaseConstants.PATH_BASE_OLDHLOG) > 0) {
                     return Type.LIFE;
                 }
             }
