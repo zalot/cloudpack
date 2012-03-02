@@ -20,6 +20,7 @@ public interface HLogPersistence extends Configurable {
     public void deleteGroup(HLogEntryGroup group) throws Exception;
     public HLogEntryGroup getGroupByName(String groupName , boolean getChild) throws Exception;
     public void updateGroup(HLogEntryGroup entry, boolean updateChild) throws Exception;
+    public void createOrUpdateGroup(HLogEntryGroup entry, boolean updateChild) throws Exception;
     public boolean isLockGroup(String groupName) throws Exception;
     public boolean lockGroup(String groupName) throws Exception;
     public void unlockGroup(String groupName) throws Exception;
