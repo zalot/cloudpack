@@ -1,5 +1,8 @@
 package com.alibaba.hbase.replication.test;
 
+import java.util.Random;
+import java.util.UUID;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
@@ -10,25 +13,24 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTablePool;
 
 public class BaseReplicationTest {
-    
-    protected static final int zkClusterCount = 2;
-    protected static final int hbaseClusterCount = 2;
-    
+
+    protected static final int           zkClusterCount    = 2;
+    protected static final int           hbaseClusterCount = 2;
+
     protected static HBaseTestingUtility util1;
-    protected static Configuration conf1;
-    protected static HTablePool pool1;
-    
+    protected static Configuration       conf1;
+    protected static HTablePool          pool1;
+
     protected static HBaseTestingUtility util2;
-    protected static Configuration conf2;
-    protected static HTablePool pool2;
-    
-    protected static final String TABLEA = "testTableA";
-    protected static final String TABLEB = "testTableB";
-    protected static final String TABLEC = "testTableC";
-    protected static final String COLA = "colA";
-    protected static final String COLB = "colB";
-    
-	
+    protected static Configuration       conf2;
+    protected static HTablePool          pool2;
+
+    protected static final String        TABLEA            = "testTableA";
+    protected static final String        TABLEB            = "testTableB";
+    protected static final String        TABLEC            = "testTableC";
+    protected static final String        COLA              = "colA";
+    protected static final String        COLB              = "colB";
+
     public static void createTable(Configuration conf) throws Exception {
         HBaseAdmin admin = new HBaseAdmin(conf);
         HTableDescriptor htable = new HTableDescriptor(TABLEA);
@@ -49,7 +51,7 @@ public class BaseReplicationTest {
         admin.createTable(htable);
         admin.close();
     }
-    
+
     public static void init1() throws Exception {
         conf1 = HBaseConfiguration.create();
         conf1.setBoolean("hbase.regionserver.info.port.auto", true);
@@ -65,8 +67,8 @@ public class BaseReplicationTest {
         createTable(conf1);
         pool1 = new HTablePool(conf1, 10);
     }
-    
-    public static void init2() throws Exception{
+
+    public static void init2() throws Exception {
 
         conf2 = HBaseConfiguration.create(conf1);
         conf2.set(HConstants.ZOOKEEPER_ZNODE_PARENT, "/2");
@@ -86,5 +88,11 @@ public class BaseReplicationTest {
         conf1to2.set("hbase.zookeeper.quorum", conf2.get("hbase.zookeeper.quorum"));
         conf1to2.set("zookeeper.znode.parent", conf2.get("zookeeper.znode.parent"));
         conf1to2.set("hbase.master.port", conf2.get("hbase.master.port"));
+    }
+
+    protected Random rnd = new Random();
+
+    protected String getRndString(String table) {
+        return table + UUID.randomUUID().toString().substring(0, 10);
     }
 }

@@ -51,17 +51,78 @@ public class TestHLogPersistence extends BaseReplicationTest {
         dao2.deleteGroup(group);
         dao1.createGroup(group, true);
         Assert.assertNotNull(dao1.getHLogEntry(entry.getGroupName(), entry.getName()));
-        
+
         Assert.assertTrue(dao1.lockGroup(group.getGroupName()));
         Assert.assertTrue(dao2.isLockGroup(group.getGroupName()));
         Assert.assertFalse(dao2.lockGroup(group.getGroupName()));
-        
+
         zk1.close();
         Assert.assertFalse(dao2.isLockGroup(group.getGroupName()));
         Assert.assertTrue(dao2.lockGroup(group.getGroupName()));
-        
-        zk1 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
+
+        zk2.close();
+    }
+
+    @Test
+    public void testMuThreadPer() throws Exception {
+        final HLogEntryGroup group = new HLogEntryGroup("testB");
+
+        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
+        final HLogZookeeperPersistence dao1 = new HLogZookeeperPersistence();
         dao1.setZookeeper(zk1);
-        
+        dao1.init(conf1);
+
+        RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
+        final HLogZookeeperPersistence dao2 = new HLogZookeeperPersistence();
+        dao2.setZookeeper(zk2);
+        dao2.init(conf1);
+
+        dao1.createGroup(group, false);
+
+        Runnable run1 = new Runnable() {
+
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        if(dao1.lockGroup(group.getGroupName())){
+                            System.out.println("thread1 - lock");
+                            Thread.sleep(500);
+                            dao1.unlockGroup(group.getGroupName());
+                            System.out.println("[unlock] thread1 - unlock");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        Runnable run2 = new Runnable() {
+
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        if(dao2.lockGroup(group.getGroupName())){
+                            System.out.println("thread2 - lock");
+                            Thread.sleep(300);
+                            dao2.unlockGroup(group.getGroupName());
+                            System.out.println("thread2 - unlock");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        };
+
+        Thread td1 = new Thread(run1);
+        td1.start();
+
+        Thread td2 = new Thread(run2);
+        td2.start();
+        Thread.sleep(600000);
     }
 }
