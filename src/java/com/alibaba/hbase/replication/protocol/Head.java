@@ -46,19 +46,19 @@ public class Head implements Serializable {
         this.headTimestamp = headTimestamp;
     }
 
-    public int getStartOffset() {
+    public long getStartOffset() {
         return startOffset;
     }
 
-    public void setStartOffset(int startOffset) {
+    public void setStartOffset(long startOffset) {
         this.startOffset = startOffset;
     }
 
-    public int getEndOffset() {
+    public long getEndOffset() {
         return endOffset;
     }
 
-    public void setEndOffset(int endOffset) {
+    public void setEndOffset(long endOffset) {
         this.endOffset = endOffset;
     }
 
@@ -107,12 +107,12 @@ public class Head implements Serializable {
     /**
      * 起始偏移量 （用于 HLog.Reader 中的 position ）
      */
-    protected int    startOffset;
+    protected long    startOffset;
 
     /**
      * 结束偏移量 （用于 HLog.Reader 中的 position ）
      */
-    protected int    endOffset;
+    protected long    endOffset;
 
     /**
      * 数量
