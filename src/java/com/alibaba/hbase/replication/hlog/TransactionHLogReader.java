@@ -1,8 +1,8 @@
 package com.alibaba.hbase.replication.hlog;
 
-import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
-
 import org.apache.hadoop.fs.FileSystem;
+
+import com.alibaba.hbase.replication.domain.HLogEntry;
 
 /**
  * 事务读取
@@ -12,6 +12,6 @@ import org.apache.hadoop.fs.FileSystem;
  */
 public class TransactionHLogReader extends DefaultHLogReader{
 
-	public TransactionHLogReader(FileSystem fs, HLogInfo info) {
+	public TransactionHLogReader(FileSystem fs, HLogEntry info) {
 	}
 }

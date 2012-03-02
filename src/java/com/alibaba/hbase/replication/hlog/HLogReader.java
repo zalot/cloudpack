@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
-import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
+import com.alibaba.hbase.replication.domain.HLogEntry;
 
 
 /**
@@ -14,7 +14,6 @@ import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
  * @author zalot.zhaoh Feb 28, 2012 2:28:11 PM
  */
 public interface HLogReader{
-	HLogInfo getHLogInfo();
     void close() throws IOException;
     void open() throws IOException;
 //    boolean hasMoreNext();
@@ -24,5 +23,5 @@ public interface HLogReader{
     long getPosition() throws IOException;
     boolean isOpen();
     boolean hasOpened();
-    void init(HLogOperator operator, HLogInfo info);
+    void init(HLogOperator operator, HLogEntry info);
 }

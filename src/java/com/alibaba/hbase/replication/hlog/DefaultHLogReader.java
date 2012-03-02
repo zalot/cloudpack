@@ -4,27 +4,28 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
-import com.alibaba.hbase.replication.hlog.domain.HLogInfo;
+import com.alibaba.hbase.replication.domain.HLogEntry;
+import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
- * 负责日志细节的读取工作，该类被 HLogOperator 统一管理
- * 1. 被 HLogOperator 统一管理读取的类 
- * 2. 延迟打开
+ * 负责日志细节的读取工作，该类被 HLogOperator 统一管理 1. 被 HLogOperator 统一管理读取的类 2. 延迟打开
+ * 
  * @author zalot.zhaoh Feb 28, 2012 2:28:25 PM
  */
 public class DefaultHLogReader implements HLogReader {
 
     protected static final Log LOG       = LogFactory.getLog(DefaultHLogReader.class);
     HLogOperator               operator;
-    private HLogInfo           info;
+    private HLogEntry          entry;
     private HLog.Reader        reader;
     private long               seek;
     private boolean            hasOpened = false;
     private boolean            isOpen    = false;
-    
+
     public DefaultHLogReader(){
     }
 
@@ -33,21 +34,11 @@ public class DefaultHLogReader implements HLogReader {
         if (reader != null && isOpen) reader.close();
         reader = null;
         isOpen = false;
-        LOG.debug("[HLogReader][Close][TYPE." + info.getType() + "]" + Thread.currentThread().getName() + " [File] "
-                  + info.getPath().getName());
     }
 
     public long getPosition() throws IOException {
-        if (operator.isClosed()) {
-            return -1;
-        }
         lazyOpen();
         return reader.getPosition();
-    }
-
-    @Override
-    public HLogInfo getHLogInfo() {
-        return info;
     }
 
     @Override
@@ -56,18 +47,15 @@ public class DefaultHLogReader implements HLogReader {
     }
 
     public boolean isOpen() {
-        if (operator.isClosed()) {
-            return true;
-        }
         return isOpen;
     }
 
     private void lazyOpen() {
         try {
-            if (!operator.isClosed() && reader == null && !hasOpened) {
-                LOG.debug("[HLogReader][Open][TYPE." + info.getType() + "]" + Thread.currentThread().getName()
-                          + " [File] " + info.getPath().getName());
-                reader = HLog.getReader(operator.getFileSystem(), info.getPath(), operator.getConf());
+            if (reader == null && !hasOpened) {
+                Path path = getHLogPath();
+                if (path == null) return;
+                reader = HLog.getReader(operator.getFileSystem(), path, operator.getConf());
                 if (reader != null) {
                     isOpen = true;
                     if (seek > 0) {
@@ -83,10 +71,6 @@ public class DefaultHLogReader implements HLogReader {
     }
 
     public Entry next() throws IOException {
-        if (operator.isClosed()) {
-            close();
-            return null;
-        }
         lazyOpen();
         if (isOpen) {
             return reader.next();
@@ -96,39 +80,10 @@ public class DefaultHLogReader implements HLogReader {
 
     @Override
     public Entry next(Entry reuse) throws IOException {
-        if (operator.isClosed()) {
-            close();
-            return null;
-        }
         lazyOpen();
         if (isOpen) return reader.next(reuse);
         return null;
     }
-
-    // @Override
-    // public boolean hasMoreNext() {
-    // lazyOpen();
-    // try{
-    // if(isOpen()){
-    // long pos = reader.getPosition();
-    // Entry entry = reader.next();
-    // if(entry != null){
-    // if(reader.getPosition() != pos)
-    // reader.seek(pos);
-    // return true;
-    // }else{
-    // // 如果该文件已经没有内容则关闭
-    // close();
-    // }
-    // }
-    // }catch(Exception e){
-    // try {
-    // close();
-    // } catch (IOException e1) {
-    // }
-    // }
-    // return false;
-    // }
 
     @Override
     public void open() throws IOException {
@@ -143,13 +98,29 @@ public class DefaultHLogReader implements HLogReader {
 
     @Override
     public String toString() {
-        return "LazyOpenHLogReader [reader=" + reader + ", path=" + info.getPath() + ", type=" + info.getType() + ", seek="
-               + seek + ", isOpen=" + isOpen + ", hasOpened=" + hasOpened + "]";
+        try {
+            return "LazyOpenHLogReader [reader=" + reader + ", path=" + getHLogPath() + ", type=" + entry.getType()
+                   + ", seek=" + seek + ", isOpen=" + isOpen + ", hasOpened=" + hasOpened + "]";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
     }
 
     @Override
-    public void init(HLogOperator operator, HLogInfo info) {
+    public void init(HLogOperator operator, HLogEntry entry) {
         this.operator = operator;
-        this.info = info;
+        this.entry = entry;
+    }
+
+    protected Path getHLogPath() throws IOException {
+        if (HLogEntry.Type.END == entry.getType() || HLogEntry.Type.UNKNOW == entry.getType()) return null;
+        Path path = HLogUtil.getPathByHLogEntry(operator.getFileSystem(), "", entry);
+        if (path == null && HLogEntry.Type.LIFE == entry.getType()) {
+            entry.setType(HLogEntry.Type.OLD);
+            path = HLogUtil.getPathByHLogEntry(operator.getFileSystem(), "", entry);
+            return path;
+        }
+        return path;
     }
 }
