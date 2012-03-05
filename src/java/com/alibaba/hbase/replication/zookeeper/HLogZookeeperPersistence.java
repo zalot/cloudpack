@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
 import org.apache.zookeeper.CreateMode;
@@ -28,7 +29,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
 
     // public ArrayList<ACL> perms;
 
-    
     public String getName() {
         return name;
     }
@@ -105,6 +105,9 @@ public class HLogZookeeperPersistence implements HLogPersistence {
 
     @Override
     public HLogEntry getHLogEntry(String groupName, String name) throws Exception {
+        if (!HLog.validateHLogFilename(name)) {
+            return null;
+        }
         String path = getEntryPath(groupName, name);
         Stat stat = zoo.exists(path, false);
         if (stat != null) {
@@ -200,7 +203,7 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     public boolean lockGroup(String groupName) throws Exception {
         if (!isLockGroup(groupName)) {
             try {
-                zoo.create(getGroupLockPath(groupName), null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                zoo.create(getGroupLockPath(groupName), getGroupData(null), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
                 // String lockPath = getGroupLockPath(groupName);
                 // String seqPath = zoo.create(lockPath, null, Ids.OPEN_ACL_UNSAFE , CreateMode.EPHEMERAL);
                 // if(getLockSeq(lockPath, seqPath) != 0){
@@ -258,6 +261,9 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     //
     //
     protected byte[] getGroupData(HLogEntryGroup group) {
+        if (group == null) {
+            group = new HLogEntryGroup(null);
+        }
         return null;
     }
 
