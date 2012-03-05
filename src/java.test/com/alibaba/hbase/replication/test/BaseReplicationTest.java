@@ -1,16 +1,24 @@
 package com.alibaba.hbase.replication.test;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
+import org.apache.hadoop.hbase.client.Put;
 
 public class BaseReplicationTest {
 
@@ -94,5 +102,28 @@ public class BaseReplicationTest {
 
     protected String getRndString(String table) {
         return table + UUID.randomUUID().toString().substring(0, 10);
+    }
+    
+    
+    public void insertData(HTablePool pool, String table, String family, String qualifier, int size) throws IOException {
+        HTableInterface htable = pool.getTable(table);
+        List<Put> puts = new ArrayList<Put>();
+        for (int x = 0; x < size; x++) {
+            Put put = new Put(getRndString(table).getBytes());
+            put.add(family.getBytes(), qualifier.getBytes(), getRndString(null).getBytes());
+            puts.add(put);
+        }
+        htable.put(puts);
+        System.out.println("insert Data " + size);
+    }
+    
+    public void printDFS(FileSystem fs, Path path) throws IOException{
+        if(fs.isFile(path)){
+            System.out.println(path);
+        }else{
+            for(FileStatus fss : fs.listStatus(path)){
+                printDFS(fs, fss.getPath());
+            }
+        }
     }
 }
