@@ -42,7 +42,7 @@ public class TestHLogCrossIDCReplicationManager extends BaseReplicationTest {
         
         while(true){
             insertData(pool1, TABLEA, COLA, "test", 1000);
-            printDFS(operator.getFileSystem(), operator.getRootDir().getParent().getParent());
+            printDFS(operator.getFileSystem(), operator.getRootDir().getParent());
             Thread.sleep(10000);
         }
     }
