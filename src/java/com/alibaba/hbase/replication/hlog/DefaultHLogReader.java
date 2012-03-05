@@ -90,7 +90,7 @@ public class DefaultHLogReader implements HLogReader {
         lazyOpen();
     }
 
-    public void seek(long pos) throws IOException {
+    public void seek(long pos){
         if (!isOpen) {
             seek = pos;
         }
@@ -111,6 +111,7 @@ public class DefaultHLogReader implements HLogReader {
     public void init(HLogOperator operator, HLogEntry entry) {
         this.operator = operator;
         this.entry = entry;
+        seek(entry.getPos());
     }
 
     protected Path getHLogPath() throws IOException {

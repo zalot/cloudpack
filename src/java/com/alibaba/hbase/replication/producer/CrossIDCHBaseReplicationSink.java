@@ -61,7 +61,7 @@ public class CrossIDCHBaseReplicationSink extends Thread {
         while(true){
             List<String> groups;
             try {
-                Thread.sleep(500);
+                Thread.sleep(5000);
                 groups = hlogDAO.listGroupName();
             } catch (Exception e1) {
                 continue;
@@ -109,6 +109,7 @@ public class CrossIDCHBaseReplicationSink extends Thread {
                     hlogDAO.updateEntry(entry);
                 }
             }
+            reader.close();
         }
     }
     
