@@ -11,7 +11,8 @@ import java.util.List;
 public class HLogEntryGroup {
 
     protected String groupName;
-
+    protected long lastReaderTime;
+    
     public String getGroupName() {
         return groupName;
     }

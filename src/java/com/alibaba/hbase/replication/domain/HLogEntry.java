@@ -36,9 +36,9 @@ public class HLogEntry implements Comparable<HLogEntry> {
             if (path != null && HLog.validateHLogFilename(path.getName())) {
                 String url = path.toUri().getRawPath();
                 if (url.indexOf(AliHBaseConstants.PATH_BASE_HLOG) > 0) {
-                    return Type.OLD;
-                } else if (url.indexOf(AliHBaseConstants.PATH_BASE_OLDHLOG) > 0) {
                     return Type.LIFE;
+                } else if (url.indexOf(AliHBaseConstants.PATH_BASE_OLDHLOG) > 0) {
+                    return Type.OLD;
                 }
             }
             return Type.UNKNOW;
