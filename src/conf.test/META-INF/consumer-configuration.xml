@@ -1,56 +1,51 @@
 <?xml version="1.0"?>
 <configuration>
 	<property>
-		<name>replication.file.dir</name>
-		<value>${replication_file_dir}</value>
-		<description>待同步中间文件在hdfs上的存放位置</description>
-	</property>
-	<property>
 		<name>replication.producer.fs</name>
-		<value>${replication_producer_fs}</value>
+		<value>hdfs://havana01:9000/replication/</value>
 		<description>同步生产端的filesystem位置</description>
 	</property>
 	<property>
 		<name>replication.tmpfile.filePath</name>
-		<value>${replication_tmpfile_filePath}</value>
+		<value>todo/</value>
 		<description>待处理的中间文件存放位置</description>
 	</property>
 	<property>
 		<name>replication.tmpfile.oldPath</name>
-		<value>${replication_tmpfile_oldPath}</value>
+		<value>old/</value>
 		<description>已处理的中间文件存放位置</description>
 	</property>
 	<property>
 		<name>replication.tmpfile.rejectPath</name>
-		<value>${replication_tmpfile_rejectPath}</value>
+		<value>reject/</value>
 		<description>退回的中间文件存放位置（需要producer端重做）</description>
 	</property>
 	<property>
 		<name>hbase.zookeeper.quorum</name>
-		<value>${replication_consumer_zookeeper_quorum}</value>
+		<value>havana01</value>
 	</property>
 	<property>
 		<name>replication.consumer.zookeeper.znoderoot</name>
-		<value>${replication_consumer_zookeeper_znoderoot}</value>
+		<value>/consumer</value>
 	</property>
 	<property>
 		<name>replication.consumer.fileChannelPoolSize</name>
-		<value>${replication_consumer_fileChannelPoolSize}</value>
+		<value>10</value>
 	</property>
 	<property>
 		<name>replication.consumer.dataLoadingPoolSize</name>
-		<value>${replication_consumer_dataLoadingPoolSize}</value>
+		<value>30</value>
 	</property>
 	<property>
 		<name>replication.consumer.dataLoadingBatchSize</name>
-		<value>${replication_consumer_dataLoadingBatchSize}</value>
+		<value>500</value>
 	</property>
 	<property>
 		<name>replication.consumer.threadpool.queuesize</name>
-		<value>${replication_consumer_threadpool_queuesize}</value>
+		<value>100</value>
 	</property>
 	<property>
 		<name>replication.consumer.threadpool.keepAliveTime</name>
-		<value>${replication_consumer_threadpool_keepAliveTime}</value>
+		<value>100</value>
 	</property>
 </configuration>

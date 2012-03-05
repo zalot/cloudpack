@@ -5,7 +5,7 @@
  * use it only in accordance with the terms of the license agreement you entered
  * into with Alibaba.com.
  */
-package com.alibaba.hbase.replication.consumer;
+package com.alibaba.hbase.replication.server;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,14 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * 类Server.java的实现描述：初始线程 
- * @author dongsh 2012-2-28 上午10:34:14
+ * 类Consumer.java的实现描述：Consumer的main线程 
+ * @author dongsh 2012-3-4 下午02:17:18
  */
-public class Server {
-
-    private static final Logger LOG         = LoggerFactory.getLogger(Server.class);
-    private static final String SPRING_PATH = "classpath*:META-INF/spring/replication-*.xml";
-    //private static final String CONFIG_PATH = "classpath*:META-INF/configuration.xml";
+public class Consumer {
+    private static final Logger LOG         = LoggerFactory.getLogger(Consumer.class);
+    private static final String SPRING_PATH = "classpath*:META-INF/spring/consumer.xml";
 
     public static void main(String args[]) {
         try {
@@ -50,10 +48,10 @@ public class Server {
             System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
                                + " Consumer server started");
 
-            synchronized (Server.class) {
+            synchronized (Consumer.class) {
                 while (true) {
                     try {
-                        Server.class.wait();
+                        Consumer.class.wait();
                     } catch (Throwable t) {
                         LOG.error("Consumer server got runtime errors: ", t);
                     }

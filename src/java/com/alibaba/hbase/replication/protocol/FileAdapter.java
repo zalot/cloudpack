@@ -3,22 +3,46 @@ package com.alibaba.hbase.replication.protocol;
 import java.io.IOException;
 import java.security.MessageDigest;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.alibaba.hbase.replication.consumer.Constants;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
+import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.protocol.protobuf.BodySerializingHandler;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
  * 
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
+@Service("fileAdapter")
 public class FileAdapter implements ProtocolAdapter {
 
+    /**
+     * 待处理的中间文件存放位置
+     */
+    protected String            filePath;
+    /**
+     * 已处理的中间文件存放位置
+     */
+    protected String            oldPath;
+    /**
+     * 退回的中间文件存放位置（需要producer端重做）
+     */
+    protected String            rejectPath;
+    @Autowired
+    protected Configuration     conf;
     public static final String  SPLIT_SYMBOL = "|";
     public static MessageDigest digest       = null;
     protected Path              targetPath;
@@ -31,7 +55,7 @@ public class FileAdapter implements ProtocolAdapter {
     }
 
     public static Head validataFileName(String fileName) {
-        String[] info = fileName.split(SPLIT_SYMBOL);
+        String[] info = StringUtils.split(fileName, SPLIT_SYMBOL);
         if (info.length == 8) {
             try {
                 Head head = new Head();
@@ -71,14 +95,32 @@ public class FileAdapter implements ProtocolAdapter {
         Path target = write(data, fs, tmpPath);
         if (target != null) {
             Path ot = new Path(targetPath.toString() + "/" + target.getName());
-            if(!fs.rename(target, ot)){
+            if (!fs.rename(target, ot)) {
                 throw new RuntimeException(target + " rename to " + ot);
             }
         }
     }
 
-    public static MetaData read(Head head, FileSystem fs) throws FileParsingException {
-        // TODO 读取文件
+    public MetaData read(Head head, FileSystem fs) throws FileParsingException, FileReadingException {
+        FSDataInputStream in = null;
+        byte[] byteArray = null;
+        try {
+            in = fs.open(new Path(conf.get(Constants.PRODUCER_FS), filePath + head2FileName(head)));
+            byteArray = IOUtils.toByteArray(in);
+        } catch (IOException e1) {
+            throw new FileReadingException("error while reading hdfs file to bytes. file: " + head2FileName(head), e1);
+        } finally {
+            org.apache.hadoop.io.IOUtils.closeStream(in);
+        }
+        if (byteArray != null && byteArray.length > 0) {
+            try {
+                Body body = BodySerializingHandler.deserialize(byteArray);
+                Version1 result = new Version1(head, body);
+                return result;
+            } catch (InvalidProtocolBufferException e) {
+                throw new FileParsingException("error while parsing body with protobuf.", e);
+            }
+        }
         return null;
     }
 
@@ -145,10 +187,11 @@ public class FileAdapter implements ProtocolAdapter {
      * 
      * @param fileHead 中间文件文件名
      * @param fs
+     * @throws IOException
      */
-    public static void clean(Head fileHead, FileSystem fs) {
-        // TODO Auto-generated method stub
-
+    public void clean(Head head, FileSystem fs) throws IOException {
+        fs.rename(new Path(conf.get(Constants.PRODUCER_FS), filePath + head2FileName(head)),
+                  new Path(conf.get(Constants.PRODUCER_FS), oldPath + head2FileName(head)));
     }
 
     /**
@@ -157,8 +200,16 @@ public class FileAdapter implements ProtocolAdapter {
      * @param fileHead 中间文件文件名
      * @param fs
      */
-    public static void reject(Head fileHead, FileSystem fs) {
-        // TODO Auto-generated method stub
+    public void reject(Head head, FileSystem fs) {
+        // FIXME
 
     }
+
+    @PostConstruct
+    public void setPath() {
+        filePath = conf.get(Constants.TMPFILE_FILEPATH);
+        oldPath = conf.get(Constants.TMPFILE_OLDPATH);
+        rejectPath = conf.get(Constants.TMPFILE_REJECTPATH);
+    }
+
 }

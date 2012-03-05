@@ -9,9 +9,9 @@ package com.alibaba.hbase.replication.consumer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +20,6 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
-import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Body.Edit;
 
 /**
@@ -39,24 +37,21 @@ import com.alibaba.hbase.replication.protocol.Body.Edit;
 @Service("dataLoadingManager")
 public class DataLoadingManager {
 
-    private static final Logger LOG              = LoggerFactory.getLogger(DataLoadingManager.class);
-
-    @Autowired
-    protected int               maxTablePoolSize = 30;
-    @Autowired
-    protected int               batchSize        = 500;
-
+    private static final Logger LOG = LoggerFactory.getLogger(DataLoadingManager.class);
     @Autowired
     @Qualifier("consumerConf")
     protected Configuration     conf;
     protected HTablePool        pool;
+    protected int               batchSize;
 
+    @PostConstruct
     public void start() {
         if (LOG.isInfoEnabled()) {
             LOG.info("DataLoadingManager start.");
         }
+        batchSize = conf.getInt(Constants.REP_DATA_LAODING_BATCH_SIZE, 1000);
         Configuration hbaseConf = HBaseConfiguration.create(conf);
-        pool = new HTablePool(hbaseConf, maxTablePoolSize);
+        pool = new HTablePool(hbaseConf, conf.getInt(Constants.REP_DATA_LAODING_POOL_SIZE, 30));
     }
 
     /**
@@ -112,28 +107,28 @@ public class DataLoadingManager {
             try {
                 table.put(puts.subList(i, i + batchSize < puts.size() ? i + batchSize : puts.size()));
             } catch (IOException e1) {
-                if(LOG.isErrorEnabled()){
-                    LOG.error("puts error,tableName: "+tableName);
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("puts error,tableName: " + tableName);
                 }
-                //FIXME 异常数据是否需要保存起来？
+                // FIXME 异常数据是否需要保存起来？
             }
         }
         for (int i = 0; i < deletes.size(); i += batchSize) {
             try {
                 table.delete(deletes.subList(i, i + batchSize < deletes.size() ? i + batchSize : deletes.size()));
             } catch (IOException e1) {
-                if(LOG.isErrorEnabled()){
-                    LOG.error("deletes error,tableName: "+tableName);
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("deletes error,tableName: " + tableName);
                 }
-                //FIXME 异常数据是否需要保存起来？
+                // FIXME 异常数据是否需要保存起来？
             }
         }
         try {
-            //pool.put方法已经被deprecated掉了
+            // pool.put方法已经被deprecated掉了
             table.close();
         } catch (IOException e1) {
-            if(LOG.isErrorEnabled()){
-                LOG.error("pool puts table error,tableName: "+tableName);
+            if (LOG.isErrorEnabled()) {
+                LOG.error("pool puts table error,tableName: " + tableName);
             }
         }
     }

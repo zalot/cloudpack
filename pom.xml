@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<!-- <parent> <groupId>com.alibaba</groupId> <artifactId>pampas</artifactId> 
-		<version>4</version> </parent>  -->
+		<version>4</version> </parent> -->
 	<groupId>com.alibaba</groupId>
 	<artifactId>hbase.replication</artifactId>
 	<packaging>jar</packaging>
@@ -17,6 +17,8 @@
 		<downloadResouce>true</downloadResouce>
 		<downloadJavadocs>true</downloadJavadocs>
 		<springframework_version>2.5.6.SEC02</springframework_version>
+		<unitils_version>3.3</unitils_version>
+		<slf4j_version>1.6.1</slf4j_version>
 	</properties>
 
 	<!-- 构造项 -->
@@ -105,27 +107,91 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.alibaba.external</groupId>
-			<artifactId>google.protobuf</artifactId>
-			<!-- TODO : try to upgrade to 2.4.1 -->
-			<version>2.2.0</version>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.4.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.alibaba.external</groupId>
-			<artifactId>sourceforge.spring</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
 			<version>${springframework_version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.alibaba.external</groupId>
-			<artifactId>sourceforge.spring.modules.test</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 			<version>${springframework_version}</version>
 			<scope>test</scope>
+		</dependency>
+		<!-- <dependency> <groupId>com.alibaba.external</groupId> <artifactId>google.protobuf</artifactId> 
+			<version>2.2.0</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
+			<artifactId>sourceforge.spring</artifactId> <version>${springframework_version}</version> 
+			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>sourceforge.spring.modules.test</artifactId> 
+			<version>${springframework_version}</version> <scope>test</scope> </dependency> -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<!-- <dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency> -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.9</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.unitils</groupId>
+			<artifactId>unitils-core</artifactId>
+			<version>${unitils_version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.unitils</groupId>
+			<artifactId>unitils-inject</artifactId>
+			<version>${unitils_version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.unitils</groupId>
+			<artifactId>unitils-easymock</artifactId>
+			<version>${unitils_version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.unitils</groupId>
+			<artifactId>unitils-spring</artifactId>
+			<version>${unitils_version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-nop</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

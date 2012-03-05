@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -36,8 +37,8 @@ import com.alibaba.hbase.replication.protocol.Body.Edit;
 import com.alibaba.hbase.replication.protocol.FileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.MetaData;
-import com.alibaba.hbase.replication.protocol.exception.FileNotFoundException;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
+import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 
 /**
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类
@@ -54,11 +55,13 @@ public class FileChannelRunnable implements Runnable {
     protected String               name          = Constants.CHANNEL_NAME
                                                    + UUID.randomUUID().toString().substring(0, 8);
     protected DataLoadingManager   dataLoadingManager;
+    protected FileAdapter          fileAdapter;
     protected List<ConsumerZNode>  errorNodeList = new ArrayList<ConsumerZNode>();
     protected AtomicBoolean        stopflag;
 
-    public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager, AtomicBoolean stopflag)
-                                                                                                                 throws IOException{
+    public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager, FileAdapter fileAdapter,
+                               AtomicBoolean stopflag) throws IOException{
+        this.fileAdapter = fileAdapter;
         this.conf = conf;
         this.stopflag = stopflag;
         this.dataLoadingManager = dataLoadingManager;
@@ -77,31 +80,21 @@ public class FileChannelRunnable implements Runnable {
                         LOG.error("validataFileName fail. fileName: " + currentNode.getFileName());
                     }
                 } else {
+                    MetaData metaData = null;
                     try {
-                        MetaData metaData = FileAdapter.read(fileHead, fs);
-                        // 文件不存在的跳过
-                        if (metaData != null && metaData.getBody() != null
-                            && MapUtils.isNotEmpty(metaData.getBody().getEditMap())) {
-                            Map<String, List<Edit>> editMap = metaData.getBody().getEditMap();
-                            for (String tableName : editMap.keySet()) {
-                                // 按表并发加载数据
-                                dataLoadingManager.batchLoad(tableName, editMap.get(tableName));
-                            }
-                            // 执行完成后清除相关文件
-                            FileAdapter.clean(fileHead, fs);
+                        metaData = fileAdapter.read(fileHead, fs);
+                    } catch (FileReadingException e) {
+                        // 文件不存在、文件读取失败 => 跳过
+                        if (LOG.isWarnEnabled()) {
+                            LOG.warn(e);
                         }
-                        // 清除zk上对此group的加锁
-                        String groupRoot = conf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR
-                                           + currentNode.getGroupName();
-                        String cur = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_CURRENT;
-                        zoo.delete(cur, Constants.ZK_ANY_VERSION);
                     } catch (FileParsingException e) {
                         // 文件解析出错,退回重做
                         if (LOG.isErrorEnabled()) {
                             LOG.error("error while parsing file: " + currentNode.getFileName(), e);
                         }
                         try {
-                            FileAdapter.reject(fileHead, fs);
+                            fileAdapter.reject(fileHead, fs);
                             errorNodeList.add(currentNode);
                         } catch (Exception e1) {
                             // 文件退回出错，只能重做了
@@ -120,9 +113,35 @@ public class FileChannelRunnable implements Runnable {
                                 }
                             }
                         }
+                        // 跳出此次循环，尝试获取下一个consumerNode
+                        continue;
+                    }
+                    if (metaData != null && metaData.getBody() != null
+                        && MapUtils.isNotEmpty(metaData.getBody().getEditMap())) {
+                        // 对于能够解析出body数据的进行加载
+                        Map<String, List<Edit>> editMap = metaData.getBody().getEditMap();
+                        for (String tableName : editMap.keySet()) {
+                            // 按表并发加载数据
+                            dataLoadingManager.batchLoad(tableName, editMap.get(tableName));
+                        }
+                        // 执行完成后清除相关文件
+                        try {
+                            fileAdapter.clean(fileHead, fs);
+                        } catch (IOException e) {
+                            if (LOG.isWarnEnabled()) {
+                                LOG.warn("clean failed.", e);
+                            }
+                        }
+                    }
+                    // 清除zk上对此group的加锁
+                    String groupRoot = conf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR
+                                       + currentNode.getGroupName();
+                    String cur = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_CURRENT;
+                    try {
+                        zoo.delete(cur, Constants.ZK_ANY_VERSION);
                     } catch (Exception e) {
                         if (LOG.isWarnEnabled()) {
-                            LOG.warn("error while processing loading . file: " + currentNode.getFileName(), e);
+                            LOG.warn("delete completed consumerNode failed.cur: " + cur, e);
                         }
                     }
                 }
@@ -275,11 +294,31 @@ public class FileChannelRunnable implements Runnable {
         byte[] data = zoo.getData(queuePath, null, null);
         ByteArrayInputStream bi = new ByteArrayInputStream(data);
         ObjectInputStream oi = new ObjectInputStream(bi);
-        Object ftsSet = oi.readObject();
-        if (ftsSet == null) {
+        Object ftsArray = oi.readObject();
+        if (ftsArray == null) {
             return null;
         }
-        return (TreeSet<String>) ftsSet;
+        TreeSet<String> ftsSet = new TreeSet<String>(new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                // 二次排序，优先fileTimestamp，然后是headTimestamp
+                Head o1Head = FileAdapter.validataFileName(o1);
+                Head o2Head = FileAdapter.validataFileName(o2);
+                if (o1Head.getFileTimestamp() > o2Head.getFileTimestamp()) return 1;
+                if (o1Head.getFileTimestamp() < o2Head.getFileTimestamp()) return -1;
+                if (o1Head.getHeadTimestamp() > o2Head.getHeadTimestamp()) return 1;
+                if (o1Head.getHeadTimestamp() < o2Head.getHeadTimestamp()) return -1;
+                if (LOG.isWarnEnabled()) {
+                    LOG.warn("same timestamp with " + o1 + " and " + o2);
+                }
+                return 0;
+            }
+        });
+        for (String elem : (ArrayList<String>) ftsArray) {
+            ftsSet.add(elem);
+        }
+        return ftsSet;
     }
 
 }

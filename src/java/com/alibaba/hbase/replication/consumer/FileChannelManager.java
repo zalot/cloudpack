@@ -9,15 +9,11 @@ package com.alibaba.hbase.replication.consumer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
-import java.nio.ByteOrder;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +24,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
 import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.CreateMode;
@@ -52,33 +47,33 @@ import com.alibaba.hbase.replication.protocol.Head;
 @Service("fileChannelManager")
 public class FileChannelManager {
 
-    private static final Logger    LOG                     = LoggerFactory.getLogger(FileChannelManager.class);
+    private static final Logger    LOG      = LoggerFactory.getLogger(FileChannelManager.class);
 
-    protected AtomicBoolean        stopflag                = new AtomicBoolean(false);
+    protected AtomicBoolean        stopflag = new AtomicBoolean(false);
     protected ThreadPoolExecutor   fileChannelPool;
-    @Autowired
-    protected int                  coreFileChannelPoolSize = 10;
-    @Autowired
-    protected int                  maxFileChannelPoolSize  = 10;
-    @Autowired
-    protected int                  queueSize               = 100;
-    @Autowired
-    protected int                  keepAliveTime           = 100;
+    protected FileSystem           fs;
+    protected RecoverableZooKeeper zoo;
     @Autowired
     @Qualifier("consumerConf")
     protected Configuration        conf;
     @Autowired
     protected DataLoadingManager   dataLoadingManager;
-    protected FileSystem           fs;
-    protected RecoverableZooKeeper zoo;
+    @Autowired
+    protected FileAdapter          fileAdapter;
 
+    // @PostConstruct
     public void start() throws IOException, KeeperException, InterruptedException {
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager is pendding to start.");
         }
-        fileChannelPool = new ThreadPoolExecutor(coreFileChannelPoolSize, this.maxFileChannelPoolSize,
-                                                 this.keepAliveTime, TimeUnit.SECONDS,
-                                                 new ArrayBlockingQueue<Runnable>(this.queueSize));
+        fileChannelPool = new ThreadPoolExecutor(
+                                                 conf.getInt(Constants.REP_FILE_CHANNEL_POOL_SIZE, 10),
+                                                 conf.getInt(Constants.REP_FILE_CHANNEL_POOL_SIZE, 10),
+                                                 conf.getInt(Constants.THREADPOOL_KEEPALIVE_TIME, 100),
+                                                 TimeUnit.SECONDS,
+                                                 new ArrayBlockingQueue<Runnable>(
+                                                                                  conf.getInt(Constants.THREADPOOL_SIZE,
+                                                                                              100)));
         fs = FileSystem.get(URI.create(conf.get(Constants.PRODUCER_FS)), conf);
         zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
         Stat statZkRoot = zoo.exists(conf.get(Constants.REP_ZNODE_ROOT), false);
@@ -89,8 +84,12 @@ public class FileChannelManager {
             LOG.info("FileChannelManager starts.");
         }
         scanProducerFilesAndAddToZK();
-        for(int i=1;i<maxFileChannelPoolSize;i++){
-            fileChannelPool.execute(new FileChannelRunnable(conf, dataLoadingManager, stopflag));
+        for (int i = 1; i < conf.getInt(Constants.REP_FILE_CHANNEL_POOL_SIZE, 10); i++) {
+            fileChannelPool.execute(new FileChannelRunnable(conf, dataLoadingManager, fileAdapter, stopflag));
+        }
+        while(true){
+            Thread.sleep(5000);
+            scanProducerFilesAndAddToZK();
         }
     }
 
@@ -108,8 +107,9 @@ public class FileChannelManager {
     private void scanProducerFilesAndAddToZK() throws IOException {
         // s1. scanProducerFiles
         // <group,filename set>
-        Map<String, TreeSet<String>> fstMap = new HashMap<String, TreeSet<String>>();
-        for (FileStatus fst : fs.listStatus(new Path(conf.get(Constants.REP_FILE_DIR)))) {
+        Map<String, ArrayList<String>> fstMap = new HashMap<String, ArrayList<String>>();
+        for (FileStatus fst : fs.listStatus(new Path(conf.get(Constants.PRODUCER_FS),
+                                                     conf.get(Constants.TMPFILE_FILEPATH)))) {
             if (!fst.isDir()) {
                 String fileName = fst.getPath().getName();
                 Head fileHead = FileAdapter.validataFileName(fileName);
@@ -118,47 +118,26 @@ public class FileChannelManager {
                     continue;
                 }
                 String group = fileHead.getGroupName();
-                TreeSet<String> ftsSet = fstMap.get(group);
+                ArrayList<String> ftsSet = fstMap.get(group);
                 if (ftsSet == null) {
-                    ftsSet = new TreeSet<String>(new Comparator<String>() {
-
-                        @Override
-                        public int compare(String o1, String o2) {
-                            // 二次排序，优先fileTimestamp，然后是headTimestamp
-                            Head o1Head = FileAdapter.validataFileName(o1);
-                            Head o2Head = FileAdapter.validataFileName(o2);
-                            if (o1Head.getFileTimestamp() > o2Head.getFileTimestamp()) return 1;
-                            if (o1Head.getFileTimestamp() < o2Head.getFileTimestamp()) return -1;
-                            if (o1Head.getHeadTimestamp() > o2Head.getHeadTimestamp()) return 1;
-                            if (o1Head.getHeadTimestamp() < o2Head.getHeadTimestamp()) return -1;
-                            if (LOG.isWarnEnabled()) {
-                                LOG.warn("same timestamp with " + o1 + " and " + o2);
-                            }
-                            return 0;
-                        }
-                    });
+                    ftsSet = new ArrayList<String>();
                     fstMap.put(group, ftsSet);
                 }
                 ftsSet.add(fileName);
             } else if (LOG.isWarnEnabled()) {
-                LOG.warn("Dir occurs in " + conf.get(Constants.REP_FILE_DIR) + " .path: " + fst.getPath());
+                LOG.warn("Dir occurs in " + conf.get(Constants.TMPFILE_FILEPATH) + " .path: " + fst.getPath());
             }
         }
         // s2. update ZK
         if (MapUtils.isNotEmpty(fstMap)) {
             for (String group : fstMap.keySet()) {
                 String groupRoot = conf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR + group;
-                String cur = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_CURRENT;
                 String queue = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_QUEUE;
                 int queueVer;
                 try {
                     Stat statZkRoot = zoo.exists(groupRoot, false);
                     if (statZkRoot == null) {
                         zoo.create(groupRoot, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-                    }
-                    Stat statZkCur = zoo.exists(cur, false);
-                    if (statZkCur == null) {
-                        zoo.create(cur, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                     }
                     Stat statZkQueue = zoo.exists(queue, false);
                     if (statZkQueue == null) {
@@ -172,7 +151,7 @@ public class FileChannelManager {
                 }
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(baos);
-                oos.writeObject(fstMap);
+                oos.writeObject(fstMap.get(group));
                 oos.flush();
                 try {
                     zoo.setData(queue, baos.toByteArray(), queueVer);

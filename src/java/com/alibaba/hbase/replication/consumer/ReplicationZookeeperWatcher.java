@@ -11,18 +11,16 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
 /**
- * 类ReplicationZookeeperWatcher.java的实现描述 
- * @author dongsh 2012-2-29 上午10:15:18
+ * 类ReplicationZookeeperWatcher.java的实现描述
+ * 
+ * @author dongsh 2012-3-2 下午05:40:06
  */
-public class ReplicationZookeeperWatcher implements Watcher{
+public class ReplicationZookeeperWatcher implements Watcher {
 
-    /* (non-Javadoc)
-     * @see org.apache.zookeeper.Watcher#process(org.apache.zookeeper.WatchedEvent)
-     */
     @Override
     public void process(WatchedEvent event) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }
