@@ -22,7 +22,8 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
 
 /**
- * HLogGroup 扫描器 类HLogGroupZookeeperScanner.java的实现描述：TODO 类实现描述
+ * HLogGroup 扫描器<BR>
+ * 类HLogGroupZookeeperScanner.java的实现描述：TODO 类实现描述
  * 
  * @author zalot.zhaoh Mar 1, 2012 10:44:45 AM
  */
@@ -113,22 +114,19 @@ public class HLogGroupZookeeperScanner extends Thread {
     @Override
     public void run() {
         while (true) {
-            System.out.println(name + " try lock ..");
             try {
                 Thread.sleep(retryTime);
                 isLock = lock();
                 if (isLock) {
-                    System.out.println(name + " lock ..");
                     scanning();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                if (isLock){
-                    System.out.println(name + " unlock ..");
+                if (isLock) {
                     unlock();
                 }
-                
+
             }
         }
     }
