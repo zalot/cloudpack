@@ -20,6 +20,12 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Put;
 
+/**
+ * 集群基础测试类<BR>
+ * 类BaseReplicationTest.java的实现描述：TODO 类实现描述
+ * 
+ * @author zalot.zhaoh Mar 5, 2012 6:19:57 PM
+ */
 public class BaseReplicationTest {
 
     protected static final int           zkClusterCount    = 2;
@@ -103,8 +109,7 @@ public class BaseReplicationTest {
     protected String getRndString(String table) {
         return table + UUID.randomUUID().toString().substring(0, 10);
     }
-    
-    
+
     public void insertData(HTablePool pool, String table, String family, String qualifier, int size) throws IOException {
         HTableInterface htable = pool.getTable(table);
         List<Put> puts = new ArrayList<Put>();
@@ -116,12 +121,12 @@ public class BaseReplicationTest {
         htable.put(puts);
         System.out.println("insert Data " + size);
     }
-    
-    public void printDFS(FileSystem fs, Path path) throws IOException{
-        if(fs.isFile(path)){
+
+    public void printDFS(FileSystem fs, Path path) throws IOException {
+        if (fs.isFile(path)) {
             System.out.println(path);
-        }else{
-            for(FileStatus fss : fs.listStatus(path)){
+        } else {
+            for (FileStatus fss : fs.listStatus(path)) {
                 printDFS(fs, fss.getPath());
             }
         }
