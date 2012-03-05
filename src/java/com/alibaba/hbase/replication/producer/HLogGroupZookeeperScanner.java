@@ -15,7 +15,7 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
 import com.alibaba.hbase.replication.domain.HLogEntryGroup;
-import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
+import com.alibaba.hbase.replication.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.persistence.HLogPersistence;
 import com.alibaba.hbase.replication.utility.AliHBaseConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;

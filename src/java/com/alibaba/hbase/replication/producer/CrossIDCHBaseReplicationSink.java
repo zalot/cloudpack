@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.producer.crossidc;
+package com.alibaba.hbase.replication.producer;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +21,7 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
  * 
  * @author zalot.zhaoh Feb 29, 2012 2:27:45 PM
  */
-public class CrossIDCHBaseReplicationSink implements Runnable {
+public class CrossIDCHBaseReplicationSink extends Thread {
     protected ProtocolAdapter adapter;
     protected HLogPersistence hlogDAO;
     protected HLogOperator    hlogOperator;
@@ -72,6 +72,7 @@ public class CrossIDCHBaseReplicationSink implements Runnable {
                     if(hlogDAO.lockGroup(groupName)){
                         doSinkGroup(groupName);
                     }
+                    hlogDAO.unlockGroup(groupName);
                 }
             } catch (Exception e) {
             }
@@ -80,7 +81,6 @@ public class CrossIDCHBaseReplicationSink implements Runnable {
 
     private void doSinkGroup(String groupName) throws Exception {
         List<HLogEntry> entrys = hlogDAO.listEntry(groupName);
-        
         Collections.sort(entrys);
         HLogReader reader = null;
         Entry ent = null;
@@ -93,14 +93,23 @@ public class CrossIDCHBaseReplicationSink implements Runnable {
                     if(doSinkPart(groupName , entry.getTimestamp(), entry.getPos() , reader.getPosition(), body)){
                         entry.setPos(reader.getPosition());
                         hlogDAO.updateEntry(entry);
+                        body = new Body();
                     }
                 }
             }
+            if(body.getEditMap().size() > 0){
+                if(doSinkPart(groupName , entry.getTimestamp(), entry.getPos() , reader.getPosition(), body)){
+                    entry.setPos(reader.getPosition());
+                    hlogDAO.updateEntry(entry);
+                    body = new Body();
+                }
+            }else{
+                if(entry.getPos() < reader.getPosition()){
+                    entry.setPos(reader.getPosition());
+                    hlogDAO.updateEntry(entry);
+                }
+            }
         }
-//        if(doSinkPart(groupName , entry.getTimestamp(), entry.getPos() , reader.getPosition(), body)){
-//            entry.setPos(reader.getPosition());
-//            hlogDAO.updateEntry(entry);
-//        }
     }
     
     private boolean doSinkPart(String groupName , long timeStamp , long start , long end , Body body){
@@ -110,8 +119,6 @@ public class CrossIDCHBaseReplicationSink implements Runnable {
         head.setStartOffset(start);
         head.setEndOffset(end);
         if(doAdapter(head, body)){
-            body = null;
-            body = new Body();
             return true;
         }
         return false;
@@ -123,6 +130,7 @@ public class CrossIDCHBaseReplicationSink implements Runnable {
             adapter.write(version1);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
