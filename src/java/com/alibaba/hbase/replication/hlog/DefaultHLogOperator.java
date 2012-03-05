@@ -17,25 +17,25 @@ import com.alibaba.hbase.replication.utility.AliHBaseConstants;
  * 
  * @author zalot.zhaoh
  */
-public abstract class AbstractHLogOperator implements HLogOperator {
+public class DefaultHLogOperator implements HLogOperator {
 
-    protected static final Log LOG          = LogFactory.getLog(AbstractHLogOperator.class);
+    protected static final Log LOG = LogFactory.getLog(DefaultHLogOperator.class);
     protected Configuration    conf;
     protected FileSystem       fs;
-    protected String           basePath;
+    protected Path             rootDir;
     protected Path             logsPath;
     protected Path             oldLogsPath;
 
-    public AbstractHLogOperator(Configuration conf) throws IOException, KeeperException, InterruptedException{
+    public DefaultHLogOperator(Configuration conf) throws IOException{
         this(conf, null);
     }
 
-    public AbstractHLogOperator(Configuration conf, FileSystem fs) throws IOException, KeeperException,
-                                                                  InterruptedException{
+    public DefaultHLogOperator(Configuration conf, FileSystem fs) throws IOException{
         if (fs == null) this.fs = FileSystem.get(conf);
         else this.fs = fs;
-        logsPath = new Path(basePath + "/" + AliHBaseConstants.PATH_BASE_HLOG);
-        oldLogsPath = new Path(basePath + "/" + AliHBaseConstants.PATH_BASE_OLDHLOG);
+        rootDir = new Path(conf.get("hbase.rootdir"));
+        logsPath = new Path(rootDir, AliHBaseConstants.PATH_BASE_HLOG);
+        oldLogsPath = new Path(rootDir, AliHBaseConstants.PATH_BASE_OLDHLOG);
         this.conf = conf;
     }
 
@@ -55,5 +55,20 @@ public abstract class AbstractHLogOperator implements HLogOperator {
             return reader;
         }
         return null;
+    }
+
+    @Override
+    public Path getRootDir() {
+        return rootDir;
+    }
+
+    @Override
+    public Path getOldHlogDir() {
+        return oldLogsPath;
+    }
+
+    @Override
+    public Path getHlogDir() {
+        return logsPath;
     }
 }

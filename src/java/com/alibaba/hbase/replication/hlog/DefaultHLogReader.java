@@ -115,10 +115,10 @@ public class DefaultHLogReader implements HLogReader {
 
     protected Path getHLogPath() throws IOException {
         if (HLogEntry.Type.END == entry.getType() || HLogEntry.Type.UNKNOW == entry.getType()) return null;
-        Path path = HLogUtil.getPathByHLogEntry(operator.getFileSystem(), "", entry);
+        Path path = HLogUtil.getPathByHLogEntry(operator.getFileSystem(), operator.getRootDir() , entry);
         if (path == null && HLogEntry.Type.LIFE == entry.getType()) {
             entry.setType(HLogEntry.Type.OLD);
-            path = HLogUtil.getPathByHLogEntry(operator.getFileSystem(), "", entry);
+            path = HLogUtil.getPathByHLogEntry(operator.getFileSystem(), operator.getRootDir() , entry);
             return path;
         }
         return path;

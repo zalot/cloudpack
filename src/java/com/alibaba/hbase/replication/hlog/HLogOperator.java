@@ -2,6 +2,7 @@ package com.alibaba.hbase.replication.hlog;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
 import com.alibaba.hbase.replication.domain.HLogEntry;
 
@@ -16,6 +17,9 @@ import com.alibaba.hbase.replication.domain.HLogEntry;
  */
 public interface HLogOperator {
     public HLogReader getReader(HLogEntry entry) throws Exception;
+    public Path getRootDir();
+    public Path getOldHlogDir();
+    public Path getHlogDir();
     public FileSystem getFileSystem();
     public Configuration getConf();
 }
