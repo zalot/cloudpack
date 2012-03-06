@@ -4,7 +4,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import com.alibaba.hbase.replication.domain.HLogEntry;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 
 /**
  * 日志管理总接口
