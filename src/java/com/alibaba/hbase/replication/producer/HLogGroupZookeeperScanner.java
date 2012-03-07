@@ -3,6 +3,8 @@ package com.alibaba.hbase.replication.producer;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -30,23 +32,27 @@ import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
  */
 public class HLogGroupZookeeperScanner extends Thread {
 
+    protected static final Log     LOG            = LogFactory.getLog(HLogGroupZookeeperScanner.class);
     protected String               name;
     protected String               scanBasePath;
     protected String               scanLockPath;
-
+    protected int errorCount = 0;
     // 休息时间
     // 争抢到 scanner 后 间隔时间
-    protected long                 sleepTime;
+    protected long                 flushSleepTime;
 
     // scanner 争抢重试时间
     protected long                 scannerTryLockTime;
     protected Path                 hlogPath;
     protected Path                 oldHlogPath;
-    protected boolean              isLock = false;
+    protected boolean              isLock         = false;
 
     protected HLogPersistence      hlogDAO;
     protected FileSystem           fs;
     protected RecoverableZooKeeper zoo;
+    protected long                 scanOldHlogTimeOut;
+
+    protected boolean              hasScanOldHLog = false;
 
     public Path getHlogPath() {
         return hlogPath;
@@ -74,21 +80,23 @@ public class HLogGroupZookeeperScanner extends Thread {
                                                                                                          throws KeeperException,
                                                                                                          InterruptedException,
                                                                                                          IOException{
+        zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatch());
         this.fs = fs;
         this.hlogDAO = dao;
-        zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatch());
         this.name = name;
         init(conf);
     }
 
     private void init(Configuration conf) throws KeeperException, InterruptedException {
-        String rootdir = "";
-        scanBasePath = rootdir + conf.get(AliHBaseConstants.CONFKEY_ZOO_SCAN_ROOT, AliHBaseConstants.ZOO_SCAN_ROOT);
+        scanBasePath = conf.get(AliHBaseConstants.CONFKEY_ZOO_SCAN_ROOT, AliHBaseConstants.ZOO_SCAN_ROOT);
         scanLockPath = scanBasePath + AliHBaseConstants.ZOO_SCAN_LOCK;
-        sleepTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_SLEEPTIME,
-                                 AliHBaseConstants.ZOO_SCAN_LOCK_SLEEPTIME);
-        scannerTryLockTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
-                                          AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME);
+        flushSleepTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
+                                      AliHBaseConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME);
+        scannerTryLockTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_TRYLOCKTIME,
+                                          AliHBaseConstants.ZOO_SCAN_LOCK_TRYLOCKTIME);
+        scanOldHlogTimeOut = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_OLDHLOG_TIMEOUT,
+                                          AliHBaseConstants.ZOO_SCAN_OLDHLOG_TIMEOUT);
+
         hlogPath = new Path(conf.get("hbase.rootdir") + "/" + AliHBaseConstants.PATH_BASE_HLOG);
         oldHlogPath = new Path(conf.get("hbase.rootdir") + "/" + AliHBaseConstants.PATH_BASE_OLDHLOG);
         Stat stat = zoo.exists(scanBasePath, false);
@@ -121,44 +129,75 @@ public class HLogGroupZookeeperScanner extends Thread {
     public void run() {
         while (true) {
             try {
+                LOG.debug("Scanner Start ....");
                 Thread.sleep(scannerTryLockTime);
                 isLock = lock();
                 if (isLock) {
                     scanning();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                isLock = false;
+                LOG.error(e);
+                errorCount ++;
+                // 如果 超过 3次错误则释放 lock
+                if(errorCount > 3){
+                    reinizoo();
+                }
             } finally {
                 if (isLock) {
                     unlock();
                 }
+            }
+        }
+    }
 
+    private void reinizoo() {
+        if (zoo != null) {
+            try {
+                zoo.close();
+            } catch (InterruptedException e) {
             }
         }
     }
 
     private void scanning() throws Exception {
         while (true) {
-            System.out.println(name + " scanning ..");
+            Thread.sleep(flushSleepTime);
             HLogEntryGroups groups = new HLogEntryGroups();
-            groups.put(HLogUtil.getHLogsByHDFS(fs, hlogPath));
-            groups.put(HLogUtil.getHLogsByHDFS(fs, oldHlogPath));
+            putHLog(groups);
+            putOldHLog(groups);
             for (HLogEntryGroup group : groups.getGroups()) {
                 hlogDAO.createOrUpdateGroup(group, true);
             }
-            Thread.sleep(sleepTime);
         }
     }
 
-    public long getSleepTime() {
-        return sleepTime;
+    protected void putHLog(HLogEntryGroups groups) throws IOException {
+        groups.put(HLogUtil.getHLogsByHDFS(fs, hlogPath));
     }
 
-    public byte[] getData() {
+    protected void putOldHLog(HLogEntryGroups groups) throws IOException {
+        // need to scan oldlogs ?
+        /*
+         * Stat stat = zoo.exists(scanBasePath, false); byte[] tstTmp = zoo.getData(scanBasePath, false, stat); long
+         * lastScanTst = -1; if (tstTmp != null) { lastScanTst = Bytes.toLong(tstTmp, -1); }
+         */
+        // yes, scan oldlogs
+        /*
+         * if (lastScanTst == -1 || lastScanTst + scanOldHlogTimeOut >= System.currentTimeMillis()) {
+         * groups.put(HLogUtil.getHLogsByHDFS(fs, oldHlogPath)); }
+         */
+        if (!hasScanOldHLog) {
+            groups.put(HLogUtil.getHLogsByHDFS(fs, oldHlogPath));
+            hasScanOldHLog = true;
+        }
+    }
+
+    public long getFlushSleepTime() {
+        return flushSleepTime;
+    }
+
+    public byte[] getLastScanTime() {
         return Bytes.toBytes(System.currentTimeMillis());
-    }
-
-    public void setData(byte[] data) {
-        
     }
 }

@@ -3,6 +3,8 @@ package com.alibaba.hbase.replication.producer;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
 import com.alibaba.hbase.replication.hlog.HLogOperator;
@@ -25,9 +27,10 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
  */
 public class CrossIDCHBaseReplicationSink extends Thread {
 
-    protected ProtocolAdapter adapter;
-    protected HLogPersistence hlogDAO;
-    protected HLogOperator    hlogOperator;
+    protected static final Log LOG = LogFactory.getLog(HLogGroupZookeeperScanner.class);
+    protected ProtocolAdapter  adapter;
+    protected HLogPersistence  hlogDAO;
+    protected HLogOperator     hlogOperator;
 
     public CrossIDCHBaseReplicationSink(HLogPersistence dao, HLogOperator operator, ProtocolAdapter ad){
         this.hlogDAO = dao;
@@ -118,6 +121,7 @@ public class CrossIDCHBaseReplicationSink extends Thread {
 
     private boolean doSinkPart(String groupName, long timeStamp, long start, long end, Body body) {
         Head head = new Head();
+        head.setCount(body.getEditMap().size());
         head.setGroupName(groupName);
         head.setFileTimestamp(timeStamp);
         head.setStartOffset(start);
