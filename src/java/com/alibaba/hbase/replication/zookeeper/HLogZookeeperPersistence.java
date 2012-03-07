@@ -15,12 +15,18 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import com.alibaba.hbase.replication.domain.HLogEntry;
-import com.alibaba.hbase.replication.domain.HLogEntry.Type;
-import com.alibaba.hbase.replication.domain.HLogEntryGroup;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.persistence.HLogPersistence;
 import com.alibaba.hbase.replication.utility.AliHBaseConstants;
 
+/**
+ * HLogPersistence 持久化操作
+ * 
+ * 类HLogZookeeperPersistence.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 7, 2012 10:24:18 AM
+ */
 public class HLogZookeeperPersistence implements HLogPersistence {
 
     protected RecoverableZooKeeper zoo;
@@ -137,12 +143,11 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         }
     }
 
-    @Override
     public void deleteGroup(HLogEntryGroup group) throws Exception {
-        Stat stat = getGroupStat(group);
-        if (stat != null) {
-            zoo.delete(getGroupPath(group.getGroupName()), stat.getVersion());
-        }
+//        Stat stat = getGroupStat(group);
+//        if (stat != null) {
+//            zoo.delete(getGroupPath(group.getGroupName()), stat.getVersion());
+//        }
     }
 
     @Override

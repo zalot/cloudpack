@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
-import com.alibaba.hbase.replication.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.HLogOperator;
 import com.alibaba.hbase.replication.hlog.HLogReader;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.persistence.HLogPersistence;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Head;

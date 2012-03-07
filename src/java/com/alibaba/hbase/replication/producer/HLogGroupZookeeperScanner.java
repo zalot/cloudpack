@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
 import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.CreateMode;
@@ -14,8 +15,8 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import com.alibaba.hbase.replication.domain.HLogEntryGroup;
-import com.alibaba.hbase.replication.domain.HLogEntryGroups;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.persistence.HLogPersistence;
 import com.alibaba.hbase.replication.utility.AliHBaseConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;
@@ -32,8 +33,13 @@ public class HLogGroupZookeeperScanner extends Thread {
     protected String               name;
     protected String               scanBasePath;
     protected String               scanLockPath;
+
+    // 休息时间
+    // 争抢到 scanner 后 间隔时间
     protected long                 sleepTime;
-    protected long                 retryTime;
+
+    // scanner 争抢重试时间
+    protected long                 scannerTryLockTime;
     protected Path                 hlogPath;
     protected Path                 oldHlogPath;
     protected boolean              isLock = false;
@@ -81,8 +87,8 @@ public class HLogGroupZookeeperScanner extends Thread {
         scanLockPath = scanBasePath + AliHBaseConstants.ZOO_SCAN_LOCK;
         sleepTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_SLEEPTIME,
                                  AliHBaseConstants.ZOO_SCAN_LOCK_SLEEPTIME);
-        retryTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
-                                 AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME);
+        scannerTryLockTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
+                                          AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME);
         hlogPath = new Path(conf.get("hbase.rootdir") + "/" + AliHBaseConstants.PATH_BASE_HLOG);
         oldHlogPath = new Path(conf.get("hbase.rootdir") + "/" + AliHBaseConstants.PATH_BASE_OLDHLOG);
         Stat stat = zoo.exists(scanBasePath, false);
@@ -115,7 +121,7 @@ public class HLogGroupZookeeperScanner extends Thread {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(retryTime);
+                Thread.sleep(scannerTryLockTime);
                 isLock = lock();
                 if (isLock) {
                     scanning();
@@ -146,5 +152,13 @@ public class HLogGroupZookeeperScanner extends Thread {
 
     public long getSleepTime() {
         return sleepTime;
+    }
+
+    public byte[] getData() {
+        return Bytes.toBytes(System.currentTimeMillis());
+    }
+
+    public void setData(byte[] data) {
+        
     }
 }
