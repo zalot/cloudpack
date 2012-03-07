@@ -5,8 +5,8 @@ import java.util.List;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 
-import com.alibaba.hbase.replication.domain.HLogEntry;
-import com.alibaba.hbase.replication.domain.HLogEntryGroup;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 
 public interface HLogPersistence extends Configurable {
 
@@ -17,7 +17,6 @@ public interface HLogPersistence extends Configurable {
     public HLogEntry getHLogEntry(String groupName, String name) throws Exception;
     
     public void createGroup(HLogEntryGroup group, boolean createChild) throws Exception;
-    public void deleteGroup(HLogEntryGroup group) throws Exception;
     public HLogEntryGroup getGroupByName(String groupName , boolean getChild) throws Exception;
     public void updateGroup(HLogEntryGroup entry, boolean updateChild) throws Exception;
     public void createOrUpdateGroup(HLogEntryGroup entry, boolean updateChild) throws Exception;
