@@ -33,7 +33,7 @@ public class Constants {
     public static final String REP_DATA_LAODING_BATCH_SIZE = "replication.consumer.dataLoadingBatchSize";
     public static final String THREADPOOL_SIZE             = "replication.consumer.threadpool.queuesize";
     public static final String THREADPOOL_KEEPALIVE_TIME   = "replication.consumer.threadpool.keepAliveTime";
-    public static final String TMPFILE_FILEPATH            = "replication.tmpfile.filePath";
+    public static final String TMPFILE_TARGETPATH          = "replication.tmpfile.targetPath";
     public static final String TMPFILE_OLDPATH             = "replication.tmpfile.oldPath";
     public static final String TMPFILE_REJECTPATH          = "replication.tmpfile.rejectPath";
 

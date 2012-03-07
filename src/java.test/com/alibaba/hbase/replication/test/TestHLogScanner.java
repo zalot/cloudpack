@@ -12,7 +12,10 @@ import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.KeeperException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.alibaba.hbase.replication.consumer.DataLoadingManager;
 import com.alibaba.hbase.replication.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
@@ -23,10 +26,12 @@ import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
 
 public class TestHLogScanner extends BaseReplicationTest {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TestHLogScanner.class);
     @BeforeClass
     public static void init() throws Exception {
+        LOG.error("bbb");
         init1();
-
+        LOG.error("aaa");
     }
 
     @Test

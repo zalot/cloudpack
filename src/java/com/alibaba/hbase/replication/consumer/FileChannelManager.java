@@ -19,6 +19,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -61,8 +64,8 @@ public class FileChannelManager {
     @Autowired
     protected FileAdapter          fileAdapter;
 
-    // @PostConstruct
-    public void start() throws IOException, KeeperException, InterruptedException {
+    @PostConstruct
+    public void init() throws IOException, KeeperException, InterruptedException {
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager is pendding to start.");
         }
@@ -81,24 +84,38 @@ public class FileChannelManager {
             zoo.create(conf.get(Constants.REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
         if (LOG.isInfoEnabled()) {
-            LOG.info("FileChannelManager starts.");
+            LOG.info("FileChannelManager init.");
         }
+    }
+
+    public void start() throws IOException {
         scanProducerFilesAndAddToZK();
         for (int i = 1; i < conf.getInt(Constants.REP_FILE_CHANNEL_POOL_SIZE, 10); i++) {
             fileChannelPool.execute(new FileChannelRunnable(conf, dataLoadingManager, fileAdapter, stopflag));
         }
-        while(true){
-            Thread.sleep(5000);
-            scanProducerFilesAndAddToZK();
+        while (true) {
+            try {
+                Thread.sleep(5000);
+                scanProducerFilesAndAddToZK();
+            } catch (IOException e) {
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("scanProducerFilesAndAddToZK error while looping.", e);
+                }
+            } catch (InterruptedException e) {
+                LOG.warn("FileChannelManager sleep interrupted.Break the loop!");
+                break;
+            }
         }
     }
 
+    @PreDestroy
     public void stop() {
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager is pendding to stop.");
         }
         stopflag.set(true);
         fileChannelPool.shutdown();
+        Thread.interrupted();
     }
 
     /**
@@ -109,7 +126,7 @@ public class FileChannelManager {
         // <group,filename set>
         Map<String, ArrayList<String>> fstMap = new HashMap<String, ArrayList<String>>();
         for (FileStatus fst : fs.listStatus(new Path(conf.get(Constants.PRODUCER_FS),
-                                                     conf.get(Constants.TMPFILE_FILEPATH)))) {
+                                                     conf.get(Constants.TMPFILE_TARGETPATH)))) {
             if (!fst.isDir()) {
                 String fileName = fst.getPath().getName();
                 Head fileHead = FileAdapter.validataFileName(fileName);
@@ -125,7 +142,7 @@ public class FileChannelManager {
                 }
                 ftsSet.add(fileName);
             } else if (LOG.isWarnEnabled()) {
-                LOG.warn("Dir occurs in " + conf.get(Constants.TMPFILE_FILEPATH) + " .path: " + fst.getPath());
+                LOG.warn("Dir occurs in " + conf.get(Constants.TMPFILE_TARGETPATH) + " .path: " + fst.getPath());
             }
         }
         // s2. update ZK

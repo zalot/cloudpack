@@ -14,11 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.alibaba.hbase.replication.consumer.FileChannelManager;
+
 /**
- * 类Consumer.java的实现描述：Consumer的main线程 
+ * 类Consumer.java的实现描述：Consumer的main线程
+ * 
  * @author dongsh 2012-3-4 下午02:17:18
  */
 public class Consumer {
+
     private static final Logger LOG         = LoggerFactory.getLogger(Consumer.class);
     private static final String SPRING_PATH = "classpath*:META-INF/spring/consumer.xml";
 
@@ -27,6 +31,7 @@ public class Consumer {
             // 启动Server
             final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(SPRING_PATH);
             context.start();
+            ((FileChannelManager) context.getBean("fileChannelManager")).start();
             // 钩子
             Runtime.getRuntime().addShutdownHook(new Thread() {
 

@@ -32,22 +32,23 @@ public class FileAdapter implements ProtocolAdapter {
     /**
      * 待处理的中间文件存放位置
      */
-    protected String            filePath;
+    protected Path            targetPath;
     /**
      * 已处理的中间文件存放位置
      */
-    protected String            oldPath;
+    protected Path            oldPath;
     /**
      * 退回的中间文件存放位置（需要producer端重做）
      */
-    protected String            rejectPath;
+    protected Path            rejectPath;
+    /**
+     * 生成文件时使用的临时目录
+     */
+    protected Path              tmpPath;
     @Autowired
     protected Configuration     conf;
     public static final String  SPLIT_SYMBOL = "|";
     public static MessageDigest digest       = null;
-    protected Path              targetPath;
-    protected Path              againPath;
-    protected Path              tmpPath;
     protected FileSystem        fs;
 
     public Path getPath() {
@@ -105,7 +106,7 @@ public class FileAdapter implements ProtocolAdapter {
         FSDataInputStream in = null;
         byte[] byteArray = null;
         try {
-            in = fs.open(new Path(conf.get(Constants.PRODUCER_FS), filePath + head2FileName(head)));
+            in = fs.open(new Path(targetPath, head2FileName(head)));
             byteArray = IOUtils.toByteArray(in);
         } catch (IOException e1) {
             throw new FileReadingException("error while reading hdfs file to bytes. file: " + head2FileName(head), e1);
@@ -190,8 +191,8 @@ public class FileAdapter implements ProtocolAdapter {
      * @throws IOException
      */
     public void clean(Head head, FileSystem fs) throws IOException {
-        fs.rename(new Path(conf.get(Constants.PRODUCER_FS), filePath + head2FileName(head)),
-                  new Path(conf.get(Constants.PRODUCER_FS), oldPath + head2FileName(head)));
+        fs.rename(new Path(targetPath, head2FileName(head)),
+                  new Path(oldPath, head2FileName(head)));
     }
 
     /**
@@ -207,9 +208,9 @@ public class FileAdapter implements ProtocolAdapter {
 
     @PostConstruct
     public void setPath() {
-        filePath = conf.get(Constants.TMPFILE_FILEPATH);
-        oldPath = conf.get(Constants.TMPFILE_OLDPATH);
-        rejectPath = conf.get(Constants.TMPFILE_REJECTPATH);
+        targetPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_TARGETPATH));
+        oldPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_OLDPATH));
+        rejectPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_REJECTPATH));
     }
 
 }

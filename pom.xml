@@ -132,21 +132,11 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j_version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j_version}</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-api</artifactId> 
+			<version>${slf4j_version}</version> </dependency> <dependency> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-log4j12</artifactId> <version>${slf4j_version}</version> 
+			</dependency> <dependency> <groupId>log4j</groupId> <artifactId>log4j</artifactId> 
+			<version>1.2.16</version> </dependency> -->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
@@ -190,6 +180,10 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-nop</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.unitils</groupId>
+					<artifactId>unitils-dbmaintainer</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

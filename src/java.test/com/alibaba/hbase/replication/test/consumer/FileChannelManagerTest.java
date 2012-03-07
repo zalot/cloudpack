@@ -16,7 +16,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableExistsException;
 import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -31,12 +30,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.unitils.UnitilsJUnit4;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.unitils.UnitilsJUnit4TestClassRunner;
 import org.unitils.easymock.EasyMockUnitils;
 import org.unitils.easymock.annotation.Mock;
 import org.unitils.inject.annotation.InjectInto;
-import org.unitils.inject.annotation.InjectIntoByType;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByName;
 import org.unitils.spring.annotation.SpringBeanByType;
@@ -57,9 +56,9 @@ import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
  * 
  * @author dongsh 2012-3-5 上午10:58:49
  */
-// @RunWith(UnitilsJUnit4TestClassRunner.class)
+@RunWith(UnitilsJUnit4TestClassRunner.class)
 @SpringApplicationContext("classpath*:META-INF/spring/consumer.xml")
-public class FileChannelManagerTest extends UnitilsJUnit4 {
+public class FileChannelManagerTest {
 
     private static final long   DEFAULT_TIMESTAMP = 1330923080;
     private static final String TABLE             = "FCM";
@@ -75,14 +74,14 @@ public class FileChannelManagerTest extends UnitilsJUnit4 {
 
     Head                        mockHead          = new Head();
 
-    @BeforeClass
-    public static void vmSetUp() {
-        // -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.documentbuilderfactoryimpl
-        System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-                           "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-        System.setProperty("javax.xml.parsers.SAXParserFactory",
-                           "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-    }
+//    @BeforeClass
+//    public static void vmSetUp() {
+//        // -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.documentbuilderfactoryimpl
+//        System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+//                           "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+//        System.setProperty("javax.xml.parsers.SAXParserFactory",
+//                           "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+//    }
 
     @Before
     public void setUp() throws InterruptedException, KeeperException, IOException {
@@ -95,13 +94,15 @@ public class FileChannelManagerTest extends UnitilsJUnit4 {
         mockHead.setVersion(1);
         // 清理待处理文件
         FileSystem fs = FileSystem.get(URI.create(consumerConf.get(Constants.PRODUCER_FS)), consumerConf);
-        String filePath = consumerConf.get(Constants.TMPFILE_FILEPATH);
+        String filePath = consumerConf.get(Constants.TMPFILE_TARGETPATH);
         String oldPath = consumerConf.get(Constants.TMPFILE_OLDPATH);
         String rejectPath = consumerConf.get(Constants.TMPFILE_REJECTPATH);
         fs.delete(new Path(consumerConf.get(Constants.PRODUCER_FS), filePath), true);
         fs.delete(new Path(consumerConf.get(Constants.PRODUCER_FS), oldPath), true);
         fs.delete(new Path(consumerConf.get(Constants.PRODUCER_FS), rejectPath), true);
         fs.mkdirs(new Path(consumerConf.get(Constants.PRODUCER_FS), filePath));
+        fs.mkdirs(new Path(consumerConf.get(Constants.PRODUCER_FS), oldPath));
+        fs.mkdirs(new Path(consumerConf.get(Constants.PRODUCER_FS), rejectPath));
         fs.create(new Path(new Path(consumerConf.get(Constants.PRODUCER_FS), filePath),
                            FileAdapter.head2FileName(mockHead)), true);
         // 清理zk的偏移量
@@ -131,13 +132,13 @@ public class FileChannelManagerTest extends UnitilsJUnit4 {
         }
         // 准备相关表
         HBaseAdmin admin = new HBaseAdmin(consumerConf);
-        try{
-            HTableDescriptor htable=admin.getTableDescriptor(Bytes.toBytes(TABLE));
-            if(htable!=null){
+        try {
+            HTableDescriptor htable = admin.getTableDescriptor(Bytes.toBytes(TABLE));
+            if (htable != null) {
                 admin.deleteTable(TABLE);
             }
-        }catch(TableNotFoundException e){
-            //TODO some log
+        } catch (TableNotFoundException e) {
+            // TODO some log
         }
         HTableDescriptor htable = new HTableDescriptor(TABLE);
         HColumnDescriptor cf1 = new HColumnDescriptor("cf");
@@ -160,7 +161,7 @@ public class FileChannelManagerTest extends UnitilsJUnit4 {
         MetaData expMeta = new Version1(mockHead, expectedBody);
         EasyMock.expect(fileAdapter.read(EasyMock.isA(Head.class), EasyMock.isA(FileSystem.class))).andReturn(expMeta);
         EasyMockUnitils.replay();
-        fileChannelManager.start();
+        fileChannelManager.init();
         // EasyMock.verify(fileAdapter);
     }
 }
