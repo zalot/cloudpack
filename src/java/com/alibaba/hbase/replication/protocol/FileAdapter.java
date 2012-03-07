@@ -2,16 +2,20 @@ package com.alibaba.hbase.replication.protocol;
 
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,18 +33,23 @@ import com.google.protobuf.InvalidProtocolBufferException;
 @Service("fileAdapter")
 public class FileAdapter implements ProtocolAdapter {
 
+    protected static final Log  LOG          = LogFactory.getLog(FileAdapter.class);
     /**
      * 待处理的中间文件存放位置
      */
-    protected Path            targetPath;
+    protected Path              targetPath;
+    /**
+     * md5摘要文件位置
+     */
+    protected Path              digestPath;
     /**
      * 已处理的中间文件存放位置
      */
-    protected Path            oldPath;
+    protected Path              oldPath;
     /**
      * 退回的中间文件存放位置（需要producer端重做）
      */
-    protected Path            rejectPath;
+    protected Path              rejectPath;
     /**
      * 生成文件时使用的临时目录
      */
@@ -48,7 +57,6 @@ public class FileAdapter implements ProtocolAdapter {
     @Autowired
     protected Configuration     conf;
     public static final String  SPLIT_SYMBOL = "|";
-    public static MessageDigest digest       = null;
     protected FileSystem        fs;
 
     public Path getPath() {
@@ -105,21 +113,35 @@ public class FileAdapter implements ProtocolAdapter {
     public MetaData read(Head head, FileSystem fs) throws FileParsingException, FileReadingException {
         FSDataInputStream in = null;
         byte[] byteArray = null;
+        FSDataInputStream md5In = null;
+        byte[] md5ByteArray = null;
         try {
             in = fs.open(new Path(targetPath, head2FileName(head)));
             byteArray = IOUtils.toByteArray(in);
+            md5In = fs.open(new Path(targetPath, head2FileName(head)));
+            md5ByteArray = IOUtils.toByteArray(in);
         } catch (IOException e1) {
             throw new FileReadingException("error while reading hdfs file to bytes. file: " + head2FileName(head), e1);
         } finally {
             org.apache.hadoop.io.IOUtils.closeStream(in);
+            org.apache.hadoop.io.IOUtils.closeStream(md5In);
         }
-        if (byteArray != null && byteArray.length > 0) {
+        if (byteArray != null && byteArray.length > 0 && md5ByteArray != null && md5ByteArray.length > 0) {
             try {
-                Body body = BodySerializingHandler.deserialize(byteArray);
-                Version1 result = new Version1(head, body);
-                return result;
+                MessageDigest digest = MessageDigest.getInstance("MD5");
+                if (Bytes.equals(md5ByteArray, digest.digest(byteArray))) {
+                    Body body = BodySerializingHandler.deserialize(byteArray);
+                    Version1 result = new Version1(head, body);
+                    return result;
+                } else {
+                    throw new FileParsingException("Fail with MD5 digest.The file corrupts probably.");
+                }
             } catch (InvalidProtocolBufferException e) {
                 throw new FileParsingException("error while parsing body with protobuf.", e);
+            } catch (NoSuchAlgorithmException e) {
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("Coding error!", e);
+                }
             }
         }
         return null;
@@ -130,18 +152,23 @@ public class FileAdapter implements ProtocolAdapter {
         FSDataOutputStream sigoutput = null;
         Path target = null;
         try {
-            Body body = meta.getBody();
             String fileName = head2FileName(meta.getHead());
             byte[] data = BodySerializingHandler.serialize(meta.getBody());
-            digest.update(data);
+            MessageDigest digest = MessageDigest.getInstance("MD5");
             target = new Path(root, fileName);
             output = fs.create(target, true);
             output.write(data);
             sigoutput = fs.create(new Path(fileName + "_md5"));
-            sigoutput.write(digest.digest());
+            sigoutput.write(digest.digest(data));
             return target;
         } catch (IOException e) {
-            e.printStackTrace();
+            if (LOG.isErrorEnabled()) {
+                LOG.error("Create file failed.", e);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("Coding error!", e);
+            }
         } finally {
             if (output != null) {
                 try {
@@ -178,7 +205,6 @@ public class FileAdapter implements ProtocolAdapter {
             if (!fs.exists(targetPath)) {
                 fs.mkdirs(targetPath);
             }
-            digest = MessageDigest.getInstance("MD5");
         } catch (Exception e) {
         }
     }
@@ -191,8 +217,9 @@ public class FileAdapter implements ProtocolAdapter {
      * @throws IOException
      */
     public void clean(Head head, FileSystem fs) throws IOException {
-        fs.rename(new Path(targetPath, head2FileName(head)),
-                  new Path(oldPath, head2FileName(head)));
+        fs.rename(new Path(targetPath, head2FileName(head)), new Path(oldPath, head2FileName(head)));
+        fs.rename(new Path(digestPath, head2FileName(head) + Constants.MD5_SUFFIX),
+                  new Path(oldPath, head2FileName(head) + Constants.MD5_SUFFIX));
     }
 
     /**
@@ -200,10 +227,12 @@ public class FileAdapter implements ProtocolAdapter {
      * 
      * @param fileHead 中间文件文件名
      * @param fs
+     * @throws IOException 
      */
-    public void reject(Head head, FileSystem fs) {
-        // FIXME
-
+    public void reject(Head head, FileSystem fs) throws IOException {
+        fs.rename(new Path(targetPath, head2FileName(head)), new Path(rejectPath, head2FileName(head)));
+        fs.rename(new Path(digestPath, head2FileName(head) + Constants.MD5_SUFFIX),
+                  new Path(rejectPath, head2FileName(head) + Constants.MD5_SUFFIX));
     }
 
     @PostConstruct
@@ -211,6 +240,7 @@ public class FileAdapter implements ProtocolAdapter {
         targetPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_TARGETPATH));
         oldPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_OLDPATH));
         rejectPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_REJECTPATH));
+        digestPath = new Path(targetPath, Constants.MD5_DIR);
     }
 
 }

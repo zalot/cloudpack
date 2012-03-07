@@ -18,6 +18,10 @@ public class FileParsingException extends Exception {
         super(string, e);
     }
 
+    public FileParsingException(String string){
+        super(string);
+    }
+
     private static final long serialVersionUID = -5193043184877698845L;
 
 }

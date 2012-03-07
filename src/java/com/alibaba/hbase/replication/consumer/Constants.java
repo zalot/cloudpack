@@ -23,6 +23,8 @@ public class Constants {
     // slave集群数据特有的clusterID
     public static final UUID   SLAVE_CLUSTER_ID            = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
     public static final int    WAIT_MILLIS                 = 500;
+    public static final String MD5_DIR                     = "md5";
+    public static final String MD5_SUFFIX                  = "_md5";
 
     // conf key
     public static final String PRODUCER_FS                 = "replication.producer.fs";
