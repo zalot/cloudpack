@@ -9,6 +9,13 @@ import java.io.Serializable;
  */
 public class Head implements Serializable {
 
+    @Override
+    public String toString() {
+        return "Head [version=" + version + ", groupName=" + groupName + ", fileTimestamp=" + fileTimestamp
+               + ", headTimestamp=" + headTimestamp + ", startOffset=" + startOffset + ", endOffset=" + endOffset
+               + ", count=" + count + ", retry=" + retry + "]";
+    }
+
     /**
      * 
      */
