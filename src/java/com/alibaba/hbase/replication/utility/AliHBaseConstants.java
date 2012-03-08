@@ -20,6 +20,9 @@ public class AliHBaseConstants {
     public static String CONFKEY_HLOG_READERBUFFER            = "com.alibaba.hbase.replication.hlog.readerbuffer";
     public static long   HLOG_READERBUFFER                    = 50000;
 
+    public static String CONFKEY_HLOGGROUP_INTERVAL           = "com.alibaba.hbase.replication.hlog.group.interval";
+    public static long   HLOG_GROUP_INTERVAL                   = 10000;
+
     public static String ZOO_SCAN_LOCK                        = "/scanlock";
     public static String ZOO_PERSISTENCE_HLOG_GROUP           = "/aligroups";
     public static String ZOO_PERSISTENCE_HLOG_GROUP_LOCK      = "/aliglock";
