@@ -22,9 +22,8 @@ import com.alibaba.hbase.replication.persistence.HLogPersistence;
 import com.alibaba.hbase.replication.utility.AliHBaseConstants;
 
 /**
- * HLogPersistence 持久化操作
+ * HLogPersistence 持久化操作 类HLogZookeeperPersistence.java的实现描述：TODO 类实现描述
  * 
- * 类HLogZookeeperPersistence.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 7, 2012 10:24:18 AM
  */
 public class HLogZookeeperPersistence implements HLogPersistence {
@@ -144,10 +143,10 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     }
 
     public void deleteGroup(HLogEntryGroup group) throws Exception {
-//        Stat stat = getGroupStat(group);
-//        if (stat != null) {
-//            zoo.delete(getGroupPath(group.getGroupName()), stat.getVersion());
-//        }
+        // Stat stat = getGroupStat(group);
+        // if (stat != null) {
+        // zoo.delete(getGroupPath(group.getGroupName()), stat.getVersion());
+        // }
     }
 
     @Override
@@ -156,6 +155,7 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         Stat stat = zoo.exists(path, false);
         if (stat == null) return null;
         HLogEntryGroup group = new HLogEntryGroup(groupName);
+        setGroupData(group, zoo.getData(path, false, stat));
         if (getChild) {
             List<String> ls = zoo.getChildren(path, false);
             HLogEntry entry = null;
@@ -208,7 +208,7 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     public boolean lockGroup(String groupName) throws Exception {
         if (!isLockGroup(groupName)) {
             try {
-                zoo.create(getGroupLockPath(groupName), getGroupData(null), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                zoo.create(getGroupLockPath(groupName), null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
                 // String lockPath = getGroupLockPath(groupName);
                 // String seqPath = zoo.create(lockPath, null, Ids.OPEN_ACL_UNSAFE , CreateMode.EPHEMERAL);
                 // if(getLockSeq(lockPath, seqPath) != 0){
@@ -266,14 +266,19 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     //
     //
     protected byte[] getGroupData(HLogEntryGroup group) {
-        if (group == null) {
-            group = new HLogEntryGroup(null);
-        }
-        return null;
+        return Bytes.toBytes(group.getLastOperatorTime());
     }
 
+    /**
+     * 请与 getGroupData 保持一致性
+     * 
+     * @param entry
+     * @param data
+     */
     protected void setGroupData(HLogEntryGroup entry, byte[] data) {
-        return;
+        if (entry != null && data != null) {
+            entry.setLastOperatorTime(Bytes.toLong(data));
+        }
     }
 
     protected String getGroupPath(String groupName) {

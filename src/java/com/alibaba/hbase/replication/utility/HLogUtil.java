@@ -1,12 +1,7 @@
 package com.alibaba.hbase.replication.utility;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -69,11 +64,8 @@ public class HLogUtil {
         if (clusterId != HConstants.DEFAULT_CLUSTER_ID) {
             return;
         }
-
-        System.out.println(new String(tableName));
         // 不同步 META 和 ROOT 表
         if (isCusTable(tableName)) {
-            System.out.println("OK Table - " + new String(tableName));
             String strTableName = Bytes.toString(tableName);
             List<KeyValue> kvs = entry.getEdit().getKeyValues();
             for (KeyValue kv : kvs) {
@@ -100,7 +92,6 @@ public class HLogUtil {
                 edit.setValue(kv.getValue());
                 edit.setTimeStamp(kv.getTimestamp());
                 body.addEdit(strTableName, edit);
-                System.out.println("OK EDIT - " + edit);
             }
         }
     }

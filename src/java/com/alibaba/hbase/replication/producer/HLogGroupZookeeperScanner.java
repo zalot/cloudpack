@@ -36,7 +36,7 @@ public class HLogGroupZookeeperScanner extends Thread {
     protected String               name;
     protected String               scanBasePath;
     protected String               scanLockPath;
-    protected int errorCount = 0;
+    protected int                  errorCount     = 0;
     // 休息时间
     // 争抢到 scanner 后 间隔时间
     protected long                 flushSleepTime;
@@ -51,6 +51,7 @@ public class HLogGroupZookeeperScanner extends Thread {
     protected FileSystem           fs;
     protected RecoverableZooKeeper zoo;
     protected long                 scanOldHlogTimeOut;
+    protected Configuration conf;
 
     protected boolean              hasScanOldHLog = false;
 
@@ -84,6 +85,7 @@ public class HLogGroupZookeeperScanner extends Thread {
         this.fs = fs;
         this.hlogDAO = dao;
         this.name = name;
+        this.conf = conf;
         init(conf);
     }
 
@@ -138,9 +140,9 @@ public class HLogGroupZookeeperScanner extends Thread {
             } catch (Exception e) {
                 isLock = false;
                 LOG.error(e);
-                errorCount ++;
+                errorCount++;
                 // 如果 超过 3次错误则释放 lock
-                if(errorCount > 3){
+                if (errorCount > 3) {
                     reinizoo();
                 }
             } finally {
@@ -155,20 +157,26 @@ public class HLogGroupZookeeperScanner extends Thread {
         if (zoo != null) {
             try {
                 zoo.close();
-            } catch (InterruptedException e) {
+                zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatch());
+            } catch (Exception e) {
+                LOG.error(e.getMessage());
             }
         }
     }
 
     private void scanning() throws Exception {
         while (true) {
+            // TODO : 如果 flushSleepTime 这段时间内有 Hlog - > OldHlog 那么就要更换策略
+            // 所以常情保持 Hlog 的数量和大小，确保 在 flushSleepTime 时间段内， Hlog 一直都在 .logs 目录中
             Thread.sleep(flushSleepTime);
+            LOG.debug(Thread.currentThread().getName() + " scanning ....");
             HLogEntryGroups groups = new HLogEntryGroups();
             putHLog(groups);
             putOldHLog(groups);
             for (HLogEntryGroup group : groups.getGroups()) {
                 hlogDAO.createOrUpdateGroup(group, true);
             }
+            LOG.debug(Thread.currentThread().getName() + " scanning ok");
         }
     }
 

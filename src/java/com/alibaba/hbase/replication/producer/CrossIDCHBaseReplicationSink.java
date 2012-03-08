@@ -10,11 +10,15 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import com.alibaba.hbase.replication.hlog.HLogOperator;
 import com.alibaba.hbase.replication.hlog.HLogReader;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.persistence.HLogPersistence;
 import com.alibaba.hbase.replication.protocol.Body;
+import com.alibaba.hbase.replication.protocol.Body.Edit;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.protocol.Version1;
+import com.alibaba.hbase.replication.utility.AliHBaseConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
@@ -27,10 +31,12 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
  */
 public class CrossIDCHBaseReplicationSink extends Thread {
 
-    protected static final Log LOG = LogFactory.getLog(HLogGroupZookeeperScanner.class);
+    protected static final Log LOG             = LogFactory.getLog(HLogGroupZookeeperScanner.class);
     protected ProtocolAdapter  adapter;
     protected HLogPersistence  hlogDAO;
     protected HLogOperator     hlogOperator;
+    private long               minGroupInterval;
+    private long               maxReaderBuffer = AliHBaseConstants.HLOG_READERBUFFER;
 
     public CrossIDCHBaseReplicationSink(HLogPersistence dao, HLogOperator operator, ProtocolAdapter ad){
         this.hlogDAO = dao;
@@ -69,14 +75,17 @@ public class CrossIDCHBaseReplicationSink extends Thread {
             try {
                 Thread.sleep(5000);
                 groups = hlogDAO.listGroupName();
-            } catch (Exception e1) {
-                continue;
-            }
-
-            try {
                 for (String groupName : groups) {
                     if (hlogDAO.lockGroup(groupName)) {
-                        doSinkGroup(groupName);
+                        HLogEntryGroup group = hlogDAO.getGroupByName(groupName, false);
+                        if (group != null) {
+                            // 每个Group不能连续操作，需要间隔 (优化后)
+                            if (group.getLastOperatorTime() + minGroupInterval < System.currentTimeMillis()) {
+                                doSinkGroup(group);
+                                group.setLastOperatorTime(System.currentTimeMillis());
+                                hlogDAO.updateGroup(group, false);
+                            }
+                        }
                     }
                     hlogDAO.unlockGroup(groupName);
                 }
@@ -85,47 +94,66 @@ public class CrossIDCHBaseReplicationSink extends Thread {
         }
     }
 
-    private void doSinkGroup(String groupName) throws Exception {
-        List<HLogEntry> entrys = hlogDAO.listEntry(groupName);
+    private void doSinkGroup(HLogEntryGroup group) throws Exception {
+        List<HLogEntry> entrys = hlogDAO.listEntry(group.getGroupName());
         Collections.sort(entrys);
         HLogReader reader = null;
         Entry ent = null;
         Body body = new Body();
-        for (HLogEntry entry : entrys) {
+        HLogEntry entry;
+        for (int idx = 0; idx < entrys.size(); idx++) {
+            entry = entrys.get(idx);
+            if (entry.getType() == Type.END || entry.getType() == Type.UNKNOW) {
+                continue;
+            }
             reader = hlogOperator.getReader(entry);
             while ((ent = reader.next()) != null) {
                 HLogUtil.put2Body(ent, body);
-                if (body.getEditMap().size() > 50000) {
-                    if (doSinkPart(groupName, entry.getTimestamp(), entry.getPos(), reader.getPosition(), body)) {
+                if (body.getEditMap().size() > maxReaderBuffer) {
+                    if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
+                                   body)) {
                         entry.setPos(reader.getPosition());
                         hlogDAO.updateEntry(entry);
                         body = new Body();
                     }
                 }
             }
-            if (body.getEditMap().size() > 0) {
-                if (doSinkPart(groupName, entry.getTimestamp(), entry.getPos(), reader.getPosition(), body)) {
-                    entry.setPos(reader.getPosition());
-                    hlogDAO.updateEntry(entry);
-                    body = new Body();
+
+            // 如果指针移动了则更新
+            if (entry.getPos() < reader.getPosition()) {
+                entry.setPos(reader.getPosition());
+                // 如果后面还有 HLogEntry 则说明这个 Reader 的数据都以经读完 (优化后)
+                if (idx + 1 < entrys.size()) {
+                    entry.setType(Type.END);
                 }
-            } else {
-                if (entry.getPos() < reader.getPosition()) {
-                    entry.setPos(reader.getPosition());
-                    hlogDAO.updateEntry(entry);
+
+                if (body.getEditMap().size() > 0) {
+                    if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
+                                    body)) {
+                        // 如果失败则返回,不再继续更新
+                        return;
+                    }
                 }
+
+                hlogDAO.updateEntry(entry);
             }
+            body = new Body();
             reader.close();
         }
     }
 
     private boolean doSinkPart(String groupName, long timeStamp, long start, long end, Body body) {
         Head head = new Head();
-        head.setCount(body.getEditMap().size());
+        int count = 0;
+        for (List<Edit> edits : body.getEditMap().values()) {
+            count += edits.size();
+        }
+        head.setCount(count);
         head.setGroupName(groupName);
         head.setFileTimestamp(timeStamp);
         head.setStartOffset(start);
         head.setEndOffset(end);
+        System.out.println(head);
         if (doAdapter(head, body)) {
             return true;
         }
