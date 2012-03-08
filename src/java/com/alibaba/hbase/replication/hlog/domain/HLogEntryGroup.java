@@ -11,8 +11,16 @@ import java.util.List;
 public class HLogEntryGroup {
 
     protected String groupName;
-    protected long lastReaderTime;
-    
+    protected long   lastOperatorTime;
+
+    public long getLastOperatorTime() {
+        return lastOperatorTime;
+    }
+
+    public void setLastOperatorTime(long lastOperatorTime) {
+        this.lastOperatorTime = lastOperatorTime;
+    }
+
     public String getGroupName() {
         return groupName;
     }
@@ -28,11 +36,10 @@ public class HLogEntryGroup {
     }
 
     public void put(HLogEntry entry) {
-        if(groupName.equalsIgnoreCase(entry.getGroupName()))
-            entrys.add(entry);
+        if (groupName.equalsIgnoreCase(entry.getGroupName())) entrys.add(entry);
     }
-    
-    public List<HLogEntry> getEntrys(){
+
+    public List<HLogEntry> getEntrys() {
         return entrys;
     }
 }
