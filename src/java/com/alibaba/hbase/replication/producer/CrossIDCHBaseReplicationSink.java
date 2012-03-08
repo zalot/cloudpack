@@ -35,7 +35,7 @@ public class CrossIDCHBaseReplicationSink extends Thread {
     protected ProtocolAdapter  adapter;
     protected HLogPersistence  hlogDAO;
     protected HLogOperator     hlogOperator;
-    private long               minGroupInterval;
+    private long               minGroupInterval = AliHBaseConstants.HLOG_GROUP_INTERVAL;
     private long               maxReaderBuffer = AliHBaseConstants.HLOG_READERBUFFER;
 
     public CrossIDCHBaseReplicationSink(HLogPersistence dao, HLogOperator operator, ProtocolAdapter ad){
