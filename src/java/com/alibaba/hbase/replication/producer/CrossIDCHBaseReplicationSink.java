@@ -31,12 +31,13 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
  */
 public class CrossIDCHBaseReplicationSink extends Thread {
 
-    protected static final Log LOG             = LogFactory.getLog(HLogGroupZookeeperScanner.class);
+    protected static final Log LOG                      = LogFactory.getLog(HLogGroupZookeeperScanner.class);
     protected ProtocolAdapter  adapter;
     protected HLogPersistence  hlogDAO;
     protected HLogOperator     hlogOperator;
-    private long               minGroupInterval = AliHBaseConstants.HLOG_GROUP_INTERVAL;
-    private long               maxReaderBuffer = AliHBaseConstants.HLOG_READERBUFFER;
+    private long               minGroupOperatorInterval = AliHBaseConstants.HLOG_GROUP_OPERATORINTERVAL;
+    private long               maxReaderBuffer          = AliHBaseConstants.HLOG_READERBUFFER;
+    private long               sinkSleepTime;
 
     public CrossIDCHBaseReplicationSink(HLogPersistence dao, HLogOperator operator, ProtocolAdapter ad){
         this.hlogDAO = dao;
@@ -73,14 +74,14 @@ public class CrossIDCHBaseReplicationSink extends Thread {
         while (true) {
             List<String> groups;
             try {
-                Thread.sleep(5000);
+                Thread.sleep(sinkSleepTime);
                 groups = hlogDAO.listGroupName();
                 for (String groupName : groups) {
                     if (hlogDAO.lockGroup(groupName)) {
                         HLogEntryGroup group = hlogDAO.getGroupByName(groupName, false);
                         if (group != null) {
                             // 每个Group不能连续操作，需要间隔 (优化后)
-                            if (group.getLastOperatorTime() + minGroupInterval < System.currentTimeMillis()) {
+                            if (group.getLastOperatorTime() + minGroupOperatorInterval < System.currentTimeMillis()) {
                                 doSinkGroup(group);
                                 group.setLastOperatorTime(System.currentTimeMillis());
                                 hlogDAO.updateGroup(group, false);
