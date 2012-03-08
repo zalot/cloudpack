@@ -1,6 +1,5 @@
 package com.alibaba.hbase.replication.test;
 
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
 import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.junit.BeforeClass;

@@ -7,8 +7,8 @@ import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.alibaba.hbase.replication.domain.HLogEntry;
-import com.alibaba.hbase.replication.domain.HLogEntryGroup;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.zookeeper.HLogZookeeperPersistence;
 import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
 

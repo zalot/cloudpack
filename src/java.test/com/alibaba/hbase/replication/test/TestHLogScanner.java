@@ -15,9 +15,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.hbase.replication.consumer.DataLoadingManager;
-import com.alibaba.hbase.replication.domain.HLogEntryGroup;
-import com.alibaba.hbase.replication.domain.HLogEntryGroups;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.utility.AliHBaseConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;
@@ -37,8 +36,6 @@ public class TestHLogScanner extends BaseReplicationTest {
     @Test
     public void testSThreadScan() throws Exception {
         HLogGroupZookeeperScanner scan;
-        conf1.setLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_SLEEPTIME, 5000);
-        conf1.setLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME, 1000);
         RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
         HLogZookeeperPersistence dao1 = new HLogZookeeperPersistence();
         dao1.setZookeeper(zk1);
@@ -51,7 +48,7 @@ public class TestHLogScanner extends BaseReplicationTest {
         int count = 0;
         while (true) {
             insertData(pool1, TABLEA, COLA, "test", 1000);
-            Thread.sleep(scan.getSleepTime() * 2);
+            Thread.sleep(scan.getFlushSleepTime() * 2);
             HLogEntryGroups groups = new HLogEntryGroups();
             groups.put(HLogUtil.getHLogsByHDFS(fs, scan.getHlogPath()));
             groups.put(HLogUtil.getHLogsByHDFS(fs, scan.getOldHlogPath()));
@@ -69,8 +66,6 @@ public class TestHLogScanner extends BaseReplicationTest {
     public void testMThreadScan() throws Exception {
         final HLogGroupZookeeperScanner scan1;
         final HLogGroupZookeeperScanner scan2;
-        conf1.setLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_SLEEPTIME, 5000);
-        conf1.setLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME, 1000);
 
         RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
         final HLogZookeeperPersistence dao1 = new HLogZookeeperPersistence();
@@ -107,12 +102,12 @@ public class TestHLogScanner extends BaseReplicationTest {
                 while (true) {
                     try {
                         HLogGroupZookeeperScanner scan = rndShutDownScan(scan1, scan2);
-                        Thread.sleep(AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME / 2);
                         if (!scan.isAlive()) {
                             System.out.println("start scan [" + scan.getName() + "] ...");
                             scan.start();
                         }
-                        Thread.sleep(AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME * 2);
+//                        Thread.sleep(AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME * 2);
+                        Thread.sleep(AliHBaseConstants.ZOO_SCAN_LOCK_TRYLOCKTIME * 2);
                     } catch (Exception e) {
                     }
                 }
@@ -142,7 +137,7 @@ public class TestHLogScanner extends BaseReplicationTest {
 
         while (true) {
             insertData(pool1, TABLEA, COLA, "test", 1000);
-            Thread.sleep(scan1.getSleepTime() * 2);
+            Thread.sleep(scan1.getFlushSleepTime() * 2);
             HLogEntryGroups groups = new HLogEntryGroups();
             groups.put(HLogUtil.getHLogsByHDFS(fs, hlogPath));
             groups.put(HLogUtil.getHLogsByHDFS(fs, oldPath));
