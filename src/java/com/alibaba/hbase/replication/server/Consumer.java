@@ -25,13 +25,11 @@ public class Consumer {
 
     private static final Logger LOG         = LoggerFactory.getLogger(Consumer.class);
     private static final String SPRING_PATH = "classpath*:META-INF/spring/consumer.xml";
+    private static boolean      running     = true;
 
     public static void main(String args[]) {
         try {
-            // 启动Server
             final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(SPRING_PATH);
-            context.start();
-            ((FileChannelManager) context.getBean("fileChannelManager")).start();
             // 钩子
             Runtime.getRuntime().addShutdownHook(new Thread() {
 
@@ -46,25 +44,32 @@ public class Consumer {
                     } catch (Throwable t) {
                         LOG.error("Fail to stop consumer server: ", t);
                     }
+                    synchronized (Consumer.class) {
+                        running = false;
+                        Consumer.class.notify();
+                    }
+
                 }
             });
-
+            // 启动Server
+            context.start();
+            ((FileChannelManager) context.getBean("fileChannelManager")).start();
             LOG.info("Consumer server started");
             System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
                                + " Consumer server started");
 
-            synchronized (Consumer.class) {
-                while (true) {
-                    try {
-                        Consumer.class.wait();
-                    } catch (Throwable t) {
-                        LOG.error("Consumer server got runtime errors: ", t);
-                    }
-                }
-            }
         } catch (Throwable t) {
             System.exit(-1);
             LOG.error("Fail to start consumer server: ", t);
+        }
+        synchronized (Consumer.class) {
+            while (running) {
+                try {
+                    Consumer.class.wait();
+                } catch (Throwable t) {
+                    LOG.error("Consumer server got runtime errors: ", t);
+                }
+            }
         }
     }
 
