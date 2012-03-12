@@ -26,7 +26,8 @@
 		<zookeeper.version>3.3.3</zookeeper.version>
 		<springframework_version>2.5.6.SEC02</springframework_version>
 		<unitils_version>3.1</unitils_version>
-		<slf4j_version>1.6.1</slf4j_version>
+		<slf4j_version>1.5.6</slf4j_version>
+		<log4j_version>1.2.15</log4j_version>
 	</properties>
 
 	<url>${project_url}</url>
@@ -83,6 +84,12 @@
 			<groupId>com.alibaba.external</groupId>
 			<artifactId>sourceforge.spring</artifactId>
 			<version>${springframework_version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba.external</groupId>
+					<artifactId>jakarta.commons.logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
@@ -94,6 +101,32 @@
 			<groupId>com.alibaba.external</groupId>
 			<artifactId>jakarta.commons.io</artifactId>
 			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>jakarta.commons.collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>org.slf4j.slf4j-api</artifactId>
+			<version>${slf4j_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>org.slf4j.slf4j-log4j12</artifactId>
+			<version>${slf4j_version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>jakarta.log4j</artifactId>
+			<version>${log4j_version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba.external</groupId>
+					<artifactId>jakarta.commons.logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
