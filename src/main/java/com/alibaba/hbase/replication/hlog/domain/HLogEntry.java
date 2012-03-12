@@ -87,14 +87,14 @@ public class HLogEntry implements Comparable<HLogEntry> {
         this(path.getName());
         this.type = HLogEntry.Type.toType(path);
     }
-    
+
     public HLogEntry(String name){
         if (HLog.validateHLogFilename(name)) {
             int idx = name.lastIndexOf(".");
             this.name = name;
             this.groupName = name.substring(0, idx);
             this.timestamp = Long.parseLong(name.substring(idx + 1, name.length()));
-        }else{
+        } else {
             throw new RuntimeException("[ERROR] HLog file name is [" + name + "]");
         }
     }
@@ -121,30 +121,4 @@ public class HLogEntry implements Comparable<HLogEntry> {
         if (o.getTimestamp() == this.getTimestamp()) return 0;
         return -1;
     }
-
-    // @Override
-    // public String getZkPath() {
-    // return path.getName();
-    // }
-    //
-    // @Override
-    // public byte[] getZkData() {
-    // String data = type.getTypeValue() + SEPARATOR + pos;
-    // return data.getBytes();
-    // }
-    //
-    // @Override
-    // public void setZkPath(String path) {
-    // // unsupported
-    // }
-    //
-    // @Override
-    // public void setZKData(byte[] data) {
-    // if (data != null) {
-    // String[] sdata = new String(data).split(SEPARATOR);
-    // this.type = HLogType.toType(Integer.valueOf(sdata[0]));
-    // this.pos = Long.valueOf(sdata[1]);
-    // }
-    // }
-
 }

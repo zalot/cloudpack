@@ -12,7 +12,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.zookeeper.KeeperException;
 
-import com.alibaba.hbase.replication.hlog.DefaultHLogOperator;
+import com.alibaba.hbase.replication.hlog.DefaultHLogService;
 import com.alibaba.hbase.replication.hlog.HLogReader;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
@@ -41,7 +41,7 @@ public class CrossIDCHBaseReplicationSink implements Runnable {
     protected FileAdapter              adapter;
     protected FileSystem               fs;
     protected HLogZookeeperPersistence hlogDAO;
-    protected DefaultHLogOperator      hlogOperator;
+    protected DefaultHLogService      hlogOperator;
     private long                       minGroupOperatorInterval = ProducerConstants.HLOG_GROUP_INTERVAL;
     private long                       maxReaderBuffer          = ProducerConstants.HLOG_READERBUFFER;
     private long                       sinkSleepTime;
@@ -51,7 +51,7 @@ public class CrossIDCHBaseReplicationSink implements Runnable {
         this.adapter = ad;
         // 注意：fs上的操作非线程安全，需要每线程一个
         fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
-        this.hlogOperator = new DefaultHLogOperator(conf, fs);
+        this.hlogOperator = new DefaultHLogService(conf, fs);
         this.hlogDAO = new HLogZookeeperPersistence(conf);
     }
 

@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
 import org.apache.hadoop.hbase.zookeeper.ZKUtil;
@@ -18,13 +19,13 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
+import com.alibaba.hbase.replication.hlog.HLogOperatorPersistence;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
-import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;
-import com.alibaba.hbase.replication.zookeeper.HLogZookeeperPersistence;
-import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
+import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 
 /**
  * HLogGroup 扫描器<BR>
@@ -36,60 +37,66 @@ public class HLogGroupZookeeperScanner implements Runnable {
 
     protected static final Log         LOG            = LogFactory.getLog(HLogGroupZookeeperScanner.class);
     protected String                   name;
-    protected String                   scanBasePath;
-    protected String                   scanLockPath;
+    protected String                   zooScanBasePath;
+    protected String                   zooScanLockPath;
+    protected Path                     dfsHLogPath;
+    protected Path                     dfsOldHLogPath;
+    
     protected int                      errorCount     = 0;
     // 休息时间
     // 争抢到 scanner 后 间隔时间
     protected long                     flushSleepTime;
-
     // scanner 争抢重试时间
     protected long                     scannerTryLockTime;
-    protected Path                     hlogPath;
-    protected Path                     oldHlogPath;
     protected boolean                  isLock         = false;
 
-    protected HLogZookeeperPersistence hlogDAO;
-    protected FileSystem               fs;
-    protected RecoverableZooKeeper     zoo;
     protected long                     scanOldHlogTimeOut;
-    protected Configuration            conf;
-
     protected boolean                  hasScanOldHLog = false;
 
+    // 外部对象引用
+    protected Configuration            conf;
+    protected HLogOperatorPersistence hlogDAO;
+    protected FileSystem               fs;
+    protected RecoverableZooKeeper     zoo;
+
     public Path getHlogPath() {
-        return hlogPath;
+        return dfsHLogPath;
     }
 
     public void setHlogPath(Path hlogPath) {
-        this.hlogPath = hlogPath;
+        this.dfsHLogPath = hlogPath;
     }
 
     public Path getOldHlogPath() {
-        return oldHlogPath;
+        return dfsOldHLogPath;
     }
 
     public void setOldHlogPath(Path oldHlogPath) {
-        this.oldHlogPath = oldHlogPath;
+        this.dfsOldHLogPath = oldHlogPath;
     }
 
     public HLogGroupZookeeperScanner(Configuration conf) throws KeeperException, InterruptedException, IOException{
-        this(UUID.randomUUID().toString(), conf);
+        this(UUID.randomUUID().toString(), conf, null);
+    }
+    
+    public HLogGroupZookeeperScanner(Configuration conf, RecoverableZooKeeper zoo) throws KeeperException, InterruptedException, IOException{
+        this(UUID.randomUUID().toString(), conf, zoo);
     }
 
-    public HLogGroupZookeeperScanner(String name, Configuration conf) throws KeeperException, InterruptedException,
+    public HLogGroupZookeeperScanner(String name, Configuration conf, RecoverableZooKeeper zoo) throws KeeperException, InterruptedException,
                                                                      IOException{
-        zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatch());
-        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
-        this.hlogDAO = new HLogZookeeperPersistence(conf);
+        if(zoo == null)
+            zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());
+        this.zoo = zoo;
+        this.fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
         this.name = name;
         this.conf = conf;
-        init(conf);
+        init();
     }
 
-    private void init(Configuration conf) throws KeeperException, InterruptedException {
-        scanBasePath = conf.get(ProducerConstants.CONFKEY_ZOO_SCAN_ROOT, ProducerConstants.ZOO_SCAN_ROOT);
-        scanLockPath = scanBasePath + ProducerConstants.ZOO_SCAN_LOCK;
+    private void init() throws KeeperException, InterruptedException {
+        zooScanBasePath = conf.get(ProducerConstants.CONFKEY_ZOO_SCAN_ROOT, ProducerConstants.ZOO_SCAN_ROOT);
+        zooScanLockPath = zooScanBasePath + ProducerConstants.ZOO_SCAN_LOCK;
         flushSleepTime = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
                                       ProducerConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME);
         scannerTryLockTime = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_TRYLOCKTIME,
@@ -97,30 +104,28 @@ public class HLogGroupZookeeperScanner implements Runnable {
         scanOldHlogTimeOut = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_OLDHLOG_TIMEOUT,
                                           ProducerConstants.ZOO_SCAN_OLDHLOG_TIMEOUT);
 
-        hlogPath = new Path(conf.get("hbase.rootdir") + "/" + ProducerConstants.PATH_BASE_HLOG);
-        oldHlogPath = new Path(conf.get("hbase.rootdir") + "/" + ProducerConstants.PATH_BASE_OLDHLOG);
-        Stat stat = zoo.exists(scanBasePath, false);
+        Stat stat = zoo.exists(zooScanBasePath, false);
         if (stat == null) {
             try {
-                zoo.create(scanBasePath, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                zoo.create(zooScanBasePath, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             } catch (NodeExistsException e) {
             }
         }
     }
 
     public boolean lock() throws KeeperException, InterruptedException {
-        Stat stat = zoo.exists(scanLockPath, false);
+        Stat stat = zoo.exists(zooScanLockPath, false);
         if (stat != null) {
             return false;
         }
-        zoo.create(scanLockPath, null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        zoo.create(zooScanLockPath, null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         return true;
     }
 
     private void unlock() {
         try {
-            Stat stat = zoo.exists(scanLockPath, false);
-            if (stat != null) zoo.delete(scanLockPath, stat.getVersion());
+            Stat stat = zoo.exists(zooScanLockPath, false);
+            if (stat != null) zoo.delete(zooScanLockPath, stat.getVersion());
         } catch (Exception e) {
         }
     }
@@ -155,7 +160,7 @@ public class HLogGroupZookeeperScanner implements Runnable {
         if (zoo != null) {
             try {
                 zoo.close();
-                zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatch());
+                zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());
             } catch (Exception e) {
                 LOG.error(e.getMessage());
             }
@@ -179,7 +184,7 @@ public class HLogGroupZookeeperScanner implements Runnable {
     }
 
     protected void putHLog(HLogEntryGroups groups) throws IOException {
-        groups.put(HLogUtil.getHLogsByHDFS(fs, hlogPath));
+        groups.put(HLogUtil.getHLogsByHDFS(fs, dfsHLogPath));
     }
 
     protected void putOldHLog(HLogEntryGroups groups) throws IOException {
@@ -194,7 +199,7 @@ public class HLogGroupZookeeperScanner implements Runnable {
          * groups.put(HLogUtil.getHLogsByHDFS(fs, oldHlogPath)); }
          */
         if (!hasScanOldHLog) {
-            groups.put(HLogUtil.getHLogsByHDFS(fs, oldHlogPath));
+            groups.put(HLogUtil.getHLogsByHDFS(fs, dfsOldHLogPath));
             hasScanOldHLog = true;
         }
     }

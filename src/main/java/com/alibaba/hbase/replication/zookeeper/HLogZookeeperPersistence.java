@@ -18,6 +18,7 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
 import com.alibaba.hbase.replication.consumer.ReplicationZookeeperWatcher;
+import com.alibaba.hbase.replication.hlog.HLogOperatorPersistence;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
@@ -28,7 +29,7 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
  * 
  * @author zalot.zhaoh Mar 7, 2012 10:24:18 AM
  */
-public class HLogZookeeperPersistence {
+public class HLogZookeeperPersistence implements HLogOperatorPersistence{
 
     protected RecoverableZooKeeper zoo;
     protected String               baseDir;
@@ -126,13 +127,6 @@ public class HLogZookeeperPersistence {
         }
     }
 
-    public void deleteGroup(HLogEntryGroup group) throws Exception {
-        // Stat stat = getGroupStat(group);
-        // if (stat != null) {
-        // zoo.delete(getGroupPath(group.getGroupName()), stat.getVersion());
-        // }
-    }
-
     public HLogEntryGroup getGroupByName(String groupName, boolean getChild) throws Exception {
         String path = getGroupPath(groupName);
         Stat stat = zoo.exists(path, false);
@@ -154,9 +148,6 @@ public class HLogZookeeperPersistence {
         String path = getGroupPath(group.getGroupName());
         Stat stat = zoo.exists(path, false);
         if (stat != null) {
-            //
-            //
-            //
             zoo.setData(path, getGroupData(group), stat.getVersion());
             if (updateChild) {
                 HLogEntry tmpEntry;
@@ -220,6 +211,12 @@ public class HLogZookeeperPersistence {
         return Bytes.toBytes(data);
     }
 
+    /**
+     * 请与 getEntryData 保持一致
+     * 
+     * @param entry
+     * @param data
+     */
     private void setEntryData(HLogEntry entry, byte[] data) {
         if (data != null && entry != null) {
             String dataString = Bytes.toString(data);
@@ -291,5 +288,12 @@ public class HLogZookeeperPersistence {
         } catch (Exception e) {
         }
         return -1;
+    }
+    
+    
+    @Override
+    public void init(Configuration conf) throws Exception {
+        // TODO Auto-generated method stub
+        
     }
 }
