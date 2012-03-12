@@ -24,8 +24,8 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
- * HLogPersistence 持久化操作 类HLogZookeeperPersistence.java的实现描述：利用zk记录HLog处理的偏移量
- * 注意：此类的方法并非线程安全，一个线程需要new一个
+ * HLogPersistence 持久化操作
+ * 
  * @author zalot.zhaoh Mar 7, 2012 10:24:18 AM
  */
 public class HLogZookeeperPersistence {
@@ -39,16 +39,26 @@ public class HLogZookeeperPersistence {
     public String getName() {
         return name;
     }
-    
+
+    public void setZookeeper(RecoverableZooKeeper zoo) {
+        this.zoo = zoo;
+    }
+
     public HLogZookeeperPersistence(Configuration conf) throws IOException, KeeperException, InterruptedException{
-        RecoverableZooKeeper zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+        this(conf, null);
+    }
+
+    public HLogZookeeperPersistence(Configuration conf, RecoverableZooKeeper zoo) throws IOException, KeeperException,
+                                                                                 InterruptedException{
+        if (zoo == null) zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+        this.zoo = zoo;
         String rootDir = conf.get(ProducerConstants.CONFKEY_ZOO_ROOT, ProducerConstants.ZOO_ROOT);
         Stat stat = zoo.exists(rootDir, false);
         if (stat == null) {
             zoo.create(rootDir, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
         baseDir = rootDir + ProducerConstants.ZOO_PERSISTENCE_HLOG_GROUP;
-        
+
         stat = zoo.exists(baseDir, false);
         if (stat == null) {
             zoo.create(baseDir, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
