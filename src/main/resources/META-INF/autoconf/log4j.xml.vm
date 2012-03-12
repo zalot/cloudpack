@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "http://toolkit.alibaba-inc.com/dtd/log4j/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <!-- ===================================================================== -->
+    <!--  以下是appender的定义                                                 -->
+    <!-- ===================================================================== -->
+    <appender name="ROOT" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${replication_logging_root}/root.log"/>
+	    <param name="append" value="true"/>
+        <param name="encoding" value="UTF-8"/>
+        <param name="threshold" value="info"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%-5p] (%C{2},%L) - %m%n"/>
+        </layout>
+    </appender>
+	<appender name="ENGINE" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${replication_logging_root}/${replication_logging_file}"/>
+	    <param name="append" value="true"/>
+        <param name="encoding" value="UTF-8"/>
+        <param name="threshold" value="info"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%-5p] (%C{2},%L) - %m%n"/>
+        </layout>
+    </appender>
+    <appender name="DUBBO" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${replication_dubbo_logging_root}/${replication_dubbo_logging_file}"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="UTF-8"/>
+        <param name="threshold" value="info"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%-5p] (%C{2},%L) - %m%n"/>
+        </layout>
+    </appender>
+    <!-- ===================================================================== -->
+    <!--  以下是logger的定义                                                   -->
+    <!-- ===================================================================== -->
+	<logger name="org.apache.velocity">
+        <level value="OFF"/>
+    </logger>
+    <logger name="java.sql">
+        <level value="${replication_logging_level}"/>
+    </logger>
+    <logger name="javax.sql">
+        <level value="${replication_logging_level}"/>
+    </logger>
+    <logger name="com.alibaba.replication" additivity="false">
+        <level value="${replication_logging_level}"/>
+        <appender-ref ref="ENGINE"/>
+    </logger>
+    <logger name="com.alibaba.dubbo" additivity="false">
+        <level value="${replication_dubbo_logging_level}"/>
+        <appender-ref ref="DUBBO"/>
+    </logger>
+    <!-- ===================================================================== -->
+    <!--  Root logger的定义                                                    -->
+    <!-- ===================================================================== -->
+    <root>
+        <level value="${replication_logging_level}"/>
+        <appender-ref ref="ROOT"/>
+    </root>
+</log4j:configuration>
