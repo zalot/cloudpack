@@ -10,7 +10,7 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
  * @author zalot.zhaoh
  *
  */
-public class TransactionHLogReader extends DefaultHLogReader{
+public class TransactionHLogReader extends LazyOpenHLogReader{
 
 	public TransactionHLogReader(FileSystem fs, HLogEntry info) {
 	}

@@ -16,12 +16,11 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 public interface HLogReader{
     void close() throws IOException;
     void open() throws IOException;
-//    boolean hasMoreNext();
     Entry next() throws IOException;
     Entry next(Entry reuse) throws IOException;
     void seek(long pos) throws IOException;
     long getPosition() throws IOException;
     boolean isOpen();
     boolean hasOpened();
-    void init(HLogOperator operator, HLogEntry info);
+    void init(HLogService operator, HLogEntry info);
 }
