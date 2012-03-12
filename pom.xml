@@ -1,56 +1,47 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<!-- <parent> <groupId>com.alibaba</groupId> <artifactId>pampas</artifactId> 
-		<version>4</version> </parent> -->
-	<groupId>com.alibaba</groupId>
+	<parent>
+		<groupId>com.alibaba</groupId>
+		<artifactId>pampas</artifactId>
+		<version>4</version>
+	</parent>
+	<groupId>com.alibaba.platform.app</groupId>
 	<artifactId>hbase.replication</artifactId>
 	<packaging>jar</packaging>
-	<version>0.92.0</version>
-	<name>HBaseTest</name>
-	<url>http://maven.apache.org</url>
+	<version>0.1.0</version>
+	<name>hbase.replication</name>
 
 	<!-- 参数配置 -->
 	<properties>
+		<project_url>http://b2b-doc.alibaba-inc.com/display/opentech/hbase_rep</project_url>
+		<project_scm_url>http://svn.alibaba-inc.com/repos/ali_platform/havana/sandbox/trunk</project_scm_url>
+		<project_scm_connection>scm:svn:http://svn.alibaba-inc.com/repos/ali_platform/havana/sandbox/trunk</project_scm_connection>
+		<project_issue_url>http://b2b-req.alibaba-inc.com/browse/havana</project_issue_url>
+		<project_site_url>http://repo.alibaba-inc.com/mvn/internal/releases/sites/havana</project_site_url>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.test.skip>true</maven.test.skip>
-		<downloadResouce>true</downloadResouce>
-		<downloadJavadocs>true</downloadJavadocs>
+		<hadoop.version>1.0.0</hadoop.version>
+		<hbase.version>0.92.0</hbase.version>
+		<zookeeper.version>3.3.3</zookeeper.version>
 		<springframework_version>2.5.6.SEC02</springframework_version>
-		<unitils_version>3.3</unitils_version>
+		<unitils_version>3.1</unitils_version>
 		<slf4j_version>1.6.1</slf4j_version>
 	</properties>
 
+	<url>${project_url}</url>
+	<scm>
+		<connection>${project_scm_connection}</connection>
+		<developerConnection>${project_scm_connection}</developerConnection>
+		<url>${project_scm_url}</url>
+	</scm>
+	<issueManagement>
+		<system>Jira</system>
+		<url>${project_issue_url}</url>
+	</issueManagement>
+
 	<!-- 构造项 -->
 	<build>
-		<!-- JAVA源码目录 -->
-		<sourceDirectory>src/java</sourceDirectory>
-
-		<!-- JAVA测试目录 -->
-		<testSourceDirectory>src/java.test</testSourceDirectory>
-
-		<!-- 脚本目录 -->
-		<scriptSourceDirectory>src/scripts</scriptSourceDirectory>
-
-		<!-- 资源依赖目录 -->
-		<resources>
-			<resource>
-				<directory>src/conf</directory>
-				<includes>
-					<include>**/*</include>
-				</includes>
-			</resource>
-		</resources>
-
-		<!-- 测试资源依赖目录 -->
-		<testResources>
-			<testResource>
-				<directory>src/conf.test</directory>
-				<includes>
-					<include>**/*</include>
-				</includes>
-			</testResource>
-		</testResources>
 		<plugins>
 			<!-- 编译器版本选择 -->
 			<plugin>
@@ -61,131 +52,94 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-
-			<!-- 源码输出Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<attach>true</attach>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
-
-	<!-- 报告输出目录 -->
-	<reporting>
-		<outputDirectory>report</outputDirectory>
-	</reporting>
-
 
 
 	<!-- dependencyManagement 依赖配置 -->
 	<dependencies>
+		<!-- Hadoop -->
 		<dependency>
-			<groupId>org.apache.hbase</groupId>
-			<artifactId>hbase</artifactId>
-			<version>0.92.0</version>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>apache.hadoop</artifactId>
+			<version>${hadoop.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.hbase</groupId>
-			<artifactId>hbase-tests</artifactId>
-			<version>0.92.0</version>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>apache.hadoop.hbase</artifactId>
+			<version>${hbase.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
-			<version>1.0.0</version>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>apache.hadoop.zookeeper</artifactId>
+			<version>${zookeeper.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>google.protobuf</artifactId>
 			<version>2.4.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>sourceforge.spring</artifactId>
 			<version>${springframework_version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>sourceforge.spring.modules.test</artifactId>
 			<version>${springframework_version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> <groupId>com.alibaba.external</groupId> <artifactId>google.protobuf</artifactId> 
-			<version>2.2.0</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>sourceforge.spring</artifactId> <version>${springframework_version}</version> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>sourceforge.spring.modules.test</artifactId> 
-			<version>${springframework_version}</version> <scope>test</scope> </dependency> -->
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>jakarta.commons.io</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-api</artifactId> 
-			<version>${slf4j_version}</version> </dependency> <dependency> <groupId>org.slf4j</groupId> 
-			<artifactId>slf4j-log4j12</artifactId> <version>${slf4j_version}</version> 
-			</dependency> <dependency> <groupId>log4j</groupId> <artifactId>log4j</artifactId> 
-			<version>1.2.16</version> </dependency> -->
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>jakarta.commons.logging</artifactId>
 			<version>1.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>sourceforge.cglib</artifactId>
 			<version>2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.9</version>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>test.junit</artifactId>
+			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.unitils</groupId>
-			<artifactId>unitils-core</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>test.unitils.unitils-core</artifactId>
 			<version>${unitils_version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.unitils</groupId>
-			<artifactId>unitils-inject</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>test.unitils.unitils-inject</artifactId>
 			<version>${unitils_version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.unitils</groupId>
-			<artifactId>unitils-easymock</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>test.unitils.unitils-easymock</artifactId>
 			<version>${unitils_version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.unitils</groupId>
-			<artifactId>unitils-spring</artifactId>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>test.easymock</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>test.unitils.unitils-spring</artifactId>
 			<version>${unitils_version}</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-nop</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.unitils</groupId>
-					<artifactId>unitils-dbmaintainer</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

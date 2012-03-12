@@ -27,11 +27,8 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 import org.easymock.EasyMock;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.unitils.UnitilsJUnit4TestClassRunner;
 import org.unitils.easymock.EasyMockUnitils;
 import org.unitils.easymock.annotation.Mock;
@@ -74,14 +71,14 @@ public class FileChannelManagerTest {
 
     Head                        mockHead          = new Head();
 
-//    @BeforeClass
-//    public static void vmSetUp() {
-//        // -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.documentbuilderfactoryimpl
-//        System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-//                           "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-//        System.setProperty("javax.xml.parsers.SAXParserFactory",
-//                           "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-//    }
+    // @BeforeClass
+    // public static void vmSetUp() {
+    // // -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.documentbuilderfactoryimpl
+    // System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+    // "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+    // System.setProperty("javax.xml.parsers.SAXParserFactory",
+    // "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+    // }
 
     @Before
     public void setUp() throws InterruptedException, KeeperException, IOException {
@@ -93,7 +90,8 @@ public class FileChannelManagerTest {
         mockHead.setStartOffset(1);
         mockHead.setVersion(1);
         // 清理待处理文件
-        FileSystem fs = FileSystem.get(URI.create(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), consumerConf);
+        FileSystem fs = FileSystem.get(URI.create(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)),
+                                       consumerConf);
         String filePath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH);
         String oldPath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH);
         String rejectPath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH);
@@ -109,11 +107,13 @@ public class FileChannelManagerTest {
         RecoverableZooKeeper zoo = ZKUtil.connect(consumerConf, new ReplicationZookeeperWatcher());
         Stat statZkRoot = zoo.exists(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         if (statZkRoot == null) {
-            zoo.create(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            zoo.create(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
+                       CreateMode.PERSISTENT);
         } else {
             List<String> groupList = zoo.getChildren(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
             for (String group : groupList) {
-                String groupRoot = consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR + group;
+                String groupRoot = consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
+                                   + ConsumerConstants.FILE_SEPERATOR + group;
                 String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 statZkRoot = zoo.exists(queue, false);
