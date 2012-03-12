@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.collections.MapUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -36,11 +35,12 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.hbase.replication.protocol.FileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.server.ReplicationConf;
+import com.alibaba.hbase.replication.utility.ConsumerConstants;
 
 /**
  * 类Manager.java的实现描述：持有consumer端的中间文件同步线程池
@@ -57,8 +57,7 @@ public class FileChannelManager {
     protected FileSystem           fs;
     protected RecoverableZooKeeper zoo;
     @Autowired
-    @Qualifier("consumerConf")
-    protected Configuration        conf;
+    protected ReplicationConf      conf;
     @Autowired
     protected DataLoadingManager   dataLoadingManager;
     @Autowired
@@ -70,18 +69,18 @@ public class FileChannelManager {
             LOG.info("FileChannelManager is pendding to start.");
         }
         fileChannelPool = new ThreadPoolExecutor(
-                                                 conf.getInt(Constants.REP_FILE_CHANNEL_POOL_SIZE, 10),
-                                                 conf.getInt(Constants.REP_FILE_CHANNEL_POOL_SIZE, 10),
-                                                 conf.getInt(Constants.THREADPOOL_KEEPALIVE_TIME, 100),
+                                                 conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
+                                                 conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
+                                                 conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
                                                  TimeUnit.SECONDS,
                                                  new ArrayBlockingQueue<Runnable>(
-                                                                                  conf.getInt(Constants.THREADPOOL_SIZE,
+                                                                                  conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                               100)));
-        fs = FileSystem.get(URI.create(conf.get(Constants.PRODUCER_FS)), conf);
+        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
         zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
-        Stat statZkRoot = zoo.exists(conf.get(Constants.REP_ZNODE_ROOT), false);
+        Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         if (statZkRoot == null) {
-            zoo.create(conf.get(Constants.REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager init.");
@@ -90,7 +89,7 @@ public class FileChannelManager {
 
     public void start() throws IOException {
         scanProducerFilesAndAddToZK();
-        for (int i = 1; i < conf.getInt(Constants.REP_FILE_CHANNEL_POOL_SIZE, 10); i++) {
+        for (int i = 1; i < conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10); i++) {
             fileChannelPool.execute(new FileChannelRunnable(conf, dataLoadingManager, fileAdapter, stopflag));
         }
         while (true) {
@@ -125,8 +124,8 @@ public class FileChannelManager {
         // s1. scanProducerFiles
         // <group,filename set>
         Map<String, ArrayList<String>> fstMap = new HashMap<String, ArrayList<String>>();
-        for (FileStatus fst : fs.listStatus(new Path(conf.get(Constants.PRODUCER_FS),
-                                                     conf.get(Constants.TMPFILE_TARGETPATH)))) {
+        for (FileStatus fst : fs.listStatus(new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
+                                                     conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH)))) {
             if (!fst.isDir()) {
                 String fileName = fst.getPath().getName();
                 Head fileHead = FileAdapter.validataFileName(fileName);
@@ -142,14 +141,14 @@ public class FileChannelManager {
                 }
                 ftsSet.add(fileName);
             } else if (LOG.isWarnEnabled()) {
-                LOG.warn("Dir occurs in " + conf.get(Constants.TMPFILE_TARGETPATH) + " .path: " + fst.getPath());
+                LOG.warn("Dir occurs in " + conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH) + " .path: " + fst.getPath());
             }
         }
         // s2. update ZK
         if (MapUtils.isNotEmpty(fstMap)) {
             for (String group : fstMap.keySet()) {
-                String groupRoot = conf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR + group;
-                String queue = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_QUEUE;
+                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR + group;
+                String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 int queueVer;
                 try {
                     Stat statZkRoot = zoo.exists(groupRoot, false);

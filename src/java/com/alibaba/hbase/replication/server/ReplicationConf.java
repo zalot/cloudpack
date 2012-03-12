@@ -11,22 +11,26 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.hbase.replication.consumer.Constants;
-
 /**
  * 类ReplicationConf.java的实现描述：Configuration for consumer
  * 
  * @author dongsh 2012-3-4 下午02:15:28
  */
-@Service("consumerConf")
+@Service("conf")
 public class ReplicationConf extends Configuration {
+
+    private static String filePath = null;
+
+    public static void setFilePath(String filePath) {
+        ReplicationConf.filePath = filePath;
+    }
 
     public ReplicationConf(){
         super();
-        //添加hbase的默认配置
+        // 添加hbase的默认配置
         HBaseConfiguration.addHbaseResources(this);
-        //添加自定义的配置
-        this.addResource(Constants.CONFIG_FILE);
+        // 添加自定义的配置
+        this.addResource(filePath);
     }
 
 }

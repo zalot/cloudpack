@@ -1,5 +1,6 @@
 package com.alibaba.hbase.replication.zookeeper;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,23 +11,24 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
+import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
+import com.alibaba.hbase.replication.consumer.ReplicationZookeeperWatcher;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
-import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
-import com.alibaba.hbase.replication.persistence.HLogPersistence;
-import com.alibaba.hbase.replication.utility.AliHBaseConstants;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
- * HLogPersistence 持久化操作 类HLogZookeeperPersistence.java的实现描述：TODO 类实现描述
- * 
+ * HLogPersistence 持久化操作 类HLogZookeeperPersistence.java的实现描述：利用zk记录HLog处理的偏移量
+ * 注意：此类的方法并非线程安全，一个线程需要new一个
  * @author zalot.zhaoh Mar 7, 2012 10:24:18 AM
  */
-public class HLogZookeeperPersistence implements HLogPersistence {
+public class HLogZookeeperPersistence {
 
     protected RecoverableZooKeeper zoo;
     protected String               baseDir;
@@ -37,46 +39,26 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     public String getName() {
         return name;
     }
-
-    public void setZookeeper(RecoverableZooKeeper zoo) {
-        this.zoo = zoo;
-    }
-
-    public RecoverableZooKeeper getZookeeper() {
-        return zoo;
-    }
-
-    @Override
-    public void setConf(Configuration conf) {
-
-    }
-
-    @Override
-    public Configuration getConf() {
-        return null;
-    }
-
-    @Override
-    public void init(Configuration conf) throws KeeperException, InterruptedException {
-        String rootDir = conf.get(AliHBaseConstants.CONFKEY_ZOO_ROOT, AliHBaseConstants.ZOO_ROOT);
+    
+    public HLogZookeeperPersistence(Configuration conf) throws IOException, KeeperException, InterruptedException{
+        RecoverableZooKeeper zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+        String rootDir = conf.get(ProducerConstants.CONFKEY_ZOO_ROOT, ProducerConstants.ZOO_ROOT);
         Stat stat = zoo.exists(rootDir, false);
         if (stat == null) {
             zoo.create(rootDir, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
-
-        baseDir = rootDir + AliHBaseConstants.ZOO_PERSISTENCE_HLOG_GROUP;
+        baseDir = rootDir + ProducerConstants.ZOO_PERSISTENCE_HLOG_GROUP;
+        
         stat = zoo.exists(baseDir, false);
         if (stat == null) {
             zoo.create(baseDir, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
     }
 
-    @Override
     public void createEntry(HLogEntry entry) throws Exception {
         zoo.create(getEntryPath(entry), getEntryData(entry), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
     }
 
-    @Override
     public void deleteEntry(HLogEntry entry) throws Exception {
         String path = getEntryPath(entry);
         Stat stat = zoo.exists(path, false);
@@ -85,7 +67,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         }
     }
 
-    @Override
     public void updateEntry(HLogEntry entry) throws Exception {
         String path = getEntryPath(entry);
         Stat stat = zoo.exists(path, false);
@@ -108,7 +89,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         return entrys;
     }
 
-    @Override
     public HLogEntry getHLogEntry(String groupName, String name) throws Exception {
         if (!HLog.validateHLogFilename(name)) {
             return null;
@@ -123,16 +103,10 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         return null;
     }
 
-    //
-    //
-    //
-
-    @Override
     public List<String> listGroupName() throws KeeperException, InterruptedException {
         return zoo.getChildren(baseDir, false);
     }
 
-    @Override
     public void createGroup(HLogEntryGroup group, boolean createChild) throws Exception {
         zoo.create(getGroupPath(group.getGroupName()), getGroupData(group), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         if (createChild) {
@@ -149,7 +123,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         // }
     }
 
-    @Override
     public HLogEntryGroup getGroupByName(String groupName, boolean getChild) throws Exception {
         String path = getGroupPath(groupName);
         Stat stat = zoo.exists(path, false);
@@ -167,11 +140,13 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         return group;
     }
 
-    @Override
     public void updateGroup(HLogEntryGroup group, boolean updateChild) throws Exception {
         String path = getGroupPath(group.getGroupName());
         Stat stat = zoo.exists(path, false);
         if (stat != null) {
+            //
+            //
+            //
             zoo.setData(path, getGroupData(group), stat.getVersion());
             if (updateChild) {
                 HLogEntry tmpEntry;
@@ -185,7 +160,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         }
     }
 
-    @Override
     public void createOrUpdateGroup(HLogEntryGroup group, boolean updateChild) throws Exception {
         HLogEntryGroup tmpGroup = getGroupByName(group.getGroupName(), false);
         if (tmpGroup == null) {
@@ -195,7 +169,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         }
     }
 
-    @Override
     public boolean isLockGroup(String groupName) throws Exception {
         Stat stat = getLockGroupStat(groupName);
         if (stat != null) {
@@ -204,7 +177,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         return false;
     }
 
-    @Override
     public boolean lockGroup(String groupName) throws Exception {
         if (!isLockGroup(groupName)) {
             try {
@@ -223,7 +195,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
         return false;
     }
 
-    @Override
     public void unlockGroup(String groupName) throws Exception {
         Stat stat = getLockGroupStat(groupName);
         if (stat == null) return;
@@ -233,10 +204,6 @@ public class HLogZookeeperPersistence implements HLogPersistence {
             return;
         }
     }
-
-    //
-    //
-    //
 
     private byte[] getEntryData(HLogEntry entry) {
         String data = entry.getPos() + "." + entry.getType().getTypeValue();
@@ -286,7 +253,7 @@ public class HLogZookeeperPersistence implements HLogPersistence {
     }
 
     protected String getGroupLockPath(String groupName) {
-        return baseDir + "/" + groupName + AliHBaseConstants.ZOO_PERSISTENCE_HLOG_GROUP_LOCK;
+        return baseDir + "/" + groupName + ProducerConstants.ZOO_PERSISTENCE_HLOG_GROUP_LOCK;
     }
 
     protected Stat getGroupStat(HLogEntryGroup group) throws Exception {

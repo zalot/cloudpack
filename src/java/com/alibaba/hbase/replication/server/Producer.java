@@ -14,23 +14,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.alibaba.hbase.replication.consumer.FileChannelManager;
-import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.producer.ReplicationSinkManger;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
- * 类Consumer.java的实现描述：Consumer的main线程
+ * 类Producer.java的实现描述：Producer的main线程
  * 
- * @author dongsh 2012-3-4 下午02:17:18
+ * @author dongsh 2012-3-9 上午10:42:41
  */
-public class Consumer {
+public class Producer {
 
-    private static final Logger LOG         = LoggerFactory.getLogger(Consumer.class);
+    private static final Logger LOG         = LoggerFactory.getLogger(Producer.class);
     private static final String SPRING_PATH = "classpath*:META-INF/spring/context.xml";
     private static boolean      running     = true;
 
     public static void main(String args[]) {
         try {
-            ReplicationConf.setFilePath(ConsumerConstants.CONSUMER_CONFIG_FILE);
+            ReplicationConf.setFilePath(ProducerConstants.PRODUCER_CONFIG_FILE);
             final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(SPRING_PATH);
             // 钩子
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -40,39 +40,38 @@ public class Consumer {
                     try {
                         context.stop();
                         context.close();
-                        LOG.info("Consumer server stopped");
+                        LOG.info("Producer server stopped");
                         System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                                           + " Consumer server stoped");
+                                           + " Producer server stoped");
                     } catch (Throwable t) {
-                        LOG.error("Fail to stop consumer server: ", t);
+                        LOG.error("Fail to stop Producer server: ", t);
                     }
-                    synchronized (Consumer.class) {
+                    synchronized (Producer.class) {
                         running = false;
-                        Consumer.class.notify();
+                        Producer.class.notify();
                     }
 
                 }
             });
             // 启动Server
             context.start();
-            ((FileChannelManager) context.getBean("fileChannelManager")).start();
-            LOG.info("Consumer server started");
+            ((ReplicationSinkManger) context.getBean("replicationSinkManger")).start();
+            LOG.info("Producer server started");
             System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                               + " Consumer server started");
+                               + " Producer server started");
 
         } catch (Throwable t) {
             System.exit(-1);
-            LOG.error("Fail to start consumer server: ", t);
+            LOG.error("Fail to start producer server: ", t);
         }
-        synchronized (Consumer.class) {
+        synchronized (Producer.class) {
             while (running) {
                 try {
-                    Consumer.class.wait();
+                    Producer.class.wait();
                 } catch (Throwable t) {
-                    LOG.error("Consumer server got runtime errors: ", t);
+                    LOG.error("Producer server got runtime errors: ", t);
                 }
             }
         }
     }
-
 }

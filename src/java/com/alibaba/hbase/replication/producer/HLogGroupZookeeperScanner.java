@@ -1,6 +1,7 @@
 package com.alibaba.hbase.replication.producer;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -19,9 +20,10 @@ import org.apache.zookeeper.data.Stat;
 
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
-import com.alibaba.hbase.replication.persistence.HLogPersistence;
-import com.alibaba.hbase.replication.utility.AliHBaseConstants;
+import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;
+import com.alibaba.hbase.replication.zookeeper.HLogZookeeperPersistence;
 import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
 
 /**
@@ -30,30 +32,30 @@ import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
  * 
  * @author zalot.zhaoh Mar 1, 2012 10:44:45 AM
  */
-public class HLogGroupZookeeperScanner extends Thread {
+public class HLogGroupZookeeperScanner implements Runnable {
 
-    protected static final Log     LOG            = LogFactory.getLog(HLogGroupZookeeperScanner.class);
-    protected String               name;
-    protected String               scanBasePath;
-    protected String               scanLockPath;
-    protected int                  errorCount     = 0;
+    protected static final Log         LOG            = LogFactory.getLog(HLogGroupZookeeperScanner.class);
+    protected String                   name;
+    protected String                   scanBasePath;
+    protected String                   scanLockPath;
+    protected int                      errorCount     = 0;
     // 休息时间
     // 争抢到 scanner 后 间隔时间
-    protected long                 flushSleepTime;
+    protected long                     flushSleepTime;
 
     // scanner 争抢重试时间
-    protected long                 scannerTryLockTime;
-    protected Path                 hlogPath;
-    protected Path                 oldHlogPath;
-    protected boolean              isLock         = false;
+    protected long                     scannerTryLockTime;
+    protected Path                     hlogPath;
+    protected Path                     oldHlogPath;
+    protected boolean                  isLock         = false;
 
-    protected HLogPersistence      hlogDAO;
-    protected FileSystem           fs;
-    protected RecoverableZooKeeper zoo;
-    protected long                 scanOldHlogTimeOut;
-    protected Configuration conf;
+    protected HLogZookeeperPersistence hlogDAO;
+    protected FileSystem               fs;
+    protected RecoverableZooKeeper     zoo;
+    protected long                     scanOldHlogTimeOut;
+    protected Configuration            conf;
 
-    protected boolean              hasScanOldHLog = false;
+    protected boolean                  hasScanOldHLog = false;
 
     public Path getHlogPath() {
         return hlogPath;
@@ -71,36 +73,32 @@ public class HLogGroupZookeeperScanner extends Thread {
         this.oldHlogPath = oldHlogPath;
     }
 
-    public HLogGroupZookeeperScanner(Configuration conf, FileSystem fs, HLogPersistence dao) throws KeeperException,
-                                                                                            InterruptedException,
-                                                                                            IOException{
-        this(UUID.randomUUID().toString(), conf, fs, dao);
+    public HLogGroupZookeeperScanner(Configuration conf) throws KeeperException, InterruptedException, IOException{
+        this(UUID.randomUUID().toString(), conf);
     }
 
-    public HLogGroupZookeeperScanner(String name, Configuration conf, FileSystem fs, HLogPersistence dao)
-                                                                                                         throws KeeperException,
-                                                                                                         InterruptedException,
-                                                                                                         IOException{
+    public HLogGroupZookeeperScanner(String name, Configuration conf) throws KeeperException, InterruptedException,
+                                                                     IOException{
         zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatch());
-        this.fs = fs;
-        this.hlogDAO = dao;
+        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
+        this.hlogDAO = new HLogZookeeperPersistence(conf);
         this.name = name;
         this.conf = conf;
         init(conf);
     }
 
     private void init(Configuration conf) throws KeeperException, InterruptedException {
-        scanBasePath = conf.get(AliHBaseConstants.CONFKEY_ZOO_SCAN_ROOT, AliHBaseConstants.ZOO_SCAN_ROOT);
-        scanLockPath = scanBasePath + AliHBaseConstants.ZOO_SCAN_LOCK;
-        flushSleepTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
-                                      AliHBaseConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME);
-        scannerTryLockTime = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_LOCK_TRYLOCKTIME,
-                                          AliHBaseConstants.ZOO_SCAN_LOCK_TRYLOCKTIME);
-        scanOldHlogTimeOut = conf.getLong(AliHBaseConstants.CONFKEY_ZOO_SCAN_OLDHLOG_TIMEOUT,
-                                          AliHBaseConstants.ZOO_SCAN_OLDHLOG_TIMEOUT);
+        scanBasePath = conf.get(ProducerConstants.CONFKEY_ZOO_SCAN_ROOT, ProducerConstants.ZOO_SCAN_ROOT);
+        scanLockPath = scanBasePath + ProducerConstants.ZOO_SCAN_LOCK;
+        flushSleepTime = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
+                                      ProducerConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME);
+        scannerTryLockTime = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_TRYLOCKTIME,
+                                          ProducerConstants.ZOO_SCAN_LOCK_TRYLOCKTIME);
+        scanOldHlogTimeOut = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_OLDHLOG_TIMEOUT,
+                                          ProducerConstants.ZOO_SCAN_OLDHLOG_TIMEOUT);
 
-        hlogPath = new Path(conf.get("hbase.rootdir") + "/" + AliHBaseConstants.PATH_BASE_HLOG);
-        oldHlogPath = new Path(conf.get("hbase.rootdir") + "/" + AliHBaseConstants.PATH_BASE_OLDHLOG);
+        hlogPath = new Path(conf.get("hbase.rootdir") + "/" + ProducerConstants.PATH_BASE_HLOG);
+        oldHlogPath = new Path(conf.get("hbase.rootdir") + "/" + ProducerConstants.PATH_BASE_OLDHLOG);
         Stat stat = zoo.exists(scanBasePath, false);
         if (stat == null) {
             try {

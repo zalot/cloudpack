@@ -1,25 +1,31 @@
 package com.alibaba.hbase.replication.producer;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
+import org.apache.zookeeper.KeeperException;
 
-import com.alibaba.hbase.replication.hlog.HLogOperator;
+import com.alibaba.hbase.replication.hlog.DefaultHLogOperator;
 import com.alibaba.hbase.replication.hlog.HLogReader;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
-import com.alibaba.hbase.replication.persistence.HLogPersistence;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Body.Edit;
+import com.alibaba.hbase.replication.protocol.FileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
-import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.protocol.Version1;
-import com.alibaba.hbase.replication.utility.AliHBaseConstants;
+import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;
+import com.alibaba.hbase.replication.zookeeper.HLogZookeeperPersistence;
 
 /**
  * HBaseReplication 搬运工作对象 <BR>
@@ -29,44 +35,24 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
  * 
  * @author zalot.zhaoh Feb 29, 2012 2:27:45 PM
  */
-public class CrossIDCHBaseReplicationSink extends Thread {
+public class CrossIDCHBaseReplicationSink implements Runnable {
 
-    protected static final Log LOG                      = LogFactory.getLog(HLogGroupZookeeperScanner.class);
-    protected ProtocolAdapter  adapter;
-    protected HLogPersistence  hlogDAO;
-    protected HLogOperator     hlogOperator;
-    private long               minGroupOperatorInterval = AliHBaseConstants.HLOG_GROUP_OPERATORINTERVAL;
-    private long               maxReaderBuffer          = AliHBaseConstants.HLOG_READERBUFFER;
-    private long               sinkSleepTime;
+    protected static final Log         LOG                      = LogFactory.getLog(HLogGroupZookeeperScanner.class);
+    protected FileAdapter              adapter;
+    protected FileSystem               fs;
+    protected HLogZookeeperPersistence hlogDAO;
+    protected DefaultHLogOperator      hlogOperator;
+    private long                       minGroupOperatorInterval = ProducerConstants.HLOG_GROUP_INTERVAL;
+    private long                       maxReaderBuffer          = ProducerConstants.HLOG_READERBUFFER;
+    private long                       sinkSleepTime;
 
-    public CrossIDCHBaseReplicationSink(HLogPersistence dao, HLogOperator operator, ProtocolAdapter ad){
-        this.hlogDAO = dao;
-        this.hlogOperator = operator;
+    public CrossIDCHBaseReplicationSink(Configuration conf, FileAdapter ad) throws IOException, KeeperException,
+                                                                           InterruptedException{
         this.adapter = ad;
-    }
-
-    public ProtocolAdapter getAdapter() {
-        return adapter;
-    }
-
-    public HLogPersistence getHlogDAO() {
-        return hlogDAO;
-    }
-
-    public HLogOperator getHlogOperator() {
-        return hlogOperator;
-    }
-
-    public void setAdapter(ProtocolAdapter adapter) {
-        this.adapter = adapter;
-    }
-
-    public void setHlogDAO(HLogPersistence hlogDAO) {
-        this.hlogDAO = hlogDAO;
-    }
-
-    public void setHlogOperator(HLogOperator hlogOperator) {
-        this.hlogOperator = hlogOperator;
+        // 注意：fs上的操作非线程安全，需要每线程一个
+        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
+        this.hlogOperator = new DefaultHLogOperator(conf, fs);
+        this.hlogDAO = new HLogZookeeperPersistence(conf);
     }
 
     @Override
@@ -164,7 +150,7 @@ public class CrossIDCHBaseReplicationSink extends Thread {
     private boolean doAdapter(Head head, Body body) {
         Version1 version1 = new Version1(head, body);
         try {
-            adapter.write(version1);
+            adapter.write(version1, fs);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

@@ -9,11 +9,11 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
-import com.alibaba.hbase.replication.utility.AliHBaseConstants;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
  * 日志操作 1. 统一管理 HLogReader
- * 
+ * 注意：此类的方法并非线程安全，一个线程需要new一个
  * @author zalot.zhaoh
  */
 public class DefaultHLogOperator implements HLogOperator {
@@ -33,8 +33,8 @@ public class DefaultHLogOperator implements HLogOperator {
         if (fs == null) this.fs = FileSystem.get(conf);
         else this.fs = fs;
         rootDir = new Path(conf.get("hbase.rootdir"));
-        logsPath = new Path(rootDir, AliHBaseConstants.PATH_BASE_HLOG);
-        oldLogsPath = new Path(rootDir, AliHBaseConstants.PATH_BASE_OLDHLOG);
+        logsPath = new Path(rootDir, ProducerConstants.PATH_BASE_HLOG);
+        oldLogsPath = new Path(rootDir, ProducerConstants.PATH_BASE_OLDHLOG);
         this.conf = conf;
     }
 

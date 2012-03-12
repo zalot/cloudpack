@@ -19,10 +19,10 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.hbase.replication.consumer.Constants;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.protocol.protobuf.BodySerializingHandler;
+import com.alibaba.hbase.replication.utility.ConsumerConstants;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
@@ -31,33 +31,32 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
 @Service("fileAdapter")
-public class FileAdapter implements ProtocolAdapter {
+public class FileAdapter {
 
-    protected static final Log  LOG          = LogFactory.getLog(FileAdapter.class);
+    protected static final Log LOG          = LogFactory.getLog(FileAdapter.class);
     /**
      * 待处理的中间文件存放位置
      */
-    protected Path              targetPath;
+    protected Path             targetPath;
     /**
      * md5摘要文件位置
      */
-    protected Path              digestPath;
+    protected Path             digestPath;
     /**
      * 已处理的中间文件存放位置
      */
-    protected Path              oldPath;
+    protected Path             oldPath;
     /**
      * 退回的中间文件存放位置（需要producer端重做）
      */
-    protected Path              rejectPath;
+    protected Path             rejectPath;
     /**
      * 生成文件时使用的临时目录
      */
-    protected Path              tmpPath;
+    protected Path             tmpPath;
     @Autowired
-    protected Configuration     conf;
-    public static final String  SPLIT_SYMBOL = "|";
-    protected FileSystem        fs;
+    protected Configuration    conf;
+    public static final String SPLIT_SYMBOL = "|";
 
     public Path getPath() {
         return targetPath;
@@ -99,13 +98,48 @@ public class FileAdapter implements ProtocolAdapter {
         ;
     }
 
-    @Override
-    public void write(MetaData data) throws Exception {
-        Path target = write(data, fs, tmpPath);
-        if (target != null) {
+    public void write(MetaData data, FileSystem fs) throws Exception {
+        FSDataOutputStream output = null;
+        FSDataOutputStream sigoutput = null;
+        try {
+            String fileName = head2FileName(data.getHead());
+            byte[] bodyBytes = BodySerializingHandler.serialize(data.getBody());
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            Path target = new Path(tmpPath, fileName);
+            output = fs.create(target, true);
+            output.write(bodyBytes);
+            sigoutput = fs.create(new Path(fileName + "_md5"));
+            sigoutput.write(digest.digest(bodyBytes));
             Path ot = new Path(targetPath.toString() + "/" + target.getName());
             if (!fs.rename(target, ot)) {
                 throw new RuntimeException(target + " rename to " + ot);
+            }
+        } catch (IOException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("Create file failed.", e);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("Coding error!", e);
+            }
+        } finally {
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    output = null;
+                }
+            }
+            if (sigoutput != null) {
+                try {
+                    sigoutput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    sigoutput = null;
+                }
             }
         }
     }
@@ -147,66 +181,20 @@ public class FileAdapter implements ProtocolAdapter {
         return null;
     }
 
-    public static Path write(MetaData meta, FileSystem fs, Path root) {
-        FSDataOutputStream output = null;
-        FSDataOutputStream sigoutput = null;
-        Path target = null;
-        try {
-            String fileName = head2FileName(meta.getHead());
-            byte[] data = BodySerializingHandler.serialize(meta.getBody());
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            target = new Path(root, fileName);
-            output = fs.create(target, true);
-            output.write(data);
-            sigoutput = fs.create(new Path(fileName + "_md5"));
-            sigoutput.write(digest.digest(data));
-            return target;
-        } catch (IOException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("Create file failed.", e);
-            }
-        } catch (NoSuchAlgorithmException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("Coding error!", e);
-            }
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    output = null;
-                }
-            }
-            if (sigoutput != null) {
-                try {
-                    sigoutput.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    sigoutput = null;
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
     public void init(Configuration conf) {
-        String hbaseDir = conf.get("hbase.rootdir");
-        try {
-            tmpPath = new Path(hbaseDir + "/alirepstmp");
-            targetPath = new Path(hbaseDir + "/alireps");
-            fs = FileSystem.get(conf);
-            if (!fs.exists(tmpPath)) {
-                fs.mkdirs(tmpPath);
-            }
-            if (!fs.exists(targetPath)) {
-                fs.mkdirs(targetPath);
-            }
-        } catch (Exception e) {
-        }
+        // String hbaseDir = conf.get("hbase.rootdir");
+        // try {
+        // tmpPath = new Path(hbaseDir + "/alirepstmp");
+        // targetPath = new Path(hbaseDir + "/alireps");
+        // fs = FileSystem.get(conf);
+        // if (!fs.exists(tmpPath)) {
+        // fs.mkdirs(tmpPath);
+        // }
+        // if (!fs.exists(targetPath)) {
+        // fs.mkdirs(targetPath);
+        // }
+        // } catch (Exception e) {
+        // }
     }
 
     /**
@@ -218,8 +206,8 @@ public class FileAdapter implements ProtocolAdapter {
      */
     public void clean(Head head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(oldPath, head2FileName(head)));
-        fs.rename(new Path(digestPath, head2FileName(head) + Constants.MD5_SUFFIX),
-                  new Path(oldPath, head2FileName(head) + Constants.MD5_SUFFIX));
+        fs.rename(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX),
+                  new Path(oldPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
     }
 
     /**
@@ -227,20 +215,20 @@ public class FileAdapter implements ProtocolAdapter {
      * 
      * @param fileHead 中间文件文件名
      * @param fs
-     * @throws IOException 
+     * @throws IOException
      */
     public void reject(Head head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(rejectPath, head2FileName(head)));
-        fs.rename(new Path(digestPath, head2FileName(head) + Constants.MD5_SUFFIX),
-                  new Path(rejectPath, head2FileName(head) + Constants.MD5_SUFFIX));
+        fs.rename(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX),
+                  new Path(rejectPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
     }
 
     @PostConstruct
     public void setPath() {
-        targetPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_TARGETPATH));
-        oldPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_OLDPATH));
-        rejectPath = new Path(conf.get(Constants.PRODUCER_FS), conf.get(Constants.TMPFILE_REJECTPATH));
-        digestPath = new Path(targetPath, Constants.MD5_DIR);
+        targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH));
+        oldPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), conf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH));
+        rejectPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), conf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH));
+        digestPath = new Path(targetPath, ConsumerConstants.MD5_DIR);
     }
 
 }

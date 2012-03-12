@@ -24,10 +24,11 @@ import org.apache.hadoop.hbase.client.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.hbase.replication.protocol.Body.Edit;
+import com.alibaba.hbase.replication.server.ReplicationConf;
+import com.alibaba.hbase.replication.utility.ConsumerConstants;
 
 /**
  * 类DataLoadingManager.java的实现描述：持有consumer端的HbaseClient加载数据线程池
@@ -39,8 +40,7 @@ public class DataLoadingManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataLoadingManager.class);
     @Autowired
-    @Qualifier("consumerConf")
-    protected Configuration     conf;
+    protected ReplicationConf   conf;
     protected HTablePool        pool;
     protected int               batchSize;
 
@@ -49,9 +49,9 @@ public class DataLoadingManager {
         if (LOG.isInfoEnabled()) {
             LOG.info("DataLoadingManager start.");
         }
-        batchSize = conf.getInt(Constants.REP_DATA_LAODING_BATCH_SIZE, 1000);
+        batchSize = conf.getInt(ConsumerConstants.CONFKEY_REP_DATA_LAODING_BATCH_SIZE, 1000);
         Configuration hbaseConf = HBaseConfiguration.create(conf);
-        pool = new HTablePool(hbaseConf, conf.getInt(Constants.REP_DATA_LAODING_POOL_SIZE, 30));
+        pool = new HTablePool(hbaseConf, conf.getInt(ConsumerConstants.CONFKEY_REP_DATA_LAODING_POOL_SIZE, 30));
     }
 
     /**
@@ -73,26 +73,26 @@ public class DataLoadingManager {
             switch (e.getType()) {
                 case Put:
                     Put p = new Put(e.getRowKey(), e.getTimeStamp());
-                    p.setClusterId(Constants.SLAVE_CLUSTER_ID);
+                    p.setClusterId(ConsumerConstants.SLAVE_CLUSTER_ID);
                     p.add(e.getFamily(), e.getQualifier(), e.getValue());
                     puts.add(p);
                     break;
                 case Delete:
                     Delete d = new Delete(e.getRowKey());
                     d.deleteColumn(e.getFamily(), e.getQualifier(), e.getTimeStamp());
-                    d.setClusterId(Constants.SLAVE_CLUSTER_ID);
+                    d.setClusterId(ConsumerConstants.SLAVE_CLUSTER_ID);
                     deletes.add(d);
                     break;
                 case DeleteColumn:
                     Delete dc = new Delete(e.getRowKey());
                     dc.deleteColumns(e.getFamily(), e.getQualifier(), e.getTimeStamp());
-                    dc.setClusterId(Constants.SLAVE_CLUSTER_ID);
+                    dc.setClusterId(ConsumerConstants.SLAVE_CLUSTER_ID);
                     deletes.add(dc);
                     break;
                 case DeleteFamily:
                     Delete df = new Delete(e.getRowKey());
                     df.deleteFamily(e.getFamily(), e.getTimeStamp());
-                    df.setClusterId(Constants.SLAVE_CLUSTER_ID);
+                    df.setClusterId(ConsumerConstants.SLAVE_CLUSTER_ID);
                     deletes.add(df);
                     break;
                 default:

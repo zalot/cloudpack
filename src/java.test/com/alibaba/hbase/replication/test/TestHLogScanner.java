@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
-import com.alibaba.hbase.replication.utility.AliHBaseConstants;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.zookeeper.HLogZookeeperPersistence;
 import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
@@ -107,7 +107,7 @@ public class TestHLogScanner extends BaseReplicationTest {
                             scan.start();
                         }
 //                        Thread.sleep(AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME * 2);
-                        Thread.sleep(AliHBaseConstants.ZOO_SCAN_LOCK_TRYLOCKTIME * 2);
+                        Thread.sleep(ProducerConstants.ZOO_SCAN_LOCK_TRYLOCKTIME * 2);
                     } catch (Exception e) {
                     }
                 }

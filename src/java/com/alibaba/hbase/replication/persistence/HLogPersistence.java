@@ -8,6 +8,7 @@ import org.apache.hadoop.conf.Configuration;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 
+@Deprecated
 public interface HLogPersistence extends Configurable {
 
     public void createEntry(HLogEntry entry) throws Exception;

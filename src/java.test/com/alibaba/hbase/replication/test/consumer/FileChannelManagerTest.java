@@ -40,7 +40,6 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByName;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import com.alibaba.hbase.replication.consumer.Constants;
 import com.alibaba.hbase.replication.consumer.FileChannelManager;
 import com.alibaba.hbase.replication.consumer.ReplicationZookeeperWatcher;
 import com.alibaba.hbase.replication.protocol.Body;
@@ -50,6 +49,7 @@ import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.Version1;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
+import com.alibaba.hbase.replication.utility.ConsumerConstants;
 
 /**
  * 类FileChannelManagerTest.java的实现描述
@@ -57,7 +57,7 @@ import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
  * @author dongsh 2012-3-5 上午10:58:49
  */
 @RunWith(UnitilsJUnit4TestClassRunner.class)
-@SpringApplicationContext("classpath*:META-INF/spring/consumer.xml")
+@SpringApplicationContext("classpath*:META-INF/spring/context.xml")
 public class FileChannelManagerTest {
 
     private static final long   DEFAULT_TIMESTAMP = 1330923080;
@@ -93,40 +93,40 @@ public class FileChannelManagerTest {
         mockHead.setStartOffset(1);
         mockHead.setVersion(1);
         // 清理待处理文件
-        FileSystem fs = FileSystem.get(URI.create(consumerConf.get(Constants.PRODUCER_FS)), consumerConf);
-        String filePath = consumerConf.get(Constants.TMPFILE_TARGETPATH);
-        String oldPath = consumerConf.get(Constants.TMPFILE_OLDPATH);
-        String rejectPath = consumerConf.get(Constants.TMPFILE_REJECTPATH);
-        fs.delete(new Path(consumerConf.get(Constants.PRODUCER_FS), filePath), true);
-        fs.delete(new Path(consumerConf.get(Constants.PRODUCER_FS), oldPath), true);
-        fs.delete(new Path(consumerConf.get(Constants.PRODUCER_FS), rejectPath), true);
-        fs.mkdirs(new Path(consumerConf.get(Constants.PRODUCER_FS), filePath));
-        fs.mkdirs(new Path(consumerConf.get(Constants.PRODUCER_FS), oldPath));
-        fs.mkdirs(new Path(consumerConf.get(Constants.PRODUCER_FS), rejectPath));
-        fs.create(new Path(new Path(consumerConf.get(Constants.PRODUCER_FS), filePath),
+        FileSystem fs = FileSystem.get(URI.create(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), consumerConf);
+        String filePath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH);
+        String oldPath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH);
+        String rejectPath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH);
+        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath), true);
+        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), oldPath), true);
+        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), rejectPath), true);
+        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath));
+        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), oldPath));
+        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), rejectPath));
+        fs.create(new Path(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath),
                            FileAdapter.head2FileName(mockHead)), true);
         // 清理zk的偏移量
         RecoverableZooKeeper zoo = ZKUtil.connect(consumerConf, new ReplicationZookeeperWatcher());
-        Stat statZkRoot = zoo.exists(consumerConf.get(Constants.REP_ZNODE_ROOT), false);
+        Stat statZkRoot = zoo.exists(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         if (statZkRoot == null) {
-            zoo.create(consumerConf.get(Constants.REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            zoo.create(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         } else {
-            List<String> groupList = zoo.getChildren(consumerConf.get(Constants.REP_ZNODE_ROOT), false);
+            List<String> groupList = zoo.getChildren(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
             for (String group : groupList) {
-                String groupRoot = consumerConf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR + group;
-                String cur = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_CURRENT;
-                String queue = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_QUEUE;
+                String groupRoot = consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR + group;
+                String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
+                String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 statZkRoot = zoo.exists(queue, false);
                 if (statZkRoot != null) {
-                    zoo.delete(queue, Constants.ZK_ANY_VERSION);
+                    zoo.delete(queue, ConsumerConstants.ZK_ANY_VERSION);
                 }
                 statZkRoot = zoo.exists(cur, false);
                 if (statZkRoot != null) {
-                    zoo.delete(cur, Constants.ZK_ANY_VERSION);
+                    zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
                 }
                 statZkRoot = zoo.exists(groupRoot, false);
                 if (statZkRoot != null) {
-                    zoo.delete(groupRoot, Constants.ZK_ANY_VERSION);
+                    zoo.delete(groupRoot, ConsumerConstants.ZK_ANY_VERSION);
                 }
             }
         }

@@ -39,6 +39,7 @@ import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
+import com.alibaba.hbase.replication.utility.ConsumerConstants;
 
 /**
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类
@@ -52,7 +53,7 @@ public class FileChannelRunnable implements Runnable {
     protected RecoverableZooKeeper zoo;
     protected Configuration        conf;
     protected FileSystem           fs;
-    protected String               name          = Constants.CHANNEL_NAME
+    protected String               name          = ConsumerConstants.CHANNEL_NAME
                                                    + UUID.randomUUID().toString().substring(0, 8);
     protected DataLoadingManager   dataLoadingManager;
     protected FileAdapter          fileAdapter;
@@ -66,7 +67,8 @@ public class FileChannelRunnable implements Runnable {
         this.stopflag = stopflag;
         this.dataLoadingManager = dataLoadingManager;
         zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
-        fs = FileSystem.get(URI.create(conf.get(Constants.PRODUCER_FS)), conf);
+        //注意：fs上的操作非线程安全，需要每线程一个
+        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
     }
 
     @Override
@@ -101,12 +103,12 @@ public class FileChannelRunnable implements Runnable {
                             if (LOG.isErrorEnabled()) {
                                 LOG.error("reject file failed. file name" + currentNode.getFileName(), e);
                             }
-                            String groupRoot = conf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR
+                            String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
                                                + currentNode.getGroupName();
-                            String cur = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_CURRENT;
+                            String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                             try {
                                 // 清除zk上对此group的加锁
-                                zoo.delete(cur, Constants.ZK_ANY_VERSION);
+                                zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
                             } catch (Exception e2) {
                                 if (LOG.isWarnEnabled()) {
                                     LOG.warn("error while deleting cur from zk . cur: " + cur, e);
@@ -134,11 +136,11 @@ public class FileChannelRunnable implements Runnable {
                         }
                     }
                     // 清除zk上对此group的加锁
-                    String groupRoot = conf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR
+                    String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
                                        + currentNode.getGroupName();
-                    String cur = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_CURRENT;
+                    String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                     try {
-                        zoo.delete(cur, Constants.ZK_ANY_VERSION);
+                        zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
                     } catch (Exception e) {
                         if (LOG.isWarnEnabled()) {
                             LOG.warn("delete completed consumerNode failed.cur: " + cur, e);
@@ -148,7 +150,7 @@ public class FileChannelRunnable implements Runnable {
             } else {
                 // 没分配到任务的sleep再重试一段时间
                 try {
-                    Thread.sleep(Constants.WAIT_MILLIS);
+                    Thread.sleep(ConsumerConstants.WAIT_MILLIS);
                 } catch (InterruptedException e) {
                     if (LOG.isWarnEnabled()) {
                         LOG.warn("wait Interrupted. Name: " + this.name, e);
@@ -170,8 +172,9 @@ public class FileChannelRunnable implements Runnable {
             ConsumerZNode orig = null;
             String retry = null;
             for (ConsumerZNode node : errorNodeList) {
-                String groupRoot = conf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR + node.getGroupName();
-                String queue = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_QUEUE;
+                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
+                                   + node.getGroupName();
+                String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 try {
                     TreeSet<String> ftsSet = getQueueData(queue);
                     for (String fileName : ftsSet) {
@@ -203,17 +206,17 @@ public class FileChannelRunnable implements Runnable {
         // 没有可重做的異常節點
         List<String> groupList = null;
         try {
-            groupList = zoo.getChildren(conf.get(Constants.REP_ZNODE_ROOT), false);
+            groupList = zoo.getChildren(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         } catch (Exception e) {
             if (LOG.isWarnEnabled()) {
-                LOG.warn("no group found at zk. " + conf.get(Constants.REP_ZNODE_ROOT), e);
+                LOG.warn("no group found at zk. " + conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), e);
             }
         }
         if (CollectionUtils.isNotEmpty(groupList)) {
             for (String group : groupList) {
-                String groupRoot = conf.get(Constants.REP_ZNODE_ROOT) + Constants.FILE_SEPERATOR + group;
-                String cur = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_CURRENT;
-                String queue = groupRoot + Constants.FILE_SEPERATOR + Constants.ZK_QUEUE;
+                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR + group;
+                String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
+                String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 Stat statZkCur;
                 try {
                     statZkCur = zoo.exists(cur, false);
@@ -259,7 +262,7 @@ public class FileChannelRunnable implements Runnable {
                             LOG.warn("error while creating znode of cur: " + cur, e);
                         }
                         try {
-                            zoo.delete(cur, Constants.ZK_ANY_VERSION);
+                            zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
                         } catch (Exception e1) {
                             if (LOG.isErrorEnabled()) {
                                 LOG.error("error while deleting znode of cur: " + cur, e);

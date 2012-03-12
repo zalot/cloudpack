@@ -15,6 +15,7 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
  * 
  * @author zalot.zhaoh
  */
+@Deprecated
 public interface HLogOperator {
     public HLogReader getReader(HLogEntry entry) throws Exception;
     public Path getRootDir();
