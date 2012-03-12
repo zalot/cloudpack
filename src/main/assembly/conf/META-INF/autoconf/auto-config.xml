@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="gb2312"?>
+<config>
+	<group name="env" description="环境设置">
+		<property name="replication.javahome" defaultValue="/usr/alibaba/java"
+			description="应用程序javahome" />
+		<property name="replication.production" defaultValue="dev"
+			description="生产模式" />
+		<property name="replication.appserver.port"
+			defaultValue="8080" description="应用服务器端口" />
+	</group>
+
+	<group name="configuration">
+		<property name="replication.file.dir" defaultValue="/user/admin/replicationFile"
+			description="待同步中间文件在hdfs上的存放位置" />
+		<property name="replication.producer.fs" defaultValue="hdfs://localhost/"
+			description="同步生产端的filesystem位置" />
+	</group>
+
+	<group name="consumer">
+		<property name="replication.consumer.zookeeper.quorum"
+			defaultValue="localhost" description="hbase.zookeeper.quorum" />
+		<property name="replication.consumer.zookeeper.znoderoot"
+			defaultValue="/consumer" description="断点保留位置" />
+	</group>
+
+	<group name="producer">
+		<property name="replication.producer.zookeeper.quorum"
+			defaultValue="localhost" description="hbase.zookeeper.quorum" />
+	</group>
+
+	<group name="log">
+		<property name="replication.output" defaultValue="${user.home}/output"
+			description="日志输出目录" />
+		<property name="replication.logging.root" defaultValue="${replication_output}/logs"
+			description="日志文件输出路径" />
+		<property name="replication.logging.level" defaultValue="ERROR"
+			description="日志输出级别，可选值：OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL" />
+		<property name="replication.logging.file" defaultValue="replication.log"
+			description="日志输出文件名" />
+	</group>
+
+	<group name="dragoon">
+		<property name="replication.dragoon.monitor.enabled"
+			defaultValue="false" description="是否启用dragoon监控" />
+		<property name="replication.dragoon.app.name" defaultValue="hbase.replication.havana"
+			description="dragoon监控的应用名称" />
+	</group>
+
+	<script>
+		<generate template="env.sh.vm" destfile="bin/env.sh" charset="UTF-8" />
+		<generate template="consumer-configuration.xml.vm" destfile="conf/META-INF/consumer-configuration.xml"
+			charset="UTF-8" />
+		<generate template="producer-configuration.xml.vm" destfile="conf/META-INF/producer-configuration.xml"
+			charset="UTF-8" />
+		<generate template="log4j.xml.vm" destfile="log4j.xml"
+			charset="UTF-8" />
+	</script>
+</config>

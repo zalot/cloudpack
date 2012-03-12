@@ -40,13 +40,6 @@ public class ConsumerConstants {
     public static final String CONFKEY_TMPFILE_TARGETPATH           = "com.alibaba.hbase.replication.tmpfile.targetPath";
     public static final String CONFKEY_TMPFILE_OLDPATH              = "com.alibaba.hbase.replication.tmpfile.oldPath";
     public static final String CONFKEY_TMPFILE_REJECTPATH           = "com.alibaba.hbase.replication.tmpfile.rejectPath";
-    public static final String CONFKEY_HLOGGROUP_INTERVAL           = "com.alibaba.hbase.replication.hlog.group.interval";
-    public static final String CONFKEY_HLOG_READERBUFFER            = "com.alibaba.hbase.replication.hlog.readerbuffer";
-    public static final String CONFKEY_ZOO_SCAN_LOCK_TRYLOCKTIME    = "com.alibaba.hbase.replication.zoo.scan.retrytime";
-    public static final String CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME = "com.alibaba.hbase.replication.zoo.scan.sleeptime";
-    public static final String CONFKEY_ZOO_SCAN_OLDHLOG_TIMEOUT     = "com.alibaba.hbase.replication.zoo.scan.oldhlog.timeout";
-    public static final String CONFKEY_ZOO_SCAN_ROOT                = "com.alibaba.hbase.replication.zoo.scan.root";
-    public static final String CONFKEY_ZOO_ROOT                     = "com.alibaba.hbase.replication.zoo.root";
 
     // zk node
     public static final String ZK_CURRENT                           = "cur";

@@ -53,6 +53,36 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<!-- <plugin>
+				<groupId>com.alibaba.maven.plugins</groupId>
+				<artifactId>maven-intl-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-mainfest</id>
+						<goals>
+							<goal>manifest-gen</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>assemble</id>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+					<attach>false</attach>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -145,6 +175,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
+			<artifactId>apache.hadoop.hbase.test</artifactId>
+			<version>${hbase.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
 			<artifactId>test.junit</artifactId>
 			<version>4.8.1</version>
 			<scope>test</scope>
@@ -180,4 +216,76 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>env</name>
+					<value>!release</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<descriptors>
+								<descriptor>${basedir}/src/main/assembly/dev.xml</descriptor>
+							</descriptors>
+							<finalName>web-deploy</finalName>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>com.alibaba.maven.plugins</groupId>
+						<artifactId>maven-autoconf-plugin</artifactId>
+						<version>0.3-alpha-7</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>config</goal>
+								</goals>
+								<phase>pre-integration-test</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<encoding>UTF-8</encoding>
+							<destFiles>
+								<destFile>${project.build.directory}/web-deploy</destFile>
+							</destFiles>
+							<includePackagePatterns>
+								<includePackagePattern>lib/*.jar</includePackagePattern>
+							</includePackagePatterns>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>release</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/release.xml</descriptor>
+							</descriptors>
+							<finalName>${project.artifactId}</finalName>
+							<outputDirectory>${basedir}/../../target</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
