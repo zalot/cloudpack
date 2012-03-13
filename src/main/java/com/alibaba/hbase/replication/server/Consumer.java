@@ -61,8 +61,8 @@ public class Consumer {
                                + " Consumer server started");
 
         } catch (Throwable t) {
-            System.exit(-1);
             LOG.error("Fail to start consumer server: ", t);
+            System.exit(-1);
         }
         synchronized (Consumer.class) {
             while (running) {

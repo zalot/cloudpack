@@ -5,8 +5,8 @@
 			description="应用程序javahome" />
 		<property name="replication.production" defaultValue="dev"
 			description="生产模式" />
-		<property name="replication.appserver.port"
-			defaultValue="8080" description="应用服务器端口" />
+		<property name="replication.appserver.port" defaultValue="8080"
+			description="应用服务器端口" />
 	</group>
 
 	<group name="configuration">
@@ -44,8 +44,8 @@
 	<group name="producer">
 		<property name="replication.producer.zookeeper.quorum"
 			defaultValue="localhost" description="hbase.zookeeper.quorum" />
-		<property name="replication.producer.zoo.root"
-			defaultValue="/producer" description="断点保留位置" />
+		<property name="replication.producer.zoo.root" defaultValue="/producer"
+			description="断点保留位置" />
 		<property name="replication.producer.zoo.scan.root"
 			defaultValue="/alirepscanlock" description="扫描的锁位置" />
 		<property name="replication.producer.zoo.scan.oldhlog.timeout"
@@ -62,6 +62,10 @@
 			defaultValue="10" description="文件处理的线程池大小" />
 		<property name="replication.producer.scannerPoolSize"
 			defaultValue="1" description="扫描的线程池大小" />
+		<property name="replication.producer.threadpool.queuesize"
+			defaultValue="100" description="线程池queuesize" />
+		<property name="replication.producer.threadpool.keepAliveTime"
+			defaultValue="100" description="线程池空闲线程keepAliveTime" />
 	</group>
 
 	<group name="log">
@@ -69,10 +73,15 @@
 			description="日志输出目录" />
 		<property name="replication.logging.root" defaultValue="${replication_output}/logs"
 			description="日志文件输出路径" />
-		<property name="replication.logging.level" defaultValue="ERROR"
+		<property name="replication.logging.level" defaultValue="WARN"
 			description="日志输出级别，可选值：OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL" />
 		<property name="replication.logging.file" defaultValue="replication.log"
 			description="日志输出文件名" />
+		<property name="replication.hadoop.logging.level"
+			defaultValue="WARN"
+			description="hadoop日志输出级别，可选值：OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL" />
+		<property name="replication.hadoop.logging.file"
+			defaultValue="hadoop.log" description="hadoop日志输出文件名" />
 	</group>
 
 	<group name="dragoon">

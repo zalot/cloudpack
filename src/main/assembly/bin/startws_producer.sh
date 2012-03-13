@@ -65,7 +65,7 @@ elif [ $PRODUCTION = "dev" ]; then
     
 else
     echo "********************************************************************"
-    echo "** Error: PC2.production=$PRODUCTION should be only: run, test, dev!"
+    echo "** Error: production=$PRODUCTION should be only: run, test, dev!"
     echo "********************************************************************"    
     exit 1
 fi
@@ -97,13 +97,9 @@ if [ ! -d $LOG_DIR ]; then
 	mkdir $LOG_DIR
 fi
 
-if [ -e $STOP_FILE ]; then
-	rm $STOP_FILE
-fi
-
 CONFIG_DIR=$DEPLOY_HOME/conf
 LIB_JARS=$DEPLOY_HOME/lib/*
-echo -e "Starting PC2 message receiver $HOST_NAME ...\c"
+echo -e "Starting hbase.replication.producer @ $HOST_NAME ...\c"
 
 STDOUT_LOG=$LOG_DIR/stdout.log
 nohup $JAVA_HOME/bin/java $JAVA_OPTS -classpath $CONFIG_DIR:$LIB_JARS com.alibaba.hbase.replication.server.Producer >> $STDOUT_LOG 2>&1 &

@@ -26,6 +26,11 @@
 		<description>退回的中间文件存放位置（需要producer端重做）</description>
 	</property>
 	<property>
+		<name>com.alibaba.hbase.replication.tmpfile.tmpPath</name>
+		<value>${replication_tmpfile_tmpPath}</value>
+		<description>tmp文件存放位置</description>
+	</property>
+	<property>
 		<name>hbase.zookeeper.quorum</name>
 		<value>${replication_consumer_zookeeper_quorum}</value>
 	</property>

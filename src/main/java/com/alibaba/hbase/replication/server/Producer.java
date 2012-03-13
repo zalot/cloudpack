@@ -61,8 +61,8 @@ public class Producer {
                                + " Producer server started");
 
         } catch (Throwable t) {
-            System.exit(-1);
             LOG.error("Fail to start producer server: ", t);
+            System.exit(-1);
         }
         synchronized (Producer.class) {
             while (running) {

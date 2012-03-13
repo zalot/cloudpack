@@ -14,7 +14,7 @@
             <param name="ConversionPattern" value="%d [%-5p] (%C{2},%L) - %m%n"/>
         </layout>
     </appender>
-	<appender name="ENGINE" class="org.apache.log4j.DailyRollingFileAppender">
+	<appender name="REP" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="file" value="${replication_logging_root}/${replication_logging_file}"/>
 	    <param name="append" value="true"/>
         <param name="encoding" value="UTF-8"/>
@@ -23,8 +23,8 @@
             <param name="ConversionPattern" value="%d [%-5p] (%C{2},%L) - %m%n"/>
         </layout>
     </appender>
-    <appender name="DUBBO" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="${replication_dubbo_logging_root}/${replication_dubbo_logging_file}"/>
+    <appender name="HADOOP" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${replication_logging_root}/${replication_hadoop_logging_file}"/>
         <param name="append" value="true"/>
         <param name="encoding" value="UTF-8"/>
         <param name="threshold" value="info"/>
@@ -35,22 +35,13 @@
     <!-- ===================================================================== -->
     <!--  以下是logger的定义                                                   -->
     <!-- ===================================================================== -->
-	<logger name="org.apache.velocity">
-        <level value="OFF"/>
-    </logger>
-    <logger name="java.sql">
+    <logger name="com.alibaba.hbase.replication" additivity="false">
         <level value="${replication_logging_level}"/>
+        <appender-ref ref="REP"/>
     </logger>
-    <logger name="javax.sql">
-        <level value="${replication_logging_level}"/>
-    </logger>
-    <logger name="com.alibaba.replication" additivity="false">
-        <level value="${replication_logging_level}"/>
-        <appender-ref ref="ENGINE"/>
-    </logger>
-    <logger name="com.alibaba.dubbo" additivity="false">
-        <level value="${replication_dubbo_logging_level}"/>
-        <appender-ref ref="DUBBO"/>
+    <logger name="org.apache.hadoop" additivity="false">
+        <level value="${replication_hadoop_logging_level}"/>
+        <appender-ref ref="HADOOP"/>
     </logger>
     <!-- ===================================================================== -->
     <!--  Root logger的定义                                                    -->
