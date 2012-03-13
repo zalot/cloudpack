@@ -16,6 +16,8 @@ import org.apache.zookeeper.KeeperException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.hbase.replication.hlog.HLogGroupZookeeperScanner;
+import com.alibaba.hbase.replication.producer.crossidc.HBaseReplicationCrossIDCProducer;
 import com.alibaba.hbase.replication.protocol.FileAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
@@ -62,9 +64,10 @@ public class ReplicationSinkManger {
                                         ProducerConstants.REP_SCANNER_POOL_SIZE); i++) {
             scannerPool.execute(new HLogGroupZookeeperScanner(conf));
         }
+        
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
                                         ProducerConstants.REP_SINK_POOL_SIZE); i++) {
-            replicationPool.execute(new CrossIDCHBaseReplicationSink(conf, fileAdapter));
+            replicationPool.execute(new HBaseReplicationCrossIDCProducer(conf));
         }
     }
 }
