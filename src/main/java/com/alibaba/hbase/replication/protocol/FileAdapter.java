@@ -23,6 +23,7 @@ import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.protocol.protobuf.BodySerializingHandler;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
@@ -225,9 +226,14 @@ public class FileAdapter {
 
     @PostConstruct
     public void setPath() {
-        targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH));
-        oldPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), conf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH));
-        rejectPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), conf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH));
+        targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
+                              conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH));
+        oldPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
+                           conf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH));
+        rejectPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
+                              conf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH));
+        tmpPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
+                           conf.get(ProducerConstants.CONFKEY_TMPFILE_TMPPATH));
         digestPath = new Path(targetPath, ConsumerConstants.MD5_DIR);
     }
 

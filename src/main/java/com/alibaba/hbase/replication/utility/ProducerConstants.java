@@ -3,6 +3,7 @@ package com.alibaba.hbase.replication.utility;
 public class ProducerConstants {
 
     public static final String PRODUCER_CONFIG_FILE                 = "META-INF/producer-configuration.xml";
+    public static String       CONFKEY_TMPFILE_TMPPATH              = "com.alibaba.hbase.replication.tmpfile.tmpPath";
     public static String       CONFKEY_ZOO_ROOT                     = "com.alibaba.hbase.replication.producer.zoo.root";
     public static String       ZOO_ROOT                             = "/alirep";
 

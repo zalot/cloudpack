@@ -12,7 +12,7 @@
 		</layout>
 	</appender>
     <appender name="ROOT" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="~/output/logs/root.log"/>
+        <param name="file" value="/home/admin/unit-output/logs/root.log"/>
 	    <param name="append" value="true"/>
         <param name="encoding" value="UTF-8"/>
         <param name="threshold" value="info"/>
@@ -21,7 +21,7 @@
         </layout>
     </appender>
 	<appender name="Rep" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="~/output/logs/rep.log"/>
+        <param name="file" value="/home/admin/unit-output/logs/rep.log"/>
 	    <param name="append" value="true"/>
         <param name="encoding" value="UTF-8"/>
         <param name="threshold" value="info"/>
