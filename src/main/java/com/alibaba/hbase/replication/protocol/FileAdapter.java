@@ -32,8 +32,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
 @Service("fileAdapter")
-public class FileAdapter {
+public class FileAdapter implements ProtocolAdapter {
 
+    public static final String SPLIT_SYMBOL = "|";
     protected static final Log LOG          = LogFactory.getLog(FileAdapter.class);
     /**
      * 待处理的中间文件存放位置
@@ -54,10 +55,16 @@ public class FileAdapter {
     /**
      * 生成文件时使用的临时目录
      */
-    protected Path             tmpPath;
+    protected Path             targetTmpPath;
+
+    protected FileSystem       fs;
+
     @Autowired
     protected Configuration    conf;
-    public static final String SPLIT_SYMBOL = "|";
+
+    public void setFileSystem(FileSystem fs) {
+        this.fs = fs;
+    }
 
     public Path getPath() {
         return targetPath;
@@ -99,50 +106,14 @@ public class FileAdapter {
         ;
     }
 
-    public void write(MetaData data, FileSystem fs) throws Exception {
-        FSDataOutputStream output = null;
-        FSDataOutputStream sigoutput = null;
-        try {
-            String fileName = head2FileName(data.getHead());
-            byte[] bodyBytes = BodySerializingHandler.serialize(data.getBody());
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            Path target = new Path(tmpPath, fileName);
-            output = fs.create(target, true);
-            output.write(bodyBytes);
-            sigoutput = fs.create(new Path(fileName + "_md5"));
-            sigoutput.write(digest.digest(bodyBytes));
-            Path ot = new Path(targetPath.toString() + "/" + target.getName());
-            if (!fs.rename(target, ot)) {
-                throw new RuntimeException(target + " rename to " + ot);
-            }
-        } catch (IOException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("Create file failed.", e);
-            }
-        } catch (NoSuchAlgorithmException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("Coding error!", e);
-            }
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    output = null;
-                }
-            }
-            if (sigoutput != null) {
-                try {
-                    sigoutput.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    sigoutput = null;
-                }
-            }
-        }
+    @Override
+    public MetaData read(Head head) throws Exception {
+        return read(head, fs);
+    }
+
+    @Override
+    public void write(MetaData data) throws Exception {
+        write(data, fs);
     }
 
     public MetaData read(Head head, FileSystem fs) throws FileParsingException, FileReadingException {
@@ -183,19 +154,8 @@ public class FileAdapter {
     }
 
     public void init(Configuration conf) {
-        // String hbaseDir = conf.get("hbase.rootdir");
-        // try {
-        // tmpPath = new Path(hbaseDir + "/alirepstmp");
-        // targetPath = new Path(hbaseDir + "/alireps");
-        // fs = FileSystem.get(conf);
-        // if (!fs.exists(tmpPath)) {
-        // fs.mkdirs(tmpPath);
-        // }
-        // if (!fs.exists(targetPath)) {
-        // fs.mkdirs(targetPath);
-        // }
-        // } catch (Exception e) {
-        // }
+        this.conf = conf;
+        setPath();
     }
 
     /**
@@ -226,15 +186,102 @@ public class FileAdapter {
 
     @PostConstruct
     public void setPath() {
-        targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
-                              conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH));
-        oldPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
-                           conf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH));
-        rejectPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
-                              conf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH));
-        tmpPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
-                           conf.get(ProducerConstants.CONFKEY_TMPFILE_TMPPATH));
+        if (fs == null) {
+            try {
+                fs = FileSystem.get(conf);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS) +
+                              conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH,
+                                       ConsumerConstants.TMPFILE_TARGETPATH));
+        targetTmpPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS) + 
+                                 conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETTMPPATH,
+                                          ConsumerConstants.TMPFILE_TARGETTMPPATH));
+        oldPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS) + 
+                           conf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH, ConsumerConstants.TMPFILE_OLDPATH));
+        rejectPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS) +
+                              conf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH,
+                                       ConsumerConstants.TMPFILE_REJECTPATH));
+
         digestPath = new Path(targetPath, ConsumerConstants.MD5_DIR);
+        producter_check();
     }
 
+    protected void producter_check() {
+        try {
+            if (!fs.exists(targetPath)) {
+                fs.mkdirs(targetPath);
+            }
+            if (!fs.exists(targetTmpPath)) {
+                fs.mkdirs(targetTmpPath);
+            }
+            if (!fs.exists(digestPath)) {
+                fs.mkdirs(digestPath);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void write(MetaData data, FileSystem fs) {
+        FSDataOutputStream targetOutput = null;
+        FSDataOutputStream targetMD5Output = null;
+        try {
+            // write tmpFile
+            String fileName = head2FileName(data.getHead());
+            byte[] bodyBytes = BodySerializingHandler.serialize(data.getBody());
+            Path targetTmpFilePath = new Path(targetTmpPath, fileName);
+            targetOutput = fs.create(targetTmpFilePath, true);
+            targetOutput.write(bodyBytes);
+            targetOutput.close();
+            
+            // write MD5
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            Path tmpMD5Path = new Path(targetTmpPath, fileName + ConsumerConstants.MD5_SUFFIX);
+            targetMD5Output = fs.create(tmpMD5Path);
+            targetMD5Output.write(digest.digest(bodyBytes));
+            targetMD5Output.close();
+            
+            // move tmpFile and MD5File to source directory
+            Path sourceFilePath = new Path(targetPath, targetTmpFilePath.getName());
+            Path sourceMd5FilePath = new Path(digestPath, tmpMD5Path.getName());
+            if (!fs.rename(targetTmpFilePath, sourceFilePath)) {
+                throw new RuntimeException(targetTmpPath + " rename to " + sourceFilePath);
+            }
+
+            if (!fs.rename(tmpMD5Path, sourceMd5FilePath)) {
+                throw new RuntimeException(targetTmpPath + " rename to " + sourceFilePath);
+            }
+        } catch (IOException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("Create file failed.", e);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            if (LOG.isErrorEnabled()) {
+                LOG.error("Coding error!", e);
+            }
+        } finally {
+            if (targetOutput != null) {
+                try {
+                    targetOutput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    targetOutput = null;
+                }
+            }
+            if (targetMD5Output != null) {
+                try {
+                    targetMD5Output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    targetMD5Output = null;
+                }
+            }
+        }
+    }
 }
