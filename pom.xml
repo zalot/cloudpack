@@ -221,6 +221,63 @@
 			<version>${unitils_version}</version>
 			<scope>test</scope>
 		</dependency>
+		
+		
+		
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>jakarta.commons.configuration</artifactId>
+			<version>1.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>server.jetty</artifactId>
+			<version>6.1.21</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>java.servlet</artifactId>
+			<version>2.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>java.jsr311</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>codehaus.jackson.core</artifactId>
+			<version>1.9.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>codehaus.jackson.mapper</artifactId>
+			<version>1.9.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>google.common</artifactId>
+			<version>0.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>github.highscalelib</artifactId>
+			<version>1.1.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>commons.codec</artifactId>
+			<version>1.6</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<profiles>
