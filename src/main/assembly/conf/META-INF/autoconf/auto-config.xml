@@ -14,6 +14,14 @@
 			description="待同步中间文件在hdfs上的存放位置" />
 		<property name="replication.producer.fs" defaultValue="hdfs://localhost/"
 			description="同步生产端的filesystem位置" />
+		<property name="replication.tmpfile.targetPath" defaultValue="/target"
+			description="待处理的中间文件存放位置" />
+		<property name="replication.tmpfile.oldPath" defaultValue="/old"
+			description="已处理的中间文件存放位置" />
+		<property name="replication.tmpfile.rejectPath" defaultValue="/reject"
+			description="退回的中间文件存放位置（需要producer端重做）" />
+		<property name="replication.tmpfile.tmpPath" defaultValue="/tmp"
+			description="tmp文件存放位置" />
 	</group>
 
 	<group name="consumer">
