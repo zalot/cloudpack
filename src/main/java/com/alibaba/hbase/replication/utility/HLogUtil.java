@@ -96,7 +96,7 @@ public class HLogUtil {
         }
     }
 
-    public static Path getPathByHLogEntry(FileSystem fs, Path rootPath, HLogEntry entry) throws IOException {
+    public static Path getFileStatusByHLogEntry(FileSystem fs, Path rootPath, HLogEntry entry) throws IOException {
         String filePath = null;
         if (entry.getType() == HLogEntry.Type.LIFE) {
             String dir = URLDecoder.decode(entry.getGroupName());
@@ -105,9 +105,8 @@ public class HLogUtil {
             filePath = rootPath.toString() + "/.oldlogs/" + entry.getName();
         }
         Path path = new Path(filePath);
-        if (fs.exists(path)) {
+        if(fs.exists(path))
             return path;
-        }
         return null;
     }
 }
