@@ -7,10 +7,11 @@ import org.apache.hadoop.conf.Configuration;
  * 
  * @author zalot.zhaoh Feb 28, 2012 2:26:38 PM
  */
-@Deprecated
 public interface ProtocolAdapter {
 
     public void write(MetaData data) throws Exception;
+
+    public MetaData read(Head head) throws Exception;
 
     public void init(Configuration conf);
 }
