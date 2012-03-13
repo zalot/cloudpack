@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
-import com.alibaba.hbase.replication.zookeeper.HLogZookeeperPersistence;
-import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
 
 public class TestHLogPersistence extends BaseReplicationTest {
 

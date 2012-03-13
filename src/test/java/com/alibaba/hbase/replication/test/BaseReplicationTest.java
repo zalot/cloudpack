@@ -69,7 +69,7 @@ public class BaseReplicationTest {
     public static void init1() throws Exception {
         conf1 = HBaseConfiguration.create();
         conf1.setBoolean("hbase.regionserver.info.port.auto", true);
-        conf1.setLong("hbase.regionserver.hlog.blocksize", 1024);
+        conf1.setLong("hbase.regionserver.hlog.blocksize", 1024 * 200);
         conf1.setInt("hbase.regionserver.maxlogs", 2);
         conf1.set(HConstants.ZOOKEEPER_ZNODE_PARENT, "/1");
         conf1.setBoolean("dfs.support.append", true);
@@ -124,7 +124,7 @@ public class BaseReplicationTest {
 
     public void printDFS(FileSystem fs, Path path) throws IOException {
         if (fs.isFile(path)) {
-            System.out.println(path);
+            System.out.println(path.toString() + " - len = " + fs.getFileStatus(path).getLen());
         } else {
             for (FileStatus fss : fs.listStatus(path)) {
                 printDFS(fs, fss.getPath());

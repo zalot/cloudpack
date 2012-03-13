@@ -7,21 +7,17 @@ import junit.framework.Assert;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
-import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.KeeperException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.hbase.replication.hlog.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
-import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
-import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.HLogUtil;
-import com.alibaba.hbase.replication.zookeeper.HLogZookeeperPersistence;
-import com.alibaba.hbase.replication.zookeeper.ReplicationZookeeperWatch;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 public class TestHLogScanner extends BaseReplicationTest {
 
