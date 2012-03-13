@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=../lib/hbase-0.92.0-tests.jar -DgroupId=com.alibaba.external -DartifactId=apache.hadoop.hbase.test -Dversion=0.92.0 -Dpackaging=jar -DgeneratePom=true -DupdateReleaseInfo=true
