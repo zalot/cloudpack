@@ -1,13 +1,16 @@
-package com.alibaba.hbase.replication.hlog;
+package com.alibaba.hbase.replication.hlog.reader;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
+import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 
@@ -18,13 +21,14 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
  */
 public class LazyOpenHLogReader implements HLogReader {
 
-    protected static final Log LOG       = LogFactory.getLog(LazyOpenHLogReader.class);
-    HLogService               operator;
-    private HLogEntry          entry;
-    private HLog.Reader        reader;
-    private long               seek;
-    private boolean            hasOpened = false;
-    private boolean            isOpen    = false;
+    protected static final Log LOG          = LogFactory.getLog(LazyOpenHLogReader.class);
+    protected HLogService      operator;
+    protected HLogEntry        entry;
+    protected HLog.Reader      reader;
+    protected long             tmpSeek;
+    protected long             tmpPosistion = -1;
+    protected boolean          hasOpened    = false;
+    protected boolean          isOpen       = false;
 
     public LazyOpenHLogReader(){
     }
@@ -38,7 +42,8 @@ public class LazyOpenHLogReader implements HLogReader {
 
     public long getPosition() throws IOException {
         lazyOpen();
-        return reader.getPosition();
+        if (isOpen) return reader.getPosition();
+        return tmpPosistion;
     }
 
     @Override
@@ -53,13 +58,19 @@ public class LazyOpenHLogReader implements HLogReader {
     private void lazyOpen() {
         try {
             if (reader == null && !hasOpened) {
-                Path path = getHLogPath();
-                if (path == null) return;
-                reader = HLog.getReader(operator.getFileSystem(), path, operator.getConf());
+                Path file = getHLogPath();
+                if (file == null) {
+                    isOpen = false;
+                    hasOpened = true;
+                    return;
+                }
+                
+                System.out.println("open " + file + " -> seek " + tmpSeek);
+                reader = HLog.getReader(operator.getFileSystem(), file, operator.getConf());
                 if (reader != null) {
                     isOpen = true;
-                    if (seek > 0) {
-                        reader.seek(seek);
+                    if (tmpSeek > 0) {
+                        reader.seek(tmpSeek);
                     }
                 }
             }
@@ -73,7 +84,11 @@ public class LazyOpenHLogReader implements HLogReader {
     public Entry next() throws IOException {
         lazyOpen();
         if (isOpen) {
-            return reader.next();
+            try {
+                return reader.next();
+            } catch (EOFException eof) {
+                return null;
+            }
         }
         return null;
     }
@@ -90,9 +105,15 @@ public class LazyOpenHLogReader implements HLogReader {
         lazyOpen();
     }
 
-    public void seek(long pos){
+    public void seek(long pos) {
         if (!isOpen) {
-            seek = pos;
+            tmpSeek = pos;
+        } else {
+            try {
+                reader.seek(pos);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -100,28 +121,28 @@ public class LazyOpenHLogReader implements HLogReader {
     public String toString() {
         try {
             return "LazyOpenHLogReader [reader=" + reader + ", path=" + getHLogPath() + ", type=" + entry.getType()
-                   + ", seek=" + seek + ", isOpen=" + isOpen + ", hasOpened=" + hasOpened + "]";
+                   + ", seek=" + tmpSeek + ", isOpen=" + isOpen + ", hasOpened=" + hasOpened + "]";
         } catch (IOException e) {
             e.printStackTrace();
         }
         return "ERROR";
     }
 
-    @Override
-    public void init(HLogService operator, HLogEntry entry) {
-        this.operator = operator;
-        this.entry = entry;
-        seek(entry.getPos());
-    }
-
     protected Path getHLogPath() throws IOException {
         if (HLogEntry.Type.END == entry.getType() || HLogEntry.Type.UNKNOW == entry.getType()) return null;
-        Path path = HLogUtil.getPathByHLogEntry(operator.getFileSystem(), operator.getRootDir() , entry);
+        Path path = HLogUtil.getFileStatusByHLogEntry(operator.getFileSystem(), operator.getHBaseRootDir(), entry);
         if (path == null && HLogEntry.Type.LIFE == entry.getType()) {
             entry.setType(HLogEntry.Type.OLD);
-            path = HLogUtil.getPathByHLogEntry(operator.getFileSystem(), operator.getRootDir() , entry);
+            path = HLogUtil.getFileStatusByHLogEntry(operator.getFileSystem(), operator.getHBaseRootDir(), entry);
             return path;
         }
         return path;
+    }
+
+    @Override
+    public void init(HLogService operator, HLogEntry info) {
+        this.operator = operator;
+        this.entry = info;
+        seek(entry.getPos());
     }
 }

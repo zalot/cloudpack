@@ -2,9 +2,7 @@ package com.alibaba.hbase.replication.hlog;
 
 import java.util.List;
 
-import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
@@ -15,7 +13,7 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
  * 类HLogPersistence.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 12, 2012 4:09:06 PM
  */
-public interface HLogOperatorPersistence{
+public interface HLogEntryPersistence{
     public void createEntry(HLogEntry entry) throws Exception;
     public void deleteEntry(HLogEntry entry) throws Exception;
     public void updateEntry(HLogEntry entry) throws Exception;

@@ -7,6 +7,12 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 public class HLogEntry implements Comparable<HLogEntry> {
 
+    @Override
+    public String toString() {
+        return "HLogEntry [name=" + name + ", groupName=" + groupName + ", timestamp=" + timestamp + ", type=" + type
+               + ", pos=" + pos + "]";
+    }
+
     /**
      * 日志类型
      * 
@@ -54,7 +60,17 @@ public class HLogEntry implements Comparable<HLogEntry> {
     // groupName + timestamp = name
     protected long   timestamp;
 
-    protected Type   type = Type.UNKNOW;
+    protected long   lastReadtime = 0;
+
+    public long getLastReadtime() {
+        return lastReadtime;
+    }
+
+    public void setLastReadtime(long lastReadtime) {
+        this.lastReadtime = lastReadtime;
+    }
+
+    protected Type type = Type.UNKNOW;
 
     public Type getType() {
         return type;

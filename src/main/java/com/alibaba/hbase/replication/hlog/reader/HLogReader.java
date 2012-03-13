@@ -1,9 +1,10 @@
-package com.alibaba.hbase.replication.hlog;
+package com.alibaba.hbase.replication.hlog.reader;
 
 import java.io.IOException;
 
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
+import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 
 
