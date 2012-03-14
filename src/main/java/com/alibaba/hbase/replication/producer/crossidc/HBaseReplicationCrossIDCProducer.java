@@ -88,47 +88,47 @@ public class HBaseReplicationCrossIDCProducer implements Runnable {
         Entry ent = null;
         Body body = new Body();
         HLogEntry entry;
-//        for (int idx = 0; idx < entrys.size(); idx++) {
-//            entry = entrys.get(idx);
-//            System.out.println(Thread.currentThread().getId() + " reader->" + entry.toString());
-//            if (entry.getType() == Type.END || entry.getType() == Type.UNKNOW) {
-//                continue;
-//            }
-//            reader = hlogService.getReader(entry);
-//            while ((ent = reader.next()) != null) {
-//                HLogUtil.put2Body(ent, body);
-//                if (body.getEditMap().size() > maxReaderBuffer) {
-//                    if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
-//                                   body)) {
-//                        entry.setPos(reader.getPosition());
-//                        hlogEntryPersistence.updateEntry(entry);
-//                        body = new Body();
-//                    }
-//                }
-//            }
-//
-//            // 如果指针移动了则更新
-//            if (entry.getPos() < reader.getPosition()) {
-//                if (body.getEditMap().size() > 0) {
-//                    if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
-//                                    body)) {
-//                        // 如果失败则返回,不再继续更新
-//                        return;
-//                    }
-//                }
-//
-//            }
-//            
-//            // 如果后面还有 HLogEntry 则说明这个 Reader 的数据都以经读完 (优化后)
-//            if (idx + 1 < entrys.size()) {
-//                entry.setType(Type.END);
-//            }
-//            
-//            entry.setPos(reader.getPosition());
-//            hlogEntryPersistence.updateEntry(entry);
-//            body = new Body();
-//            reader.close();
-//        }
+        for (int idx = 0; idx < entrys.size(); idx++) {
+            entry = entrys.get(idx);
+            System.out.println(Thread.currentThread().getId() + " reader->" + entry.toString());
+            if (entry.getType() == Type.END || entry.getType() == Type.UNKNOW) {
+                continue;
+            }
+            reader = hlogService.getReader(entry);
+            while ((ent = reader.next()) != null) {
+                HLogUtil.put2Body(ent, body);
+                if (body.getEditMap().size() > maxReaderBuffer) {
+                    if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
+                                   body)) {
+                        entry.setPos(reader.getPosition());
+                        hlogEntryPersistence.updateEntry(entry);
+                        body = new Body();
+                    }
+                }
+            }
+
+            // 如果指针移动了则更新
+            if (entry.getPos() < reader.getPosition()) {
+                if (body.getEditMap().size() > 0) {
+                    if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
+                                    body)) {
+                        // 如果失败则返回,不再继续更新
+                        return;
+                    }
+                }
+
+            }
+            
+            // 如果后面还有 HLogEntry 则说明这个 Reader 的数据都以经读完 (优化后)
+            if (idx + 1 < entrys.size()) {
+                entry.setType(Type.END);
+            }
+            
+            entry.setPos(reader.getPosition());
+            hlogEntryPersistence.updateEntry(entry);
+            body = new Body();
+            reader.close();
+        }
     }
 
     private boolean doSinkPart(String groupName, long timeStamp, long start, long end, Body body) {
