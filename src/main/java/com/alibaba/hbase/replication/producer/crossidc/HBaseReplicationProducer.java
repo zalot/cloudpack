@@ -11,12 +11,12 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.zookeeper.KeeperException;
 
 import com.alibaba.hbase.replication.hlog.HLogEntryPersistence;
-import com.alibaba.hbase.replication.hlog.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
+import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Body.Edit;
 import com.alibaba.hbase.replication.protocol.Head;
@@ -33,7 +33,7 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
  * 
  * @author zalot.zhaoh Feb 29, 2012 2:27:45 PM
  */
-public class HBaseReplicationCrossIDCProducer implements Runnable {
+public class HBaseReplicationProducer implements Runnable {
 
     protected static final Log     LOG                      = LogFactory.getLog(HLogGroupZookeeperScanner.class);
     private long                   minGroupOperatorInterval = ProducerConstants.HLOG_GROUP_INTERVAL;
@@ -45,7 +45,7 @@ public class HBaseReplicationCrossIDCProducer implements Runnable {
     protected HLogEntryPersistence hlogEntryPersistence;
     protected HLogService          hlogService;
 
-    public HBaseReplicationCrossIDCProducer(Configuration conf) throws IOException, KeeperException,
+    public HBaseReplicationProducer(Configuration conf) throws IOException, KeeperException,
                                                                InterruptedException{
         maxReaderBuffer = conf.getLong(ProducerConstants.CONFKEY_HLOG_READERBUFFER, ProducerConstants.HLOG_READERBUFFER);
         minGroupOperatorInterval = conf.getLong(ProducerConstants.CONFKEY_HLOG_GROUP_INTERVAL,
@@ -184,12 +184,12 @@ public class HBaseReplicationCrossIDCProducer implements Runnable {
         this.hlogService = hlogService;
     }
 
-    public static HBaseReplicationCrossIDCProducer newInstance(Configuration conf, ProtocolAdapter adapter,
+    public static HBaseReplicationProducer newInstance(Configuration conf, ProtocolAdapter adapter,
                                                                HLogEntryPersistence dao, HLogService service)
                                                                                                              throws IOException,
                                                                                                              KeeperException,
                                                                                                              InterruptedException {
-        HBaseReplicationCrossIDCProducer prod = new HBaseReplicationCrossIDCProducer(conf);
+        HBaseReplicationProducer prod = new HBaseReplicationProducer(conf);
         prod.setAdapter(adapter);
         prod.setHlogEntryPersistence(dao);
         prod.setHlogService(service);
