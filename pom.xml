@@ -170,6 +170,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
+			<artifactId>jakarta.commons.configuration</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
 			<artifactId>sourceforge.cglib</artifactId>
 			<version>2.2</version>
 		</dependency>
@@ -221,15 +226,7 @@
 			<version>${unitils_version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-		
-		
-		<dependency>
-			<groupId>com.alibaba.external</groupId>
-			<artifactId>jakarta.commons.configuration</artifactId>
-			<version>1.7</version>
-			<scope>test</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
 			<artifactId>server.jetty</artifactId>
@@ -262,13 +259,13 @@
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
-			<artifactId>google.common</artifactId>
-			<version>0.9</version>
+			<artifactId>google.guava</artifactId>
+			<version>r09</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
-			<artifactId>github.highscalelib</artifactId>
+			<artifactId>sourceforge.high-scale-lib</artifactId>
 			<version>1.1.1</version>
 			<scope>test</scope>
 		</dependency>

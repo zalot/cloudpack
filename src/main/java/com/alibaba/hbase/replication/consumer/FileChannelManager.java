@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -80,7 +81,8 @@ public class FileChannelManager {
         zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
         Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         if (statZkRoot == null) {
-            zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
+                       CreateMode.PERSISTENT);
         }
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager init.");
@@ -124,8 +126,16 @@ public class FileChannelManager {
         // s1. scanProducerFiles
         // <group,filename set>
         Map<String, ArrayList<String>> fstMap = new HashMap<String, ArrayList<String>>();
-        for (FileStatus fst : fs.listStatus(new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
-                                                     conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH)))) {
+        Path targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
+                                   conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH));
+        FileStatus[] fstList = fs.listStatus(targetPath);
+        if (fstList == null || fstList.length < 1) {
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Can not find any target File at targetPath");
+            }
+            return;
+        }
+        for (FileStatus fst : fstList) {
             if (!fst.isDir()) {
                 String fileName = fst.getPath().getName();
                 Head fileHead = FileAdapter.validataFileName(fileName);
@@ -141,13 +151,15 @@ public class FileChannelManager {
                 }
                 ftsSet.add(fileName);
             } else if (LOG.isWarnEnabled()) {
-                LOG.warn("Dir occurs in " + conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH) + " .path: " + fst.getPath());
+                LOG.warn("Dir occurs in " + conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH) + " .path: "
+                         + fst.getPath());
             }
         }
         // s2. update ZK
         if (MapUtils.isNotEmpty(fstMap)) {
             for (String group : fstMap.keySet()) {
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR + group;
+                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
+                                   + ConsumerConstants.FILE_SEPERATOR + group;
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 int queueVer;
                 try {
