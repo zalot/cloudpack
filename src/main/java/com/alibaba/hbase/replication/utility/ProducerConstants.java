@@ -9,8 +9,8 @@ public class ProducerConstants {
     public static String       CONFKEY_ZOO_SCAN_ROOT                  = "com.alibaba.hbase.replication.producer.zoo.scan.root";
     public static String       ZOO_SCAN_ROOT                          = "/alirepscanlock";
 
-    public static String       CONFKEY_ZOO_SCAN_OLDHLOG_TIMEOUT       = "com.alibaba.hbase.replication.producer.zoo.scan.oldhlog.timeout";
-    public static long         ZOO_SCAN_OLDHLOG_TIMEOUT               = 600000;
+    public static String       CONFKEY_ZOO_SCAN_OLDHLOG_INTERVAL      = "com.alibaba.hbase.replication.producer.zoo.scan.oldhlog.interval";
+    public static long         ZOO_SCAN_OLDHLOG_INTERVAL              = 600000;
 
     public static String       CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME   = "com.alibaba.hbase.replication.producer.zoo.scan.sleeptime";
     public static long         ZOO_SCAN_LOCK_FLUSHSLEEPTIME           = 20000;
@@ -24,7 +24,10 @@ public class ProducerConstants {
     public static String       CONFKEY_HLOG_GROUP_INTERVAL            = "com.alibaba.hbase.replication.producer.hlog.group.interval";
     public static long         HLOG_GROUP_INTERVAL                    = 5000;
 
-    public static final String CONFKEY_REP_SINK_POOL_SIZE             = "com.alibaba.hbase.replication.producer.replicationPoolSize";
+    public static final String CONFKEY_LOGREADER_CLASS                = "com.alibaba.hbase.replication.producer.hlog.logreader.class";
+    public static final String CONFKEY_CROSSIDC_REPLICATION_SLEEPTIME = "com.alibaba.hbase.replication.producer.hlog.sleeptime";
+
+    public static final String CONFKEY_REP_SINK_POOL_SIZE             = "com.alibaba.hbase.replication.producer.hlog.replicationPoolSize";
     public static final int    REP_SINK_POOL_SIZE                     = 10;
 
     public static final String CONFKEY_REP_SCANNER_POOL_SIZE          = "com.alibaba.hbase.replication.producer.scannerPoolSize";
@@ -33,11 +36,10 @@ public class ProducerConstants {
     public static final String CONFKEY_THREADPOOL_SIZE                = "com.alibaba.hbase.replication.producer.threadpool.queuesize";
     public static final String CONFKEY_THREADPOOL_KEEPALIVE_TIME      = "com.alibaba.hbase.replication.producer.threadpool.keepAliveTime";
 
-    public static final String CONFKEY_LOGREADER_CLASS                = "com.alibaba.hbase.replication.logreader.class";
-    public static final String CONFKEY_CROSSIDC_REPLICATION_SLEEPTIME = "com.alibaba.hbase.replication.crossidc.sleeptime";
     public static final int    CROSSIDC_REPLICATION_SLEEPTIME         = 100;
 
     public static String       ZOO_SCAN_LOCK                          = "/scanlock";
+    public static String       ZOO_REJECT_SCAN_LOCK                   = "/rejectscanlock";
     public static String       ZOO_PERSISTENCE_HLOG_GROUP             = "/aligroups";
     public static String       ZOO_PERSISTENCE_HLOG_GROUP_LOCK        = "/aliglock";
 

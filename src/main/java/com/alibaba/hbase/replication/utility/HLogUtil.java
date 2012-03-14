@@ -20,6 +20,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Body.Edit;
+import com.alibaba.hbase.replication.protocol.Head;
 
 /**
  * 日志工具
@@ -108,5 +109,14 @@ public class HLogUtil {
         if(fs.exists(path))
             return path;
         return null;
+    }
+    
+    public static HLogEntry getHLogEntryByHead(Head head) {
+        HLogEntry entry = new HLogEntry();
+        entry.setGroupName(head.getGroupName());
+        entry.setTimestamp(head.getFileTimestamp());
+        entry.setPos(head.getStartOffset());
+        entry.setType(HLogEntry.Type.OLD);
+        return entry;
     }
 }
