@@ -241,7 +241,7 @@ public class FileAdapter implements ProtocolAdapter {
             // write MD5
             MessageDigest digest = MessageDigest.getInstance("MD5");
             Path tmpMD5Path = new Path(targetTmpPath, fileName + ConsumerConstants.MD5_SUFFIX);
-            targetMD5Output = fs.create(tmpMD5Path);
+            targetMD5Output = fs.create(tmpMD5Path, true);
             targetMD5Output.write(digest.digest(bodyBytes));
             targetMD5Output.close();
             
