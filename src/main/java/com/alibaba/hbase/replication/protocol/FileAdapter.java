@@ -23,7 +23,6 @@ import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.protocol.protobuf.BodySerializingHandler;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
-import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**

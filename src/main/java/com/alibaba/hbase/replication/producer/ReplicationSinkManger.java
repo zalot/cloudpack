@@ -7,19 +7,23 @@
  */
 package com.alibaba.hbase.replication.producer;
 
-import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.zookeeper.KeeperException;
+import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
+import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
+import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.crossidc.HBaseReplicationProducer;
 import com.alibaba.hbase.replication.protocol.FileAdapter;
+import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
+import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 
 /**
  * 类ReplicationSinkManger.java的实现描述：producer端的任务线程管理
@@ -32,10 +36,21 @@ public class ReplicationSinkManger {
     @Autowired
     protected ReplicationConf conf;
 
-    @Autowired
-    protected FileAdapter     fileAdapter;
+    
+    public ReplicationConf getConf() {
+        return conf;
+    }
 
-    public void start() throws KeeperException, InterruptedException, IOException {
+    public void start() throws Exception {
+        RecoverableZooKeeper zookeeper = ZKUtil.connect(conf, new NothingZookeeperWatch());
+        
+        HLogService hlogService = new HLogService(conf); 
+        ProtocolAdapter adapter = new FileAdapter();
+        
+        adapter.init(conf);
+        HLogEntryZookeeperPersistence hLogEntryPersistence = new HLogEntryZookeeperPersistence(conf);
+        hLogEntryPersistence.setZookeeper(zookeeper);
+        
         ThreadPoolExecutor replicationPool = new ThreadPoolExecutor(
                                                                     conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
                                                                                 ProducerConstants.REP_SINK_POOL_SIZE),
@@ -58,15 +73,23 @@ public class ReplicationSinkManger {
                                                                 new ArrayBlockingQueue<Runnable>(
                                                                                                  conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                                              100)));
-
+        HLogGroupZookeeperScanner scan;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
                                         ProducerConstants.REP_SCANNER_POOL_SIZE); i++) {
-            scannerPool.execute(new HLogGroupZookeeperScanner(conf));
+            scan = new HLogGroupZookeeperScanner(conf);
+            scan.setZooKeeper(zookeeper);
+            scan.setHlogService(hlogService);
+            scannerPool.execute(scan);
         }
         
+        HBaseReplicationProducer producer;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
                                         ProducerConstants.REP_SINK_POOL_SIZE); i++) {
-            replicationPool.execute(new HBaseReplicationProducer(conf));
+            producer = new HBaseReplicationProducer(conf);
+            producer.setAdapter(adapter);
+            producer.setHlogService(hlogService);
+            producer.setHlogEntryPersistence(hLogEntryPersistence);
+            replicationPool.execute(producer);
         }
     }
 }
