@@ -7,17 +7,22 @@ import junit.framework.Assert;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
+import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.KeeperException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.hbase.replication.hlog.HLogGroupZookeeperScanner;
+import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
+import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
+import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
+import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 
 public class TestHLogScanner extends BaseReplicationTest {
 
@@ -31,16 +36,20 @@ public class TestHLogScanner extends BaseReplicationTest {
 
     @Test
     public void testSThreadScan() throws Exception {
+        HLogService service = new HLogService(conf1);
+        
         HLogGroupZookeeperScanner scan;
-        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
-        HLogZookeeperPersistence dao1 = new HLogZookeeperPersistence();
+        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
+        HLogEntryZookeeperPersistence dao1 = new HLogEntryZookeeperPersistence(conf1);
         dao1.setZookeeper(zk1);
         dao1.init(conf1);
 
         FileSystem fs = util1.getTestFileSystem();
-        scan = new HLogGroupZookeeperScanner(conf1, fs, dao1);
-        scan.start();
-
+        scan = new HLogGroupZookeeperScanner(conf1);
+        scan.setHlogEntryPersistence(dao1);
+        scan.setHlogService(service);
+//        scan.setZooKeeper(zooKeeper);
+        
         int count = 0;
         while (true) {
             insertData(pool1, TABLEA, COLA, "test", 1000);
@@ -63,27 +72,25 @@ public class TestHLogScanner extends BaseReplicationTest {
         final HLogGroupZookeeperScanner scan1;
         final HLogGroupZookeeperScanner scan2;
 
-        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
-        final HLogZookeeperPersistence dao1 = new HLogZookeeperPersistence();
+        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
+        final HLogEntryZookeeperPersistence dao1 = new HLogEntryZookeeperPersistence(conf1);
         dao1.setZookeeper(zk1);
         dao1.init(conf1);
 
-        RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
-        final HLogZookeeperPersistence dao2 = new HLogZookeeperPersistence();
+        RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
+        final HLogEntryZookeeperPersistence dao2 = new HLogEntryZookeeperPersistence(conf2);
         dao2.setZookeeper(zk2);
         dao2.init(conf1);
 
-        RecoverableZooKeeper zk3 = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
-        HLogZookeeperPersistence dao3 = new HLogZookeeperPersistence();
+        RecoverableZooKeeper zk3 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
+        HLogEntryZookeeperPersistence dao3 = new HLogEntryZookeeperPersistence(conf1);
         dao3.setZookeeper(zk3);
         dao3.init(conf1);
 
         FileSystem fs = util1.getTestFileSystem();
 
-        scan1 = new HLogGroupZookeeperScanner(conf1, fs, dao1);
-        scan2 = new HLogGroupZookeeperScanner(conf1, fs, dao2);
-        scan1.start();
-        scan2.start();
+        scan1 = new HLogGroupZookeeperScanner(conf1);
+        scan2 = new HLogGroupZookeeperScanner(conf1);
 
         Path hlogPath = scan1.getHlogPath();
         Path oldPath = scan1.getOldHlogPath();
@@ -98,10 +105,10 @@ public class TestHLogScanner extends BaseReplicationTest {
                 while (true) {
                     try {
                         HLogGroupZookeeperScanner scan = rndShutDownScan(scan1, scan2);
-                        if (!scan.isAlive()) {
-                            System.out.println("start scan [" + scan.getName() + "] ...");
-                            scan.start();
-                        }
+//                        if (!scan.isAlive()) {
+//                            System.out.println("start scan [" + scan.getName() + "] ...");
+//                            scan.start();
+//                        }
 //                        Thread.sleep(AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME * 2);
                         Thread.sleep(ProducerConstants.ZOO_SCAN_LOCK_TRYLOCKTIME * 2);
                     } catch (Exception e) {
@@ -117,11 +124,11 @@ public class TestHLogScanner extends BaseReplicationTest {
                 super.run();
                 while (true) {
                     try {
-                        HLogZookeeperPersistence dao = rndShutDownDaoZk(dao1, dao2);
-                        Thread.sleep(1000);
-                        RecoverableZooKeeper zk = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
-                        dao.setZookeeper(zk);
-                        System.out.println("start [dao] " + dao.getName());
+//                        HLogZookeeperPersistence dao = rndShutDownDaoZk(dao1, dao2);
+//                        Thread.sleep(1000);
+//                        RecoverableZooKeeper zk = ZKUtil.connect(conf1, new ReplicationZookeeperWatch());
+//                        dao.setZookeeper(zk);
+//                        System.out.println("start [dao] " + dao.getName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -160,30 +167,30 @@ public class TestHLogScanner extends BaseReplicationTest {
             canStopScan = scan2;
         }
 
-        if (canStopScan.isAlive()) {
-            try {
-                canStopScan.stop();
-                System.out.println("stop scan [" + canStopScan.getName() + "] ...");
-            } catch (Exception e) {
-
-            }
-        }
+//        if (canStopScan.isAlive()) {
+//            try {
+//                canStopScan.stop();
+//                System.out.println("stop scan [" + canStopScan.getName() + "] ...");
+//            } catch (Exception e) {
+//
+//            }
+//        }
         return canStopScan;
     }
 
-    private static HLogZookeeperPersistence rndShutDownDaoZk(HLogZookeeperPersistence dao1,
-                                                             HLogZookeeperPersistence dao2)
-                                                                                           throws InterruptedException,
-                                                                                           IOException {
-        HLogZookeeperPersistence canStop;
-        if (rnd.nextBoolean()) {
-            canStop = dao1;
-        } else {
-            canStop = dao2;
-        }
-
-        canStop.getZookeeper().close();
-        System.out.println("stop [dao] " + canStop.getName());
-        return canStop;
-    }
+//    private static HLogZookeeperPersistence rndShutDownDaoZk(HLogZookeeperPersistence dao1,
+//                                                             HLogZookeeperPersistence dao2)
+//                                                                                           throws InterruptedException,
+//                                                                                           IOException {
+//        HLogZookeeperPersistence canStop;
+//        if (rnd.nextBoolean()) {
+//            canStop = dao1;
+//        } else {
+//            canStop = dao2;
+//        }
+//
+//        canStop.getZookeeper().close();
+//        System.out.println("stop [dao] " + canStop.getName());
+//        return canStop;
+//    }
 }
