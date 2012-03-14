@@ -46,14 +46,18 @@
 		<property name="replication.producer.zoo.root" defaultValue="/producer"
 			description="断点保留位置" />
 
-		<!-- 启动器配置 -->
+		<!-- 线程池启动器配置 -->
 		<property name="replication.producer.scannerPoolSize"
 			defaultValue="1" description="扫描的线程池大小" />
 		<property name="replication.producer.threadpool.queuesize"
 			defaultValue="100" description="线程池queuesize" />
 		<property name="replication.producer.threadpool.keepAliveTime"
 			defaultValue="100" description="线程池空闲线程keepAliveTime" />
-
+		<property name="replication.producer.replicationPoolSize"
+			defaultValue="10" description="文件处理的线程池大小" />
+		<property name="replication.producer.threadpool.keepAliveTime"
+			defaultValue="100" description="线程池空闲线程keepAliveTime" />
+			
 		<!-- 扫描线程配置 -->
 		<property name="replication.producer.zoo.scan.rootlock"
 			defaultValue="/alirepscanlock" description="扫描的锁位置" />
@@ -69,13 +73,8 @@
 			defaultValue="50000" description="单个文件读取的最大上限" />
 		<property name="replication.producer.hlog.group.interval"
 			defaultValue="3000" description="每个Group最小操作的间隔" />
-		<property name="replication.producer.replicationPoolSize"
-			defaultValue="10" description="文件处理的线程池大小" />
-		<property name="replication.producer.threadpool.keepAliveTime"
-			defaultValue="100" description="线程池空闲线程keepAliveTime" />
 		<property name="replication.producer.hlog.sleeptime"
-			defaultValue="100" description="同步线程休息时间" />
-			
+			defaultValue="1000" description="同步线程休息时间" />
 	</group>
 
 	<group name="log">

@@ -75,7 +75,7 @@
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.threadpool.keepAliveTime</name>
-		<value>${replication.producer.hlog.sleeptime}</value>
+		<value>${replication_producer_hlog_sleeptime}</value>
 	</property>
 	
 </configuration>
