@@ -34,12 +34,12 @@
 		<value>${replication_producer_zoo_root}</value>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.producer.zoo.scan.root</name>
-		<value>${replication_producer_zoo_scan_root}</value>
+		<name>com.alibaba.hbase.replication.producer.zoo.scan.rootlock</name>
+		<value>${replication_producer_zoo_scan_rootlock}</value>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.producer.zoo.scan.oldhlog.timeout</name>
-		<value>${replication_producer_zoo_scan_oldhlog_timeout}</value>
+		<name>com.alibaba.hbase.replication.producer.zoo.scan.oldhlog.interval</name>
+		<value>${replication_producer_zoo_scan_oldhlog_interval}</value>
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.scan.sleeptime</name>
@@ -73,4 +73,9 @@
 		<name>com.alibaba.hbase.replication.producer.threadpool.keepAliveTime</name>
 		<value>${replication_producer_threadpool_keepAliveTime}</value>
 	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.producer.threadpool.keepAliveTime</name>
+		<value>${replication.producer.hlog.sleeptime}</value>
+	</property>
+	
 </configuration>
