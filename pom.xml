@@ -53,18 +53,9 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-				<groupId>com.alibaba.maven.plugins</groupId>
-				<artifactId>maven-intl-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-mainfest</id>
-						<goals>
-							<goal>manifest-gen</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!-- <plugin> <groupId>com.alibaba.maven.plugins</groupId> <artifactId>maven-intl-plugin</artifactId> 
+				<executions> <execution> <id>generate-mainfest</id> <goals> <goal>manifest-gen</goal> 
+				</goals> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -222,11 +213,22 @@
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
+			<artifactId>test.easymockclassextension</artifactId>
+			<version>2.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
 			<artifactId>test.unitils.unitils-spring</artifactId>
 			<version>${unitils_version}</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>com.alibaba.external</groupId>
+			<artifactId>test.unitils.unitils-database</artifactId>
+			<version>${unitils_version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.alibaba.external</groupId>
 			<artifactId>server.jetty</artifactId>

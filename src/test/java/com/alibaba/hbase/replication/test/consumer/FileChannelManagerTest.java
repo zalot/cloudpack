@@ -27,6 +27,7 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.unitils.UnitilsJUnit4TestClassRunner;
@@ -46,6 +47,7 @@ import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.Version1;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
+import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
 
 /**
@@ -61,7 +63,7 @@ public class FileChannelManagerTest {
     private static final String TABLE             = "FCM";
     @SpringBeanByType
     private FileChannelManager  fileChannelManager;
-    @SpringBeanByName
+    @SpringBeanByType
     private Configuration       consumerConf;
 
     // careful with your asm version!
@@ -71,14 +73,16 @@ public class FileChannelManagerTest {
 
     Head                        mockHead          = new Head();
 
-    // @BeforeClass
-    // public static void vmSetUp() {
-    // // -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.documentbuilderfactoryimpl
-    // System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-    // "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-    // System.setProperty("javax.xml.parsers.SAXParserFactory",
-    // "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-    // }
+    @BeforeClass
+    public static void vmSetUp() {
+        // //
+        // -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.documentbuilderfactoryimpl
+        // System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+        // "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+        // System.setProperty("javax.xml.parsers.SAXParserFactory",
+        // "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+        ReplicationConf.setFilePath(ConsumerConstants.CONSUMER_CONFIG_FILE);
+    }
 
     @Before
     public void setUp() throws InterruptedException, KeeperException, IOException {
@@ -161,7 +165,7 @@ public class FileChannelManagerTest {
         MetaData expMeta = new Version1(mockHead, expectedBody);
         EasyMock.expect(fileAdapter.read(EasyMock.isA(Head.class), EasyMock.isA(FileSystem.class))).andReturn(expMeta);
         EasyMockUnitils.replay();
-        fileChannelManager.init();
+        fileChannelManager.start();
         // EasyMock.verify(fileAdapter);
     }
 }
