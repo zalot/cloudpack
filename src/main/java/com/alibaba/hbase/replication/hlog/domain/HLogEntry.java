@@ -9,7 +9,7 @@ public class HLogEntry implements Comparable<HLogEntry> {
 
     @Override
     public String toString() {
-        return "HLogEntry [name=" + name + ", groupName=" + groupName + ", timestamp=" + timestamp + ", type=" + type
+        return "HLogEntry [groupName=" + groupName + ", timestamp=" + timestamp + ", type=" + type
                + ", pos=" + pos + "]";
     }
 
@@ -50,9 +50,6 @@ public class HLogEntry implements Comparable<HLogEntry> {
             return Type.UNKNOW;
         }
     }
-
-    // name is file name
-    protected String name;
 
     // groupName + timestamp = name
     protected String groupName;
@@ -99,6 +96,9 @@ public class HLogEntry implements Comparable<HLogEntry> {
         this.pos = pos;
     }
 
+    public HLogEntry(){
+    }
+    
     public HLogEntry(Path path){
         this(path.getName());
         this.type = HLogEntry.Type.toType(path);
@@ -107,24 +107,19 @@ public class HLogEntry implements Comparable<HLogEntry> {
     public HLogEntry(String name){
         if (HLog.validateHLogFilename(name)) {
             int idx = name.lastIndexOf(".");
-            this.name = name;
             this.groupName = name.substring(0, idx);
             this.timestamp = Long.parseLong(name.substring(idx + 1, name.length()));
         } else {
-            throw new RuntimeException("[ERROR] HLog file name is [" + name + "]");
+            throw new RuntimeException("[ERROR] HLog file name is [" + getName() + "]");
         }
     }
 
     public String getName() {
-        return name;
+        return groupName + "." + timestamp;
     }
 
     public long getTimestamp() {
         return timestamp;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setTimestamp(long timestamp) {
