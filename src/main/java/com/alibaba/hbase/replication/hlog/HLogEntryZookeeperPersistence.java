@@ -33,37 +33,25 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
 
     protected RecoverableZooKeeper zookeepr;
     protected String               baseDir;
-    protected String               name = UUID.randomUUID().toString().substring(0, 10);
+    protected String               uuid = UUID.randomUUID().toString();
 
     // public ArrayList<ACL> perms;
 
     public String getName() {
-        return name;
+        return uuid;
     }
 
     public void setZookeeper(RecoverableZooKeeper zoo) {
         this.zookeepr = zoo;
     }
 
-    public HLogEntryZookeeperPersistence(Configuration conf) throws IOException, KeeperException, InterruptedException{
+    public HLogEntryZookeeperPersistence(Configuration conf) throws Exception{
         this(conf, null);
     }
 
-    public HLogEntryZookeeperPersistence(Configuration conf, RecoverableZooKeeper zoo) throws IOException, KeeperException,
-                                                                                 InterruptedException{
-        if (zoo == null) zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+    public HLogEntryZookeeperPersistence(Configuration conf, RecoverableZooKeeper zoo) throws Exception{
         this.zookeepr = zoo;
-        String rootDir = conf.get(ProducerConstants.CONFKEY_ZOO_ROOT, ProducerConstants.ZOO_ROOT);
-        Stat stat = zoo.exists(rootDir, false);
-        if (stat == null) {
-            zoo.create(rootDir, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        }
-        baseDir = rootDir + ProducerConstants.ZOO_PERSISTENCE_HLOG_GROUP;
-
-        stat = zoo.exists(baseDir, false);
-        if (stat == null) {
-            zoo.create(baseDir, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        }
+        init(conf);
     }
 
     public void createEntry(HLogEntry entry) throws Exception {
@@ -181,7 +169,7 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
     public boolean lockGroup(String groupName) throws Exception {
         if (!isLockGroup(groupName)) {
             try {
-                zookeepr.create(getGroupLockPath(groupName), null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                zookeepr.create(getGroupLockPath(groupName), getGroupLockData(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
                 // String lockPath = getGroupLockPath(groupName);
                 // String seqPath = zoo.create(lockPath, null, Ids.OPEN_ACL_UNSAFE , CreateMode.EPHEMERAL);
                 // if(getLockSeq(lockPath, seqPath) != 0){
@@ -194,6 +182,14 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
             }
         }
         return false;
+    }
+
+    protected byte[] getGroupLockData() {
+        return Bytes.toBytes(getName());
+    }
+    
+    protected String setGroupLockData(byte[] data){
+        return Bytes.toString(data);
     }
 
     public void unlockGroup(String groupName) throws Exception {
@@ -295,6 +291,33 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
     @Override
     public void init(Configuration conf) throws Exception {
         // TODO Auto-generated method stub
-        
+        if(zookeepr == null)
+            zookeepr = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+        String rootDir = conf.get(ProducerConstants.CONFKEY_ZOO_ROOT, ProducerConstants.ZOO_ROOT);
+        Stat stat = zookeepr.exists(rootDir, false);
+        if (stat == null) {
+            zookeepr.create(rootDir, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        }
+        baseDir = rootDir + ProducerConstants.ZOO_PERSISTENCE_HLOG_GROUP;
+
+        stat = zookeepr.exists(baseDir, false);
+        if (stat == null) {
+            zookeepr.create(baseDir, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        }
+    }
+
+    @Override
+    public boolean isMeLockGroup(String groupName) throws Exception {
+        String path = getGroupLockPath(groupName);
+        Stat stat = zookeepr.exists(path, false);
+        if(stat != null){
+            String name = setGroupLockData(zookeepr.getData(path, false, stat));
+            if(name != null){
+                if(name.equals(uuid)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
