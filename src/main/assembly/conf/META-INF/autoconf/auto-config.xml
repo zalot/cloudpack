@@ -43,6 +43,8 @@
 
 	<group name="producer">
 		<!-- 基本信息配置 -->
+		<property name="replication.producer.hbase.rootdir"
+			defaultValue="/hbase" description="hbase.rootdir" />
 		<property name="replication.producer.zookeeper.quorum"
 			defaultValue="localhost" description="hbase.zookeeper.quorum" />
 		<property name="replication.producer.zoo.root" defaultValue="/producer"
