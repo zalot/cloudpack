@@ -53,7 +53,7 @@ public class TestHLogScanner extends BaseReplicationTest {
         int count = 0;
         while (true) {
             insertData(pool1, TABLEA, COLA, "test", 1000);
-            Thread.sleep(scan.getFlushSleepTime() * 2);
+            Thread.sleep(10000 * 2);
             HLogEntryGroups groups = new HLogEntryGroups();
             groups.put(HLogUtil.getHLogsByHDFS(fs, service.getHLogDir()));
             groups.put(HLogUtil.getHLogsByHDFS(fs, service.getOldHLogDir()));
@@ -141,7 +141,7 @@ public class TestHLogScanner extends BaseReplicationTest {
 
         while (true) {
             insertData(pool1, TABLEA, COLA, "test", 1000);
-            Thread.sleep(scan1.getFlushSleepTime() * 2);
+            Thread.sleep(10000 * 2);
             HLogEntryGroups groups = new HLogEntryGroups();
             groups.put(HLogUtil.getHLogsByHDFS(fs, hlogPath));
             groups.put(HLogUtil.getHLogsByHDFS(fs, oldPath));
