@@ -56,15 +56,16 @@ public class HLogUtil {
         return hlogs;
     }
 
-    public static void put2Body(Entry entry, Body body) {
+    public static int put2Body(Entry entry, Body body) {
         Edit edit = null;
         byte[] tableName = entry.getKey().getTablename();
         UUID clusterId = entry.getKey().getClusterId();
 
         // 目前只支持单向同步，所以ClusterId 只要不是默认的就判定该 Entry 为同步的数据
         if (clusterId != HConstants.DEFAULT_CLUSTER_ID) {
-            return;
+            return 0;
         }
+        int count = 0;
         // 不同步 META 和 ROOT 表
         if (isCusTable(tableName)) {
             String strTableName = Bytes.toString(tableName);
@@ -93,8 +94,10 @@ public class HLogUtil {
                 edit.setValue(kv.getValue());
                 edit.setTimeStamp(kv.getTimestamp());
                 body.addEdit(strTableName, edit);
+                count++;
             }
         }
+        return count;
     }
 
     public static Path getFileStatusByHLogEntry(FileSystem fs, Path rootPath, HLogEntry entry) throws IOException {

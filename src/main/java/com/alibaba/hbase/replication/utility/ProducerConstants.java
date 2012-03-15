@@ -15,8 +15,8 @@ public class ProducerConstants {
     public static String       CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME   = "com.alibaba.hbase.replication.producer.zoo.scan.sleeptime";
     public static long         ZOO_SCAN_LOCK_FLUSHSLEEPTIME           = 20000;
 
-    public static String       CONFKEY_ZOO_SCAN_LOCK_TRYLOCKTIME      = "com.alibaba.hbase.replication.producer.zoo.scan.retrytime";
-    public static long         ZOO_SCAN_LOCK_TRYLOCKTIME              = 10000;
+    public static String       CONFKEY_ZOO_SCAN_LOCK_RETRYTIME      = "com.alibaba.hbase.replication.producer.zoo.scan.retrytime";
+    public static long         ZOO_SCAN_LOCK_RETRYTIME              = 10000;
 
     public static String       CONFKEY_HLOG_READERBUFFER              = "com.alibaba.hbase.replication.producer.hlog.readerbuffer";
     public static long         HLOG_READERBUFFER                      = 50000;
@@ -26,6 +26,8 @@ public class ProducerConstants {
 
     public static final String CONFKEY_LOGREADER_CLASS                = "com.alibaba.hbase.replication.producer.hlog.logreader.class";
     public static final String CONFKEY_CROSSIDC_REPLICATION_SLEEPTIME = "com.alibaba.hbase.replication.producer.hlog.sleeptime";
+
+    public static final String CONFKEY_HDFS_HBASE_ROOT                = "com.alibaba.hbase.replication.producer.hbase.rootdir";
 
     public static final String CONFKEY_REP_SINK_POOL_SIZE             = "com.alibaba.hbase.replication.producer.hlog.replicationPoolSize";
     public static final int    REP_SINK_POOL_SIZE                     = 10;
