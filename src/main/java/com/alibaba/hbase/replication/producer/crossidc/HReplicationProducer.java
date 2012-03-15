@@ -56,32 +56,34 @@ public class HReplicationProducer implements Runnable {
     @Override
     public void run() {
         while (true) {
-            List<String> groups;
             try {
                 Thread.sleep(replicationSleepTime);
-                groups = hlogEntryPersistence.listGroupName();
-                for (String groupName : groups) {
-                    if (hlogEntryPersistence.lockGroup(groupName)) {
-                        HLogEntryGroup group = hlogEntryPersistence.getGroupByName(groupName, false);
-                        if (group != null) {
-                            // 每个Group不能连续操作，需要间隔 (优化后)
-                            if (group.getLastOperatorTime() + minGroupOperatorInterval < System.currentTimeMillis()) {
-                                doSinkGroup(group);
-                                group.setLastOperatorTime(System.currentTimeMillis());
-                                hlogEntryPersistence.updateGroup(group, false);
-                            }
-                        }
-                    }
-                    if (hlogEntryPersistence.isMeLockGroup(groupName)) {
-                        hlogEntryPersistence.unlockGroup(groupName);
-                    }
-                }
+                doProducer();
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error(e.getStackTrace());
             }
         }
     }
 
+    public void doProducer() throws Exception{
+        List<String> groups = hlogEntryPersistence.listGroupName();
+        for (String groupName : groups) {
+            if (hlogEntryPersistence.lockGroup(groupName)) {
+                HLogEntryGroup group = hlogEntryPersistence.getGroupByName(groupName, false);
+                if (group != null) {
+                    // 每个Group不能连续操作，需要间隔 (优化后)
+                    if (group.getLastOperatorTime() + minGroupOperatorInterval < System.currentTimeMillis()) {
+                        doSinkGroup(group);
+                        group.setLastOperatorTime(System.currentTimeMillis());
+                        hlogEntryPersistence.updateGroup(group, false);
+                    }
+                }
+            }
+            if (hlogEntryPersistence.isMeLockGroup(groupName)) {
+                hlogEntryPersistence.unlockGroup(groupName);
+            }
+        }
+    }
     private void doSinkGroup(HLogEntryGroup group) throws Exception {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);

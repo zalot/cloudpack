@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
-import com.alibaba.hbase.replication.protocol.FileAdapter;
+import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
@@ -45,7 +45,7 @@ public class ReplicationSinkManger {
         RecoverableZooKeeper zookeeper = ZKUtil.connect(conf, new NothingZookeeperWatch());
         
         HLogService hlogService = new HLogService(conf); 
-        ProtocolAdapter adapter = new FileAdapter();
+        ProtocolAdapter adapter = new DefaultHDFSFileAdapter();
         
         adapter.init(conf);
         HLogEntryZookeeperPersistence hLogEntryPersistence = new HLogEntryZookeeperPersistence(conf);

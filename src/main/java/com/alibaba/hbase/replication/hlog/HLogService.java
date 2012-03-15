@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.HConstants;
 
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
@@ -41,7 +42,9 @@ public class HLogService {
     public HLogService(Configuration conf, FileSystem fs) throws IOException{
         if (fs == null) this.fs = FileSystem.get(conf);
         else this.fs = fs;
-        rootDir = new Path(conf.get(ProducerConstants.CONFKEY_HDFS_HBASE_ROOT));
+        String strRootDir = conf.get(ProducerConstants.CONFKEY_HDFS_HBASE_ROOT);
+        if (strRootDir == null) strRootDir = conf.get(HConstants.HBASE_DIR);
+        rootDir = new Path(strRootDir);
         logsPath = new Path(rootDir, ProducerConstants.PATH_BASE_HLOG);
         oldLogsPath = new Path(rootDir, ProducerConstants.PATH_BASE_OLDHLOG);
         this.conf = conf;

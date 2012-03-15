@@ -35,8 +35,6 @@ public class HLogGroupZookeeperScanner implements Runnable {
     protected String               name;
     protected String               zooScanBasePath;
     protected String               zooScanLockPath;
-    protected Path                 dfsHLogPath;
-    protected Path                 dfsOldHLogPath;
 
     protected int                  errorCount     = 0;
     // 休息时间
@@ -49,6 +47,8 @@ public class HLogGroupZookeeperScanner implements Runnable {
     protected long                 scanOldHlogTimeOut;
     protected boolean              hasScanOldHLog = false;
     protected boolean              init           = false;
+    protected HLogService          hlogService;
+    protected RecoverableZooKeeper zooKeeper;
 
     // 外部对象引用
     protected HLogEntryPersistence hlogEntryPersistence;
@@ -77,25 +77,6 @@ public class HLogGroupZookeeperScanner implements Runnable {
         this.zooKeeper = zooKeeper;
     }
 
-    protected HLogService          hlogService;
-    protected RecoverableZooKeeper zooKeeper;
-
-    public Path getHlogPath() {
-        return dfsHLogPath;
-    }
-
-    public void setHlogPath(Path hlogPath) {
-        this.dfsHLogPath = hlogPath;
-    }
-
-    public Path getOldHlogPath() {
-        return dfsOldHLogPath;
-    }
-
-    public void setOldHlogPath(Path oldHlogPath) {
-        this.dfsOldHLogPath = oldHlogPath;
-    }
-
     public HLogGroupZookeeperScanner(Configuration conf) throws KeeperException, InterruptedException, IOException{
         this(UUID.randomUUID().toString(), conf, null);
     }
@@ -111,17 +92,18 @@ public class HLogGroupZookeeperScanner implements Runnable {
         if (zoo == null) zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());
         this.zooKeeper = zoo;
         this.name = name;
+        init(conf);
     }
 
-    private void init() throws KeeperException, InterruptedException {
-        zooScanBasePath = hlogService.getConf().get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT,
+    public void init(Configuration conf) throws KeeperException, InterruptedException {
+        zooScanBasePath = conf.get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT,
                                                     ProducerConstants.ZOO_LOCK_ROOT);
         zooScanLockPath = zooScanBasePath + ProducerConstants.ZOO_LOCK_SCAN;
-        flushSleepTime = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
+        flushSleepTime = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
                                                        ProducerConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME);
-        scannerTryLockTime = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
+        scannerTryLockTime = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
                                                            ProducerConstants.ZOO_SCAN_LOCK_RETRYTIME);
-        scanOldHlogTimeOut = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_OLDHLOG_INTERVAL,
+        scanOldHlogTimeOut = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_OLDHLOG_INTERVAL,
                                                            ProducerConstants.ZOO_SCAN_OLDHLOG_INTERVAL);
 
         Stat stat = zooKeeper.exists(zooScanBasePath, false);
@@ -155,9 +137,6 @@ public class HLogGroupZookeeperScanner implements Runnable {
     public void run() {
         while (true) {
             try {
-                if(!init){
-                    init();
-                }
                 LOG.debug("Scanner Start ....");
                 Thread.sleep(scannerTryLockTime);
                 isLock = lock();
@@ -192,19 +171,21 @@ public class HLogGroupZookeeperScanner implements Runnable {
         }
     }
 
-    private void scanning() throws Exception {
+    protected void scanning() throws Exception {
         while (true) {
             // TODO : 如果 flushSleepTime 这段时间内有 Hlog - > OldHlog 那么就要更换策略
             // 所以常情保持 Hlog 的数量和大小，确保 在 flushSleepTime 时间段内， Hlog 一直都在 .logs 目录中
             Thread.sleep(flushSleepTime);
-            LOG.debug(Thread.currentThread().getName() + " scanning ....");
-            HLogEntryGroups groups = new HLogEntryGroups();
-            putHLog(groups);
-            putOldHLog(groups);
-            for (HLogEntryGroup group : groups.getGroups()) {
-                hlogEntryPersistence.createOrUpdateGroup(group, true);
-            }
-            LOG.debug(Thread.currentThread().getName() + " scanning ok");
+            doScan();
+        }
+    }
+
+    public void doScan() throws Exception {
+        HLogEntryGroups groups = new HLogEntryGroups();
+        putHLog(groups);
+        putOldHLog(groups);
+        for (HLogEntryGroup group : groups.getGroups()) {
+            hlogEntryPersistence.createOrUpdateGroup(group, true);
         }
     }
 

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.hbase.replication.protocol.FileAdapter;
+import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
@@ -59,7 +59,7 @@ public class FileChannelManager {
     @Autowired
     protected DataLoadingManager   dataLoadingManager;
     @Autowired
-    protected FileAdapter          fileAdapter;
+    protected DefaultHDFSFileAdapter          fileAdapter;
 
     @PostConstruct
     public void init() throws IOException, KeeperException, InterruptedException {
@@ -135,7 +135,7 @@ public class FileChannelManager {
         for (FileStatus fst : fstList) {
             if (!fst.isDir()) {
                 String fileName = fst.getPath().getName();
-                Head fileHead = FileAdapter.validataFileName(fileName);
+                Head fileHead = DefaultHDFSFileAdapter.validataFileName(fileName);
                 if (fileHead == null && LOG.isErrorEnabled()) {
                     LOG.error("validataFileName fail. path: " + fst.getPath());
                     continue;
