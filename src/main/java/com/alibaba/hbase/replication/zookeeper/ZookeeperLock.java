@@ -8,6 +8,17 @@ package com.alibaba.hbase.replication.zookeeper;
  */
 public class ZookeeperLock {
 
+    public ZookeeperLock(String basePath, String lockPath, long sleepTime, long tryLockTime){
+        super();
+        this.basePath = basePath;
+        this.lockPath = lockPath;
+        this.sleepTime = sleepTime;
+        this.tryLockTime = tryLockTime;
+    }
+
+    public ZookeeperLock(){
+    };
+
     protected String basePath;
 
     protected String lockPath;

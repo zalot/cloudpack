@@ -33,15 +33,21 @@ public abstract class ZookeeperLockThread implements Runnable {
     protected RecoverableZooKeeper zooKeeper;
     protected ZookeeperLock        lock;
 
+    
+    public ZookeeperLock getLock() {
+        return lock;
+    }
+
+    
+    public void setLock(ZookeeperLock lock) {
+        this.lock = lock;
+    }
+
     public String getUuid() {
         if (uuid.get() == null) {
             uuid.set(UUID.randomUUID().toString());
         }
         return uuid.get();
-    }
-
-    public ZookeeperLockThread(ZookeeperLock lock){
-        this.lock = lock;
     }
 
     public RecoverableZooKeeper getZooKeeper() {
