@@ -110,19 +110,18 @@ public abstract class ZookeeperLockThread implements Runnable {
     public void run() {
         while (true) {
             try {
+                Thread.sleep(lock.getTryLockTime());
                 if (!init) {
                     init();
                 }
                 LOG.debug("Scanner Start ....");
-                Thread.sleep(lock.getTryLockTime());
                 isLock = lock();
                 if (isLock) {
-                    innnerDoRun();
+                    innnerRun();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 isLock = false;
-                LOG.error(e);
+                LOG.error(e.getStackTrace());
             } finally {
                 if (isLock) {
                     unlock();
@@ -131,7 +130,7 @@ public abstract class ZookeeperLockThread implements Runnable {
         }
     }
 
-    public void innnerDoRun() throws Exception {
+    public void innnerRun() throws Exception {
         while (true) {
             Thread.sleep(lock.getSleepTime());
             doRun();
