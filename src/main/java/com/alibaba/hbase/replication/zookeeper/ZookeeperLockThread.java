@@ -1,7 +1,10 @@
 package com.alibaba.hbase.replication.zookeeper;
 
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -16,10 +19,9 @@ import org.apache.zookeeper.data.Stat;
  */
 public abstract class ZookeeperLockThread implements Runnable {
 
-    public abstract void doRun();
-
     protected static final Log     LOG        = LogFactory.getLog(ZookeeperLockThread.class);
-    protected String               name;
+    protected ThreadLocal<String>  uuid       = new ThreadLocal<String>();
+
     protected int                  errorCount = 0;
     // 休息时间
     // 争抢到 reject scanner 后 间隔时间
@@ -30,6 +32,13 @@ public abstract class ZookeeperLockThread implements Runnable {
 
     protected RecoverableZooKeeper zooKeeper;
     protected ZookeeperLock        lock;
+
+    public String getUuid() {
+        if (uuid.get() == null) {
+            uuid.set(UUID.randomUUID().toString());
+        }
+        return uuid.get();
+    }
 
     public ZookeeperLockThread(ZookeeperLock lock){
         this.lock = lock;
@@ -54,21 +63,41 @@ public abstract class ZookeeperLockThread implements Runnable {
         init = true;
     }
 
-    public boolean lock() throws KeeperException, InterruptedException {
-        Stat stat = zooKeeper.exists(lock.getLockPath(), false);
-        if (stat != null) {
-            return false;
-        }
-        zooKeeper.create(lock.getLockPath(), null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-        return true;
-    }
-
-    private void unlock() {
+    public boolean lock() {
         try {
             Stat stat = zooKeeper.exists(lock.getLockPath(), false);
-            if (stat != null) zooKeeper.delete(lock.getLockPath(), stat.getVersion());
+            if (stat != null) {
+                return false;
+            }
+            zooKeeper.create(lock.getLockPath(), getLockData(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            return true;
         } catch (Exception e) {
         }
+        return false;
+    }
+
+    private byte[] getLockData() {
+        return Bytes.toBytes(getUuid());
+    }
+
+    private String setLockData(byte[] data) {
+        return Bytes.toString(data);
+    }
+
+    private boolean unlock() {
+        try {
+            Stat stat = zooKeeper.exists(lock.getLockPath(), false);
+            if (stat != null) {
+                String uuid = setLockData(zooKeeper.getData(lock.getLockPath(), false, stat));
+                if(getUuid().equals(uuid)){
+                    
+                }
+                zooKeeper.delete(lock.getLockPath(), stat.getVersion());
+                return true;
+            }
+        } catch (Exception e) {
+        }
+        return false;
     }
 
     @Override
@@ -82,7 +111,7 @@ public abstract class ZookeeperLockThread implements Runnable {
                 Thread.sleep(lock.getTryLockTime());
                 isLock = lock();
                 if (isLock) {
-                    doRun();
+                    innnerDoRun();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,4 +124,13 @@ public abstract class ZookeeperLockThread implements Runnable {
             }
         }
     }
+
+    public void innnerDoRun() throws Exception {
+        while (true) {
+            Thread.sleep(lock.getSleepTime());
+            doRun();
+        }
+    }
+
+    public abstract void doRun() throws Exception;
 }
