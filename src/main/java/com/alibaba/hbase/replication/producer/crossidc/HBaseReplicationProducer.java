@@ -147,7 +147,6 @@ public class HBaseReplicationProducer implements Runnable {
         head.setFileTimestamp(timeStamp);
         head.setStartOffset(start);
         head.setEndOffset(end);
-        System.out.println(head);
         if (doAdapter(head, body)) {
             return true;
         }
@@ -158,9 +157,11 @@ public class HBaseReplicationProducer implements Runnable {
         Version1 version1 = new Version1(head, body);
         try {
             adapter.write(version1);
+            LOG.debug("doAdapter - > " + head.toString());
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getStackTrace());
+            LOG.error("doAdapter ERROR - > " + head.toString());
             return false;
         }
     }
