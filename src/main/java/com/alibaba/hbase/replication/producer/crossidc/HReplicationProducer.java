@@ -33,7 +33,7 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
  * 
  * @author zalot.zhaoh Feb 29, 2012 2:27:45 PM
  */
-public class HBaseReplicationProducer implements Runnable {
+public class HReplicationProducer implements Runnable {
 
     protected static final Log     LOG                      = LogFactory.getLog(HLogGroupZookeeperScanner.class);
     private long                   minGroupOperatorInterval = ProducerConstants.HLOG_GROUP_INTERVAL;
@@ -45,7 +45,7 @@ public class HBaseReplicationProducer implements Runnable {
     protected HLogEntryPersistence hlogEntryPersistence;
     protected HLogService          hlogService;
 
-    public HBaseReplicationProducer(Configuration conf) throws IOException, KeeperException, InterruptedException{
+    public HReplicationProducer(Configuration conf) throws IOException, KeeperException, InterruptedException{
         maxReaderBuffer = conf.getLong(ProducerConstants.CONFKEY_HLOG_READERBUFFER, ProducerConstants.HLOG_READERBUFFER);
         minGroupOperatorInterval = conf.getLong(ProducerConstants.CONFKEY_HLOG_GROUP_INTERVAL,
                                                 ProducerConstants.HLOG_GROUP_INTERVAL);
@@ -190,12 +190,12 @@ public class HBaseReplicationProducer implements Runnable {
         this.hlogService = hlogService;
     }
 
-    public static HBaseReplicationProducer newInstance(Configuration conf, ProtocolAdapter adapter,
+    public static HReplicationProducer newInstance(Configuration conf, ProtocolAdapter adapter,
                                                        HLogEntryPersistence dao, HLogService service)
                                                                                                      throws IOException,
                                                                                                      KeeperException,
                                                                                                      InterruptedException {
-        HBaseReplicationProducer prod = new HBaseReplicationProducer(conf);
+        HReplicationProducer prod = new HReplicationProducer(conf);
         prod.setAdapter(adapter);
         prod.setHlogEntryPersistence(dao);
         prod.setHlogService(service);

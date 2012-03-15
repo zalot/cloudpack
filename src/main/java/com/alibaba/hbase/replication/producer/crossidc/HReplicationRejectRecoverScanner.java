@@ -26,9 +26,9 @@ import com.alibaba.hbase.replication.zookeeper.ZookeeperLockThread;
  * 
  * @author zalot.zhaoh Mar 1, 2012 10:44:45 AM
  */
-public class HBaseReplicationRejectScanner extends ZookeeperLockThread {
+public class HReplicationRejectRecoverScanner extends ZookeeperLockThread {
 
-    protected static final Log LOG = LogFactory.getLog(HBaseReplicationRejectScanner.class);
+    protected static final Log LOG = LogFactory.getLog(HReplicationRejectRecoverScanner.class);
 
     protected Path             dfsRejectHLogPath;
     protected HLogService      hlogService;
@@ -42,11 +42,11 @@ public class HBaseReplicationRejectScanner extends ZookeeperLockThread {
         this.hlogService = hlogService;
     }
 
-    public HBaseReplicationRejectScanner(ZookeeperLock lock){
+    public HReplicationRejectRecoverScanner(ZookeeperLock lock){
         this.setLock(lock);
     }
 
-    public HBaseReplicationRejectScanner(Configuration conf){
+    public HReplicationRejectRecoverScanner(Configuration conf){
         ZookeeperLock lock = new ZookeeperLock();
         lock.setBasePath(hlogService.getConf().get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT,
                                                    ProducerConstants.ZOO_LOCK_ROOT));

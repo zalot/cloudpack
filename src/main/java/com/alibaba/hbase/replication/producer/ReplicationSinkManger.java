@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
-import com.alibaba.hbase.replication.producer.crossidc.HBaseReplicationProducer;
+import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
 import com.alibaba.hbase.replication.protocol.FileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
@@ -83,10 +83,10 @@ public class ReplicationSinkManger {
             scannerPool.execute(scan);
         }
         
-        HBaseReplicationProducer producer;
+        HReplicationProducer producer;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
                                         ProducerConstants.REP_SINK_POOL_SIZE); i++) {
-            producer = new HBaseReplicationProducer(conf);
+            producer = new HReplicationProducer(conf);
             producer.setAdapter(adapter);
             producer.setHlogService(hlogService);
             producer.setHlogEntryPersistence(hLogEntryPersistence);
