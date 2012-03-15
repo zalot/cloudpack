@@ -45,7 +45,9 @@
 			defaultValue="localhost" description="hbase.zookeeper.quorum" />
 		<property name="replication.producer.zoo.root" defaultValue="/producer"
 			description="断点保留位置" />
-
+		<property name="replication.producer.zoo.rootlock"
+			defaultValue="/alireplock" description="扫描根锁：有很多子锁可以建立在这个上面" />
+			
 		<!-- 线程池启动器配置 -->
 		<property name="replication.producer.scannerPoolSize"
 			defaultValue="1" description="扫描的线程池大小" />
@@ -59,8 +61,6 @@
 			defaultValue="100" description="线程池空闲线程keepAliveTime" />
 			
 		<!-- 扫描线程配置 -->
-		<property name="replication.producer.zoo.rootlock"
-			defaultValue="/alireplock" description="扫描根锁：有很多子锁可以建立在这个上面" />
 		<property name="replication.producer.zoo.scan.oldhlog.interval"
 			defaultValue="600000" description="暂时未用：旧目录扫描间隔" />
 		<property name="replication.producer.zoo.scan.sleeptime"
@@ -68,13 +68,21 @@
 		<property name="replication.producer.zoo.scan.retrytime"
 			defaultValue="30000" description="扫描线程争抢扫描锁的间隔时间" />
 
-		<!-- replication 线程配置 -->
+		<!-- replication Thread conf -->
 		<property name="replication.producer.hlog.readerbuffer"
 			defaultValue="50000" description="单个文件读取的最大上限" />
 		<property name="replication.producer.hlog.group.interval"
 			defaultValue="3000" description="每个Group最小操作的间隔" />
 		<property name="replication.producer.hlog.sleeptime"
 			defaultValue="1000" description="同步线程休息时间" />
+		
+		<!-- reject recover Thread conf -->	
+		<property name="replication.producer.zoo.scan.oldhlog.interval"
+			defaultValue="600000" description="暂时未用：旧目录扫描间隔" />
+		<property name="replication.producer.zoo.scan.sleeptime"
+			defaultValue="20000" description="扫描线程的间隔时间" />
+		<property name="replication.producer.zoo.scan.retrytime"
+			defaultValue="30000" description="扫描线程争抢扫描锁的间隔时间" />
 	</group>
 
 	<group name="log">
