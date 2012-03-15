@@ -147,6 +147,10 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
                     if (tmpEntry == null) {
                         createEntry(entry);
                     }
+                    if (tmpEntry.getType() != HLogEntry.Type.END && tmpEntry.getType() != entry.getType()) {
+                        tmpEntry.setType(entry.getType());
+                        updateEntry(tmpEntry);
+                    }
                 }
             }
         }
