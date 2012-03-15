@@ -28,16 +28,16 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 
  * @author zalot.zhaoh Mar 7, 2012 10:24:18 AM
  */
-public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
+public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
 
     protected RecoverableZooKeeper zookeepr;
     protected String               baseDir;
-    protected ThreadLocal<String>  uuid   = new ThreadLocal<String>();;
+    protected ThreadLocal<String>  uuid = new ThreadLocal<String>(); ;
 
     // public ArrayList<ACL> perms;
 
     public String getName() {
-        if(uuid.get() == null){
+        if (uuid.get() == null) {
             uuid.set(UUID.randomUUID().toString());
         }
         return uuid.get();
@@ -109,7 +109,8 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
     }
 
     public void createGroup(HLogEntryGroup group, boolean createChild) throws Exception {
-        zookeepr.create(getGroupPath(group.getGroupName()), getGroupData(group), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        zookeepr.create(getGroupPath(group.getGroupName()), getGroupData(group), Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
         if (createChild) {
             for (HLogEntry entry : group.getEntrys()) {
                 createEntry(entry);
@@ -171,7 +172,8 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
     public boolean lockGroup(String groupName) throws Exception {
         if (!isLockGroup(groupName)) {
             try {
-                zookeepr.create(getGroupLockPath(groupName), getGroupLockData(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                zookeepr.create(getGroupLockPath(groupName), getGroupLockData(), Ids.OPEN_ACL_UNSAFE,
+                                CreateMode.EPHEMERAL);
                 // String lockPath = getGroupLockPath(groupName);
                 // String seqPath = zoo.create(lockPath, null, Ids.OPEN_ACL_UNSAFE , CreateMode.EPHEMERAL);
                 // if(getLockSeq(lockPath, seqPath) != 0){
@@ -189,8 +191,8 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
     protected byte[] getGroupLockData() {
         return Bytes.toBytes(getName());
     }
-    
-    protected String setGroupLockData(byte[] data){
+
+    protected String setGroupLockData(byte[] data) {
         return Bytes.toString(data);
     }
 
@@ -289,13 +291,11 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
         }
         return -1;
     }
-    
-    
+
     @Override
     public void init(Configuration conf) throws Exception {
         // TODO Auto-generated method stub
-        if(zookeepr == null)
-            zookeepr = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+        if (zookeepr == null) zookeepr = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
         String rootDir = conf.get(ProducerConstants.CONFKEY_ZOO_ROOT, ProducerConstants.ZOO_ROOT);
         Stat stat = zookeepr.exists(rootDir, false);
         if (stat == null) {
@@ -313,13 +313,15 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
     public boolean isMeLockGroup(String groupName) throws Exception {
         String path = getGroupLockPath(groupName);
         Stat stat = zookeepr.exists(path, false);
-        if(stat != null){
+        if (stat != null) {
             String name = null;
-            try{
+            try {
                 name = setGroupLockData(zookeepr.getData(path, false, stat));
-            }catch(Exception e){}
-            if(name != null){
-                if(name.equals(getName())){
+            } catch (Exception e) {
+                return false;
+            }
+            if (name != null) {
+                if (name.equals(getName())) {
                     return true;
                 }
             }
