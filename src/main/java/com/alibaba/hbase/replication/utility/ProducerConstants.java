@@ -14,7 +14,7 @@ public class ProducerConstants {
     // Base Zoo Path
     // -----------------------------------------
     public static String       CONFKEY_ZOO_LOCK_ROOT                  = "com.alibaba.hbase.replication.producer.zoo.lock.root";
-    public static String       ZOO_LOCK_ROOT                          = "/alirepscanlock";
+    public static String       ZOO_LOCK_ROOT                          = "/alireplock";
     
     // -----------------------------------------
     // Scan Thread
