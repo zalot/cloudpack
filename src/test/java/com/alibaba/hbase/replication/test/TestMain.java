@@ -14,8 +14,8 @@ import com.alibaba.hbase.replication.consumer.FileChannelManager;
 import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
-import com.alibaba.hbase.replication.producer.crossidc.HBaseReplicationProducer;
-import com.alibaba.hbase.replication.protocol.FileAdapter;
+import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
+import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
@@ -27,7 +27,7 @@ public class TestMain extends BaseReplicationTest{
 
     @Mock
     @InjectInto(target = "fileChannelManager", property = "fileAdapter")
-    private FileAdapter         fileAdapter;
+    private DefaultHDFSFileAdapter         fileAdapter;
     @SpringBeanByType
     private FileChannelManager  fileChannelManager;
     @SpringBeanByName
@@ -42,7 +42,6 @@ public class TestMain extends BaseReplicationTest{
     
     public void testCrossIDCReplication() throws Exception{
         fileAdapter.init(conf1);
-        
         HLogService service = new HLogService(conf1);
         RecoverableZooKeeper zk = ZKUtil.connect(conf1, new NothingZookeeperWatch());
         
@@ -56,7 +55,7 @@ public class TestMain extends BaseReplicationTest{
         Thread threadscan = new Thread(scan);
         threadscan.start();
         
-        HBaseReplicationProducer pro = new HBaseReplicationProducer(conf1);
+        HReplicationProducer pro = new HReplicationProducer(conf1);
         pro.setAdapter(fileAdapter);
         pro.setHlogEntryPersistence(dao);
         pro.setHlogService(service);

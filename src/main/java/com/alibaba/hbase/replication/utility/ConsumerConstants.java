@@ -31,6 +31,7 @@ public class ConsumerConstants {
 
     // conf key
     public static final String CONFKEY_PRODUCER_FS                 = "com.alibaba.hbase.replication.producer.fs";
+    public static final String PRODUCER_EMPTY_FS                         = "";
     public static final String CONFKEY_ZK_QUORUM                   = "com.alibaba.hbase.replication.consumer.zookeeper.quorum";
     public static final String CONFKEY_REP_ZNODE_ROOT              = "com.alibaba.hbase.replication.consumer.zookeeper.znoderoot";
     public static final String CONFKEY_REP_FILE_CHANNEL_POOL_SIZE  = "com.alibaba.hbase.replication.consumer.fileChannelPoolSize";

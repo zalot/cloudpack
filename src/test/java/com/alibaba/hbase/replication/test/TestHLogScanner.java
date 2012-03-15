@@ -55,8 +55,8 @@ public class TestHLogScanner extends BaseReplicationTest {
             insertData(pool1, TABLEA, COLA, "test", 1000);
             Thread.sleep(scan.getFlushSleepTime() * 2);
             HLogEntryGroups groups = new HLogEntryGroups();
-            groups.put(HLogUtil.getHLogsByHDFS(fs, scan.getHlogPath()));
-            groups.put(HLogUtil.getHLogsByHDFS(fs, scan.getOldHlogPath()));
+            groups.put(HLogUtil.getHLogsByHDFS(fs, service.getHLogDir()));
+            groups.put(HLogUtil.getHLogsByHDFS(fs, service.getOldHLogDir()));
             Assert.assertTrue(dao1.listGroupName().size() == groups.getGroups().size());
             for (HLogEntryGroup group : groups.getGroups()) {
                 Assert.assertTrue(dao1.listEntry(group.getGroupName()).size() == group.getEntrys().size());
@@ -69,6 +69,7 @@ public class TestHLogScanner extends BaseReplicationTest {
 
     @Test
     public void testMThreadScan() throws Exception {
+        HLogService service = new HLogService(conf1);
         final HLogGroupZookeeperScanner scan1;
         final HLogGroupZookeeperScanner scan2;
 
@@ -92,8 +93,8 @@ public class TestHLogScanner extends BaseReplicationTest {
         scan1 = new HLogGroupZookeeperScanner(conf1);
         scan2 = new HLogGroupZookeeperScanner(conf1);
 
-        Path hlogPath = scan1.getHlogPath();
-        Path oldPath = scan1.getOldHlogPath();
+        Path hlogPath = service.getHLogDir();
+        Path oldPath = service.getOldHLogDir();
 
         int count = 0;
 

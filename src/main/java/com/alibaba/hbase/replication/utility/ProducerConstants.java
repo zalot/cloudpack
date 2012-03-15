@@ -6,16 +6,17 @@ public class ProducerConstants {
     // Base
     // -----------------------------------------
     public static final String CONFKEY_HDFS_HBASE_ROOT                = "com.alibaba.hbase.replication.producer.hbase.rootdir";
+    public static final String HDFS_HBASE_ROOT                        = "/hbase";
     public static final String PRODUCER_CONFIG_FILE                   = "META-INF/producer-configuration.xml";
     public static String       CONFKEY_ZOO_ROOT                       = "com.alibaba.hbase.replication.producer.zoo.root";
     public static String       ZOO_ROOT                               = "/alirep";
-    
+
     // -----------------------------------------
     // Base Zoo Path
     // -----------------------------------------
     public static String       CONFKEY_ZOO_LOCK_ROOT                  = "com.alibaba.hbase.replication.producer.zoo.lock.root";
     public static String       ZOO_LOCK_ROOT                          = "/alireplock";
-    
+
     // -----------------------------------------
     // Scan Thread
     // -----------------------------------------
@@ -43,12 +44,12 @@ public class ProducerConstants {
     // -----------------------------------------
     // Reject Thread
     // -----------------------------------------
-    public static String       CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME   = "com.alibaba.hbase.replication.producer.zoo.scan.sleeptime";
-    public static long         ZOO_REJECT_LOCK_FLUSHSLEEPTIME           = 20000;
+    public static String       CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME = "com.alibaba.hbase.replication.producer.zoo.scan.sleeptime";
+    public static long         ZOO_REJECT_LOCK_FLUSHSLEEPTIME         = 20000;
 
-    public static String       CONFKEY_ZOO_REJECT_LOCK_RETRYTIME        = "com.alibaba.hbase.replication.producer.zoo.scan.retrytime";
-    public static long         ZOO_REJECT_LOCK_RETRYTIME                = 10000;
-    
+    public static String       CONFKEY_ZOO_REJECT_LOCK_RETRYTIME      = "com.alibaba.hbase.replication.producer.zoo.scan.retrytime";
+    public static long         ZOO_REJECT_LOCK_RETRYTIME              = 10000;
+
     // -----------------------------------------
     // Start Manager
     // -----------------------------------------
@@ -59,7 +60,7 @@ public class ProducerConstants {
     public static final int    CROSSIDC_REPLICATION_SLEEPTIME         = 100;
     public static final String CONFKEY_REP_SINK_POOL_SIZE             = "com.alibaba.hbase.replication.producer.hlog.replicationPoolSize";
     public static final int    REP_SINK_POOL_SIZE                     = 10;
-    
+
     // -----------------------------------------
     // static field
     // -----------------------------------------
