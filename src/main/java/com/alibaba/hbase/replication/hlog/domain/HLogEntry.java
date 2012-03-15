@@ -132,4 +132,8 @@ public class HLogEntry implements Comparable<HLogEntry> {
         if (o.getTimestamp() == this.getTimestamp()) return 0;
         return -1;
     }
+    
+    public static void main(String[] args){
+        System.out.println(HLogEntry.Type.toType(new Path("abc/.oldlogs/dfadsf.121213")));
+    }
 }

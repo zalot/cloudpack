@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 
@@ -13,14 +12,13 @@ import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
 import com.alibaba.hbase.replication.protocol.Body;
-import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.protocol.Version1;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.zookeeper.ZookeeperLock;
-import com.alibaba.hbase.replication.zookeeper.ZookeeperLockThread;
+import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
 
 /**
  * HLogGroup 扫描器<BR>
@@ -28,7 +26,7 @@ import com.alibaba.hbase.replication.zookeeper.ZookeeperLockThread;
  * 
  * @author zalot.zhaoh Mar 1, 2012 10:44:45 AM
  */
-public class HReplicationRejectRecoverScanner extends ZookeeperLockThread {
+public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread {
 
     protected static final Log LOG  = LogFactory.getLog(HReplicationRejectRecoverScanner.class);
 
@@ -117,7 +115,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperLockThread {
             adapter.recover(version1);
             return true;
         } catch (Exception e) {
-            LOG.error(e.getStackTrace());
+            LOG.error(e);
             return false;
         }
     }

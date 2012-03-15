@@ -64,8 +64,6 @@ public class LazyOpenHLogReader implements HLogReader {
                     hasOpened = true;
                     return;
                 }
-                
-                System.out.println("open " + file + " -> seek " + tmpSeek);
                 reader = HLog.getReader(operator.getFileSystem(), file, operator.getConf());
                 if (reader != null) {
                     isOpen = true;

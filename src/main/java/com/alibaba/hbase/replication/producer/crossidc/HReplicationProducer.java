@@ -60,7 +60,7 @@ public class HReplicationProducer implements Runnable {
                 Thread.sleep(replicationSleepTime);
                 doProducer();
             } catch (Exception e) {
-                LOG.error(e.getStackTrace());
+                LOG.error(e);
             }
         }
     }
@@ -93,7 +93,6 @@ public class HReplicationProducer implements Runnable {
         HLogEntry entry;
         for (int idx = 0; idx < entrys.size(); idx++) {
             entry = entrys.get(idx);
-            System.out.println(Thread.currentThread().getId() + " reader->" + entry.toString());
             if (entry.getType() == Type.END || entry.getType() == Type.UNKNOW) {
                 continue;
             }
@@ -114,16 +113,17 @@ public class HReplicationProducer implements Runnable {
                 }
             }
 
+            if (count > 0) {
+                if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
+                                body)) {
+                    // 如果失败则返回,不再继续更新
+                    return;
+                }
+            }
+            
             // 如果指针移动了则更新
             if (entry.getPos() < reader.getPosition()) {
-                if (body.getEditMap().size() > 0) {
-                    if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
-                                    body)) {
-                        // 如果失败则返回,不再继续更新
-                        return;
-                    }
-                }
-
+                entry.setPos(reader.getPosition());
             }
 
             // 如果后面还有 HLogEntry 则说明这个 Reader 的数据都以经读完 (优化后)
@@ -131,8 +131,6 @@ public class HReplicationProducer implements Runnable {
                 entry.setType(Type.END);
             }
 
-            entry.setPos(reader.getPosition());
-            hlogEntryPersistence.updateEntry(entry);
             body = new Body();
             reader.close();
         }
@@ -162,7 +160,7 @@ public class HReplicationProducer implements Runnable {
             LOG.debug("doAdapter - > " + head.toString());
             return true;
         } catch (Exception e) {
-            LOG.error(e.getStackTrace());
+            LOG.error(e);
             LOG.error("doAdapter ERROR - > " + head.toString());
             return false;
         }
