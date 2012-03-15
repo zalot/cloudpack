@@ -59,8 +59,8 @@
 			defaultValue="100" description="线程池空闲线程keepAliveTime" />
 			
 		<!-- 扫描线程配置 -->
-		<property name="replication.producer.zoo.scan.rootlock"
-			defaultValue="/alirepscanlock" description="扫描的锁位置" />
+		<property name="replication.producer.zoo.rootlock"
+			defaultValue="/alireplock" description="扫描根锁：有很多子锁可以建立在这个上面" />
 		<property name="replication.producer.zoo.scan.oldhlog.interval"
 			defaultValue="600000" description="暂时未用：旧目录扫描间隔" />
 		<property name="replication.producer.zoo.scan.sleeptime"

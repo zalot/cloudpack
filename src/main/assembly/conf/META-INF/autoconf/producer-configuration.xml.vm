@@ -34,8 +34,8 @@
 		<value>${replication_producer_zoo_root}</value>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.producer.zoo.scan.rootlock</name>
-		<value>${replication_producer_zoo_scan_rootlock}</value>
+		<name>com.alibaba.hbase.replication.producer.zoo.lock.root</name>
+		<value>${replication_producer_zoo_rootlock}</value>
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.scan.oldhlog.interval</name>
