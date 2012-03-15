@@ -7,7 +7,7 @@
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.hbase.rootdir</name>
-		<value>${replication_producer_hbase_rootdir"}</value>
+		<value>${replication_producer_hbase_rootdir}</value>
 		<description>根路径</description>
 	</property>
 	<property>
