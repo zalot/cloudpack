@@ -1,5 +1,7 @@
 package com.alibaba.hbase.replication.producer.crossidc;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -72,8 +74,9 @@ public class HReplicationRejectRecoverScanner extends ZookeeperLockThread {
         HLogEntry entry = HLogUtil.getHLogEntryByHead(head);
         Entry ent = null;
         Body body = new Body();
+        HLogReader reader = null;
         try {
-            HLogReader reader = hlogService.getReader(entry);
+            reader = hlogService.getReader(entry);
             if (reader != null) {
                 while ((ent = reader.next()) != null) {
                     HLogUtil.put2Body(ent, body);
@@ -82,13 +85,23 @@ public class HReplicationRejectRecoverScanner extends ZookeeperLockThread {
                     }
                 }
                 if (doAdapter(head, body)) {
-
+                    hlogService.getFileSystem().deleteOnExit(fstat.getPath());
                 }
-                reader.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getStackTrace());
+        }finally{
+            if(reader != null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOG.error(e.getStackTrace());
+                }finally{
+                    reader = null;
+                }
+            }
         }
+        
     }
 
     private boolean doAdapter(Head head, Body body) {
