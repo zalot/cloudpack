@@ -7,8 +7,6 @@ import junit.framework.Assert;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
-import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.KeeperException;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,7 +20,9 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
+import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
+import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 public class TestHLogScanner extends BaseReplicationTest {
 
@@ -110,7 +110,7 @@ public class TestHLogScanner extends BaseReplicationTest {
 //                            scan.start();
 //                        }
 //                        Thread.sleep(AliHBaseConstants.ZOO_SCAN_LOCK_RETRYTIME * 2);
-                        Thread.sleep(ProducerConstants.ZOO_SCAN_LOCK_TRYLOCKTIME * 2);
+                        Thread.sleep(ProducerConstants.ZOO_SCAN_LOCK_RETRYTIME * 2);
                     } catch (Exception e) {
                     }
                 }

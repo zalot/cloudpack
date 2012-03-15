@@ -2,15 +2,15 @@ package com.alibaba.hbase.replication.test;
 
 import junit.framework.Assert;
 
-import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
-import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
+import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
+import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 public class TestHLogPersistence extends BaseReplicationTest {
 
