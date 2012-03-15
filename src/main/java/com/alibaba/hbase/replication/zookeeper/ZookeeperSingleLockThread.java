@@ -96,9 +96,8 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
             if (stat != null) {
                 String uuid = setLockData(zooKeeper.getData(lock.getLockPath(), false, stat));
                 if(getUuid().equals(uuid)){
-                    
+                    zooKeeper.delete(lock.getLockPath(), stat.getVersion());
                 }
-                zooKeeper.delete(lock.getLockPath(), stat.getVersion());
                 return true;
             }
         } catch (Exception e) {
@@ -121,7 +120,7 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
                 }
             } catch (Exception e) {
                 isLock = false;
-                LOG.error(e.getStackTrace());
+                LOG.error(e);
             } finally {
                 if (isLock) {
                     unlock();
