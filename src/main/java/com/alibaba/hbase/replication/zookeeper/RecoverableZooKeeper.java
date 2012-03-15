@@ -39,27 +39,10 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
 /**
- * A zookeeper that can handle 'recoverable' errors.
- * To handle recoverable errors, developers need to realize that there are two 
- * classes of requests: idempotent and non-idempotent requests. Read requests 
- * and unconditional sets and deletes are examples of idempotent requests, they 
- * can be reissued with the same results. 
- * (Although, the delete may throw a NoNodeException on reissue its effect on 
- * the ZooKeeper state is the same.) Non-idempotent requests need special 
- * handling, application and library writers need to keep in mind that they may 
- * need to encode information in the data or name of znodes to detect 
- * retries. A simple example is a create that uses a sequence flag. 
- * If a process issues a create("/x-", ..., SEQUENCE) and gets a connection 
- * loss exception, that process will reissue another 
- * create("/x-", ..., SEQUENCE) and get back x-111. When the process does a 
- * getChildren("/"), it sees x-1,x-30,x-109,x-110,x-111, now it could be 
- * that x-109 was the result of the previous create, so the process actually 
- * owns both x-109 and x-111. An easy way around this is to use "x-process id-" 
- * when doing the create. If the process is using an id of 352, before reissuing
- * the create it will do a getChildren("/") and see "x-222-1", "x-542-30", 
- * "x-352-109", x-333-110". The process will know that the original create 
- * succeeded an the znode it created is "x-352-109".
- * @see "http://wiki.apache.org/hadoop/ZooKeeper/ErrorHandling"
+ * copy from org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper - 0.92.0 <BR>
+ * 仅去掉了部分的LOG ,并不关注 NodeExistsException <BR>
+ * 类RecoverableZooKeeper.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 15, 2012 12:42:29 PM
  */
 public class RecoverableZooKeeper {
   private static final Log LOG = LogFactory.getLog(RecoverableZooKeeper.class);

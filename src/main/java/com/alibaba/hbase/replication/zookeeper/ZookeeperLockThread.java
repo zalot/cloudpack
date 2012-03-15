@@ -9,7 +9,8 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
 /**
- * 提供 Zookeeper Lock 支持 类ZookeeperLockThread.java的实现描述：TODO 类实现描述
+ * 提供 Zookeeper Lock 支持 <BR>
+ * 类ZookeeperLockThread.java的实现描述：TODO 类实现描述
  * 
  * @author zalot.zhaoh Mar 14, 2012 4:28:37 PM
  */
@@ -22,7 +23,7 @@ public abstract class ZookeeperLockThread implements Runnable {
     protected int                  errorCount = 0;
     // 休息时间
     // 争抢到 reject scanner 后 间隔时间
-    
+
     // reject scanner 争抢重试时间
     protected boolean              isLock     = false;
     protected boolean              init       = false;

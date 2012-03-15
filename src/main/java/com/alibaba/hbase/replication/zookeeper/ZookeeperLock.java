@@ -1,5 +1,11 @@
 package com.alibaba.hbase.replication.zookeeper;
 
+/**
+ * Zookeeper 锁，用于 ZookeeperLockThread <BR>
+ * 类ZookeeperLock.java的实现描述：TODO 类实现描述
+ * 
+ * @author zalot.zhaoh Mar 15, 2012 12:44:14 PM
+ */
 public class ZookeeperLock {
 
     protected String basePath;
