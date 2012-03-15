@@ -1,6 +1,5 @@
 package com.alibaba.hbase.replication.hlog;
 
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
-import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
@@ -23,6 +20,8 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
+import com.alibaba.hbase.replication.utility.ZKUtil;
+import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
  * HLogPersistence 持久化操作
@@ -33,12 +32,15 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
 
     protected RecoverableZooKeeper zookeepr;
     protected String               baseDir;
-    protected String               uuid = UUID.randomUUID().toString();
+    protected ThreadLocal<String>  uuid   = new ThreadLocal<String>();;
 
     // public ArrayList<ACL> perms;
 
     public String getName() {
-        return uuid;
+        if(uuid.get() == null){
+            uuid.set(UUID.randomUUID().toString());
+        }
+        return uuid.get();
     }
 
     public void setZookeeper(RecoverableZooKeeper zoo) {
@@ -196,7 +198,8 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
         Stat stat = getLockGroupStat(groupName);
         if (stat == null) return;
         try {
-            zookeepr.delete(getGroupLockPath(groupName), stat.getVersion());
+            String path = getGroupLockPath(groupName);
+            zookeepr.delete(path, stat.getVersion());
         } catch (Exception e) {
             return;
         }
@@ -311,9 +314,12 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence{
         String path = getGroupLockPath(groupName);
         Stat stat = zookeepr.exists(path, false);
         if(stat != null){
-            String name = setGroupLockData(zookeepr.getData(path, false, stat));
+            String name = null;
+            try{
+                name = setGroupLockData(zookeepr.getData(path, false, stat));
+            }catch(Exception e){}
             if(name != null){
-                if(name.equals(uuid)){
+                if(name.equals(getName())){
                     return true;
                 }
             }

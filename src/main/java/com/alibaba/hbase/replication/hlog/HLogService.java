@@ -41,7 +41,7 @@ public class HLogService {
     public HLogService(Configuration conf, FileSystem fs) throws IOException{
         if (fs == null) this.fs = FileSystem.get(conf);
         else this.fs = fs;
-        rootDir = new Path(conf.get("hbase.rootdir"));
+        rootDir = new Path(conf.get(ProducerConstants.CONFKEY_HDFS_HBASE_ROOT));
         logsPath = new Path(rootDir, ProducerConstants.PATH_BASE_HLOG);
         oldLogsPath = new Path(rootDir, ProducerConstants.PATH_BASE_OLDHLOG);
         this.conf = conf;
