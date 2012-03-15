@@ -11,8 +11,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
-import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,9 @@ import com.alibaba.hbase.replication.protocol.FileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
+import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
+import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
  * 类ReplicationSinkManger.java的实现描述：producer端的任务线程管理
@@ -79,6 +79,7 @@ public class ReplicationSinkManger {
             scan = new HLogGroupZookeeperScanner(conf);
             scan.setZooKeeper(zookeeper);
             scan.setHlogService(hlogService);
+            scan.setHlogEntryPersistence(hLogEntryPersistence);
             scannerPool.execute(scan);
         }
         

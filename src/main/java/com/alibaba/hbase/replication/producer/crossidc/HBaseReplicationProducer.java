@@ -45,8 +45,7 @@ public class HBaseReplicationProducer implements Runnable {
     protected HLogEntryPersistence hlogEntryPersistence;
     protected HLogService          hlogService;
 
-    public HBaseReplicationProducer(Configuration conf) throws IOException, KeeperException,
-                                                               InterruptedException{
+    public HBaseReplicationProducer(Configuration conf) throws IOException, KeeperException, InterruptedException{
         maxReaderBuffer = conf.getLong(ProducerConstants.CONFKEY_HLOG_READERBUFFER, ProducerConstants.HLOG_READERBUFFER);
         minGroupOperatorInterval = conf.getLong(ProducerConstants.CONFKEY_HLOG_GROUP_INTERVAL,
                                                 ProducerConstants.HLOG_GROUP_INTERVAL);
@@ -73,7 +72,9 @@ public class HBaseReplicationProducer implements Runnable {
                             }
                         }
                     }
-                    hlogEntryPersistence.unlockGroup(groupName);
+                    if (hlogEntryPersistence.isMeLockGroup(groupName)) {
+                        hlogEntryPersistence.unlockGroup(groupName);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,15 +96,19 @@ public class HBaseReplicationProducer implements Runnable {
                 continue;
             }
             reader = hlogService.getReader(entry);
+            int count = 0;
             while ((ent = reader.next()) != null) {
-                HLogUtil.put2Body(ent, body);
-                if (body.getEditMap().size() > maxReaderBuffer) {
+                count = count + HLogUtil.put2Body(ent, body);
+                if (count > maxReaderBuffer) {
                     if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
                                    body)) {
                         entry.setPos(reader.getPosition());
                         hlogEntryPersistence.updateEntry(entry);
                         body = new Body();
+                    } else {
+                        reader.seek(entry.getPos());
                     }
+                    count = 0;
                 }
             }
 
@@ -118,12 +123,12 @@ public class HBaseReplicationProducer implements Runnable {
                 }
 
             }
-            
+
             // 如果后面还有 HLogEntry 则说明这个 Reader 的数据都以经读完 (优化后)
             if (idx + 1 < entrys.size()) {
                 entry.setType(Type.END);
             }
-            
+
             entry.setPos(reader.getPosition());
             hlogEntryPersistence.updateEntry(entry);
             body = new Body();
@@ -185,10 +190,10 @@ public class HBaseReplicationProducer implements Runnable {
     }
 
     public static HBaseReplicationProducer newInstance(Configuration conf, ProtocolAdapter adapter,
-                                                               HLogEntryPersistence dao, HLogService service)
-                                                                                                             throws IOException,
-                                                                                                             KeeperException,
-                                                                                                             InterruptedException {
+                                                       HLogEntryPersistence dao, HLogService service)
+                                                                                                     throws IOException,
+                                                                                                     KeeperException,
+                                                                                                     InterruptedException {
         HBaseReplicationProducer prod = new HBaseReplicationProducer(conf);
         prod.setAdapter(adapter);
         prod.setHlogEntryPersistence(dao);

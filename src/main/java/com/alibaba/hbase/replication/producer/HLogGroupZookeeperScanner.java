@@ -8,8 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
-import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -21,7 +19,9 @@ import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
+import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
+import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
  * HLogGroup 扫描器<BR>
@@ -119,8 +119,8 @@ public class HLogGroupZookeeperScanner implements Runnable {
         zooScanLockPath = zooScanBasePath + ProducerConstants.ZOO_SCAN_LOCK;
         flushSleepTime = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
                                                        ProducerConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME);
-        scannerTryLockTime = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_TRYLOCKTIME,
-                                                           ProducerConstants.ZOO_SCAN_LOCK_TRYLOCKTIME);
+        scannerTryLockTime = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
+                                                           ProducerConstants.ZOO_SCAN_LOCK_RETRYTIME);
         scanOldHlogTimeOut = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_OLDHLOG_INTERVAL,
                                                            ProducerConstants.ZOO_SCAN_OLDHLOG_INTERVAL);
 
