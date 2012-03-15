@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
 <configuration>
 	<property>
-		<name>com.alibaba.hbase.replication.producer.fs</name>
+		<name>fs.default.name</name>
 		<value>${replication_producer_fs}</value>
+		<description>根路径</description>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.producer.fs</name>
+		<value>${replication_producer_fs}${replication_producer_fs_root}</value>
 		<description>同步生产端的filesystem位置</description>
 	</property>
 	<property>

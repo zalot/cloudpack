@@ -10,7 +10,9 @@
 	</group>
 
 	<group name="configuration">
-		<property name="replication.producer.fs" defaultValue="hdfs://localhost/replication/"
+		<property name="replication.producer.fs" defaultValue="hdfs://localhost/"
+			description="同步生产端的filesystem位置" />
+		<property name="replication.producer.fs.root" defaultValue="replication/"
 			description="同步生产端的filesystem位置" />
 		<property name="replication.tmpfile.targetPath" defaultValue="target/"
 			description="待处理的中间文件存放位置" />
@@ -47,7 +49,7 @@
 			description="断点保留位置" />
 		<property name="replication.producer.zoo.rootlock"
 			defaultValue="/alireplock" description="扫描根锁：有很多子锁可以建立在这个上面" />
-			
+
 		<!-- 线程池启动器配置 -->
 		<property name="replication.producer.scannerPoolSize"
 			defaultValue="1" description="扫描的线程池大小" />
@@ -59,7 +61,7 @@
 			defaultValue="10" description="文件处理的线程池大小" />
 		<property name="replication.producer.threadpool.keepAliveTime"
 			defaultValue="100" description="线程池空闲线程keepAliveTime" />
-			
+
 		<!-- 扫描线程配置 -->
 		<property name="replication.producer.zoo.scan.oldhlog.interval"
 			defaultValue="600000" description="暂时未用：旧目录扫描间隔" />
@@ -75,8 +77,8 @@
 			defaultValue="3000" description="每个Group最小操作的间隔" />
 		<property name="replication.producer.hlog.sleeptime"
 			defaultValue="1000" description="同步线程休息时间" />
-		
-		<!-- reject recover Thread conf -->	
+
+		<!-- reject recover Thread conf -->
 		<property name="replication.producer.zoo.scan.oldhlog.interval"
 			defaultValue="600000" description="暂时未用：旧目录扫描间隔" />
 		<property name="replication.producer.zoo.scan.sleeptime"
