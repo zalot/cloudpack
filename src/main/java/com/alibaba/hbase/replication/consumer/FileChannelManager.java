@@ -10,10 +10,8 @@ package com.alibaba.hbase.replication.consumer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -28,7 +26,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
-import org.apache.hadoop.hbase.zookeeper.ZKUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
@@ -77,16 +74,16 @@ public class FileChannelManager {
                                                  new ArrayBlockingQueue<Runnable>(
                                                                                   conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                               100)));
-        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
-        zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
-        Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
-        if (statZkRoot == null) {
-            zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
-                       CreateMode.PERSISTENT);
-        }
-        if (LOG.isInfoEnabled()) {
-            LOG.info("FileChannelManager init.");
-        }
+//        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
+//        zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+//        Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
+//        if (statZkRoot == null) {
+//            zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
+//                       CreateMode.PERSISTENT);
+//        }
+//        if (LOG.isInfoEnabled()) {
+//            LOG.info("FileChannelManager init.");
+//        }
     }
 
     public void start() throws IOException {
