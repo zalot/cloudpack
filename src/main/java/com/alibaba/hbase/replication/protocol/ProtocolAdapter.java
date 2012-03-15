@@ -1,5 +1,7 @@
 package com.alibaba.hbase.replication.protocol;
 
+import java.util.List;
+
 import org.apache.hadoop.conf.Configuration;
 
 /**
@@ -13,5 +15,9 @@ public interface ProtocolAdapter {
 
     public MetaData read(Head head) throws Exception;
 
+    public void recover(MetaData data) throws Exception;
+
     public void init(Configuration conf);
+
+    public List<Head> listRejectHead();
 }

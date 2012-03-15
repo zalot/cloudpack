@@ -3,6 +3,8 @@ package com.alibaba.hbase.replication.protocol;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -13,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -31,42 +34,59 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
 @Service("fileAdapter")
-public class FileAdapter implements ProtocolAdapter {
+public class DefaultHDFSFileAdapter implements ProtocolAdapter {
 
     public static final String SPLIT_SYMBOL = "|";
-    protected static final Log LOG          = LogFactory.getLog(FileAdapter.class);
+    protected static final Log LOG          = LogFactory.getLog(DefaultHDFSFileAdapter.class);
     /**
      * 待处理的中间文件存放位置
      */
     protected Path             targetPath;
+
+    public Path getTargetPath() {
+        return targetPath;
+    }
+
+    public Path getDigestPath() {
+        return digestPath;
+    }
+
+    public Path getOldPath() {
+        return oldPath;
+    }
+
+    public Path getRejectPath() {
+        return rejectPath;
+    }
+
+    public Path getTargetTmpPath() {
+        return targetTmpPath;
+    }
+
     /**
      * md5摘要文件位置
      */
-    protected Path             digestPath;
+    protected Path          digestPath;
     /**
      * 已处理的中间文件存放位置
      */
-    protected Path             oldPath;
+    protected Path          oldPath;
     /**
      * 退回的中间文件存放位置（需要producer端重做）
      */
-    protected Path             rejectPath;
+    protected Path          rejectPath;
     /**
      * 生成文件时使用的临时目录
      */
-    protected Path             targetTmpPath;
+    protected Path          targetTmpPath;
 
-    protected FileSystem       fs;
+    protected FileSystem    fs;
 
     @Autowired
-    protected Configuration    conf;
+    protected Configuration conf;
 
     public void setFileSystem(FileSystem fs) {
         this.fs = fs;
-    }
-
-    public Path getPath() {
-        return targetPath;
     }
 
     public static Head validataFileName(String fileName) {
@@ -179,8 +199,7 @@ public class FileAdapter implements ProtocolAdapter {
      */
     public void reject(Head head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(rejectPath, head2FileName(head)));
-        fs.rename(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX),
-                  new Path(rejectPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
+        fs.deleteOnExit(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
     }
 
     @PostConstruct
@@ -193,20 +212,34 @@ public class FileAdapter implements ProtocolAdapter {
             }
         }
 
-        targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS) +
-                              conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH,
-                                       ConsumerConstants.TMPFILE_TARGETPATH));
-        targetTmpPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS) + 
-                                 conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETTMPPATH,
-                                          ConsumerConstants.TMPFILE_TARGETTMPPATH));
-        oldPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS) + 
-                           conf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH, ConsumerConstants.TMPFILE_OLDPATH));
-        rejectPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS) +
-                              conf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH,
-                                       ConsumerConstants.TMPFILE_REJECTPATH));
+        targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS, ConsumerConstants.PRODUCER_EMPTY_FS)
+                              + conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH,
+                                         ConsumerConstants.TMPFILE_TARGETPATH));
+        targetTmpPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS, ConsumerConstants.PRODUCER_EMPTY_FS)
+                                 + conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETTMPPATH,
+                                            ConsumerConstants.TMPFILE_TARGETTMPPATH));
+        oldPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS, ConsumerConstants.PRODUCER_EMPTY_FS)
+                           + conf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH, ConsumerConstants.TMPFILE_OLDPATH));
+        rejectPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS, ConsumerConstants.PRODUCER_EMPTY_FS)
+                              + conf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH,
+                                         ConsumerConstants.TMPFILE_REJECTPATH));
 
         digestPath = new Path(targetPath, ConsumerConstants.MD5_DIR);
         producter_check();
+        consumer_check();
+    }
+
+    private void consumer_check() {
+        try {
+            if (!fs.exists(oldPath)) {
+                fs.mkdirs(oldPath);
+            }
+            if (!fs.exists(rejectPath)) {
+                fs.mkdirs(rejectPath);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     protected void producter_check() {
@@ -236,14 +269,14 @@ public class FileAdapter implements ProtocolAdapter {
             targetOutput = fs.create(targetTmpFilePath, true);
             targetOutput.write(bodyBytes);
             targetOutput.close();
-            
+
             // write MD5
             MessageDigest digest = MessageDigest.getInstance("MD5");
             Path tmpMD5Path = new Path(targetTmpPath, fileName + ConsumerConstants.MD5_SUFFIX);
             targetMD5Output = fs.create(tmpMD5Path, true);
             targetMD5Output.write(digest.digest(bodyBytes));
             targetMD5Output.close();
-            
+
             // move tmpFile and MD5File to source directory
             Path sourceFilePath = new Path(targetPath, targetTmpFilePath.getName());
             Path sourceMd5FilePath = new Path(digestPath, tmpMD5Path.getName());
@@ -281,6 +314,36 @@ public class FileAdapter implements ProtocolAdapter {
                     targetMD5Output = null;
                 }
             }
+        }
+    }
+
+    @Override
+    public List<Head> listRejectHead() {
+        List<Head> heads = new ArrayList<Head>();
+        try{
+            FileStatus[] fss = fs.listStatus(rejectPath);
+            Head head;
+            for(FileStatus fs : fss){
+               head = validataFileName(fs.getPath().getName());
+               if(head != null){
+                   heads.add(head);
+               }else{
+                   // TODO
+               }
+            }
+        }catch(Exception e){
+        }
+        return heads;
+    }
+
+    @Override
+    public void recover(MetaData data) {
+        try {
+            write(data);
+            String fileName = head2FileName(data.getHead());
+            Path rejectFile = new Path(rejectPath, fileName);
+            fs.deleteOnExit(rejectFile);
+        } catch (Exception e) {
         }
     }
 }
