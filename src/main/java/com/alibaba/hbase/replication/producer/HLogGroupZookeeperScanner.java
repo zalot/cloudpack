@@ -114,9 +114,9 @@ public class HLogGroupZookeeperScanner implements Runnable {
     }
 
     private void init() throws KeeperException, InterruptedException {
-        zooScanBasePath = hlogService.getConf().get(ProducerConstants.CONFKEY_ZOO_SCAN_ROOT,
-                                                    ProducerConstants.ZOO_SCAN_ROOT);
-        zooScanLockPath = zooScanBasePath + ProducerConstants.ZOO_SCAN_LOCK;
+        zooScanBasePath = hlogService.getConf().get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT,
+                                                    ProducerConstants.ZOO_LOCK_ROOT);
+        zooScanLockPath = zooScanBasePath + ProducerConstants.ZOO_LOCK_SCAN;
         flushSleepTime = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
                                                        ProducerConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME);
         scannerTryLockTime = hlogService.getConf().getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
