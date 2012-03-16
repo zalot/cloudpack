@@ -33,12 +33,10 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
     protected RecoverableZooKeeper zooKeeper;
     protected ZookeeperLock        lock;
 
-    
     public ZookeeperLock getLock() {
         return lock;
     }
 
-    
     public void setLock(ZookeeperLock lock) {
         this.lock = lock;
     }
@@ -95,7 +93,7 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
             Stat stat = zooKeeper.exists(lock.getLockPath(), false);
             if (stat != null) {
                 String uuid = setLockData(zooKeeper.getData(lock.getLockPath(), false, stat));
-                if(getUuid().equals(uuid)){
+                if (getUuid().equals(uuid)) {
                     zooKeeper.delete(lock.getLockPath(), stat.getVersion());
                 }
                 return true;
@@ -120,7 +118,7 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
                 }
             } catch (Exception e) {
                 isLock = false;
-                LOG.error(e);
+                LOG.error("Scanner error ", e);
             } finally {
                 if (isLock) {
                     unlock();
