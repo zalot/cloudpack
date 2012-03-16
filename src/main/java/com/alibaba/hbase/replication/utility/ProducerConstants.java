@@ -1,5 +1,9 @@
 package com.alibaba.hbase.replication.utility;
 
+/**
+ * 类ProducerConstants.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 16, 2012 11:07:56 AM
+ */
 public class ProducerConstants {
 
     // -----------------------------------------

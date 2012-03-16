@@ -9,6 +9,10 @@ import org.apache.zookeeper.Watcher;
 
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
+/**
+ * 类ZKUtil.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 16, 2012 11:07:50 AM
+ */
 public class ZKUtil {
 
     public static RecoverableZooKeeper connect(Configuration conf, Watcher watcher) throws IOException {
