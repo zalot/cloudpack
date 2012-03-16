@@ -103,7 +103,7 @@ public class ReplicationSinkManger {
             recover.setZooKeeper(zookeeper);
             recover.setHlogService(hlogService);
             recover.setAdapter(adapter);
-            scannerPool.execute(recover);
+            recoverPool.execute(recover);
         }
 
         HReplicationProducer producer;
