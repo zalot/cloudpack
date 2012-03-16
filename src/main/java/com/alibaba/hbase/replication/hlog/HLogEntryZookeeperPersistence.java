@@ -6,7 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -22,6 +25,7 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
+import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
 
 /**
  * HLogPersistence 持久化操作
@@ -30,9 +34,10 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  */
 public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
 
+    protected static final Log     LOG  = LogFactory.getLog(HLogEntryZookeeperPersistence.class);
     protected RecoverableZooKeeper zookeepr;
     protected String               baseDir;
-    protected ThreadLocal<String>  uuid = new ThreadLocal<String>(); ;
+    protected ThreadLocal<String>  uuid = new ThreadLocal<String>();                          ;
 
     // public ArrayList<ACL> perms;
 
@@ -146,7 +151,7 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
                     tmpEntry = getHLogEntry(entry.getGroupName(), entry.getName());
                     if (tmpEntry == null) {
                         createEntry(entry);
-                    }else{
+                    } else {
                         if (tmpEntry.getType() != HLogEntry.Type.END && tmpEntry.getType() != entry.getType()) {
                             tmpEntry.setType(entry.getType());
                             updateEntry(tmpEntry);
