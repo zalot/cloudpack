@@ -14,6 +14,8 @@ public interface ProtocolAdapter {
     public void write(MetaData data) throws Exception;
 
     public MetaData read(Head head) throws Exception;
+    
+    public List<Head> listHead() throws Exception;
 
     public void recover(MetaData data) throws Exception;
 

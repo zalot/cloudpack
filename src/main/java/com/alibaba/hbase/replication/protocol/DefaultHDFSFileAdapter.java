@@ -264,7 +264,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         try {
             // write tmpFile
             String fileName = head2FileName(data.getHead());
-            byte[] bodyBytes = BodySerializingHandler.serialize(data.getBody());
+            byte[] bodyBytes = data.getBodyData();
             Path targetTmpFilePath = new Path(targetTmpPath, fileName);
             targetOutput = fs.create(targetTmpFilePath, true);
             targetOutput.write(bodyBytes);
@@ -345,5 +345,10 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
             fs.deleteOnExit(rejectFile);
         } catch (Exception e) {
         }
+    }
+
+    @Override
+    public List<Head> listHead() throws Exception {
+        return null;
     }
 }

@@ -3,7 +3,8 @@ package com.alibaba.hbase.replication.protocol;
 import java.io.Serializable;
 
 /**
- * 类Head.java的实现描述：TODO 类实现描述 协议中的 Head 信息 用于描述 1. 传输的基本信息 2. 失败重传的信息
+ * 协议中的 Head 信息 用于 <BR>
+ * 1. 传输的基本信息 2. 失败重传的信息 <BR>
  * 
  * @author zalot.zhaoh Feb 28, 2012 3:53:56 PM
  */
@@ -114,12 +115,12 @@ public class Head implements Serializable {
     /**
      * 起始偏移量 （用于 HLog.Reader 中的 position ）
      */
-    protected long    startOffset;
+    protected long   startOffset;
 
     /**
      * 结束偏移量 （用于 HLog.Reader 中的 position ）
      */
-    protected long    endOffset;
+    protected long   endOffset;
 
     /**
      * 数量
@@ -129,6 +130,6 @@ public class Head implements Serializable {
     /**
      * 重试次数，对于正常文件此项为0
      */
-    protected int    retry=0;
+    protected int    retry = 0;
 
 }
