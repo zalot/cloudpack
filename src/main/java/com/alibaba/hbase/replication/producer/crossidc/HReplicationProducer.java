@@ -26,8 +26,8 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
- * HBaseReplication 搬运工作对象 <BR>
- * 1. 能操作 Operator 来取得 数据 <BR>
+ * HReplicationProducer <BR>
+ * 1.  <BR>
  * 2. 负责将 group 中的数据搬运至 Protocol 中 <BR>
  * 类HBaseReplicationSink.java的实现描述：TODO 类实现描述
  * 
