@@ -60,12 +60,12 @@ public class HReplicationProducer implements Runnable {
                 Thread.sleep(replicationSleepTime);
                 doProducer();
             } catch (Exception e) {
-                LOG.error(e);
+                LOG.error("Producer running error ", e);
             }
         }
     }
 
-    public void doProducer() throws Exception{
+    public void doProducer() throws Exception {
         List<String> groups = hlogEntryPersistence.listGroupName();
         for (String groupName : groups) {
             if (hlogEntryPersistence.lockGroup(groupName)) {
@@ -84,6 +84,7 @@ public class HReplicationProducer implements Runnable {
             }
         }
     }
+
     private void doSinkGroup(HLogEntryGroup group) throws Exception {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);
@@ -102,7 +103,7 @@ public class HReplicationProducer implements Runnable {
                 count = count + HLogUtil.put2Body(ent, body);
                 if (count > maxReaderBuffer) {
                     if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
-                                   body)) {
+                                   body, count)) {
                         entry.setPos(reader.getPosition());
                         hlogEntryPersistence.updateEntry(entry);
                         body = new Body();
@@ -114,13 +115,14 @@ public class HReplicationProducer implements Runnable {
             }
 
             if (count > 0) {
-                if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
-                                body)) {
+                if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(), body,
+                                count)) {
+                    LOG.warn("doSinkPart error");
                     // 如果失败则返回,不再继续更新
                     return;
                 }
             }
-            
+
             // 如果指针移动了则更新
             if (entry.getPos() < reader.getPosition()) {
                 entry.setPos(reader.getPosition());
@@ -136,12 +138,8 @@ public class HReplicationProducer implements Runnable {
         }
     }
 
-    private boolean doSinkPart(String groupName, long timeStamp, long start, long end, Body body) {
+    private boolean doSinkPart(String groupName, long timeStamp, long start, long end, Body body, long count) {
         Head head = new Head();
-        int count = 0;
-        for (List<Edit> edits : body.getEditMap().values()) {
-            count += edits.size();
-        }
         head.setCount(count);
         head.setGroupName(groupName);
         head.setFileTimestamp(timeStamp);
@@ -160,8 +158,7 @@ public class HReplicationProducer implements Runnable {
             LOG.debug("doAdapter - > " + head.toString());
             return true;
         } catch (Exception e) {
-            LOG.error(e);
-            LOG.error("doAdapter ERROR - > " + head.toString());
+            LOG.error("", e);
             return false;
         }
     }
@@ -191,10 +188,9 @@ public class HReplicationProducer implements Runnable {
     }
 
     public static HReplicationProducer newInstance(Configuration conf, ProtocolAdapter adapter,
-                                                       HLogEntryPersistence dao, HLogService service)
-                                                                                                     throws IOException,
-                                                                                                     KeeperException,
-                                                                                                     InterruptedException {
+                                                   HLogEntryPersistence dao, HLogService service) throws IOException,
+                                                                                                 KeeperException,
+                                                                                                 InterruptedException {
         HReplicationProducer prod = new HReplicationProducer(conf);
         prod.setAdapter(adapter);
         prod.setHlogEntryPersistence(dao);

@@ -92,8 +92,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
                 }
             }
         } catch (Exception e) {
-            LOG.error(e);
-            LOG.error("recover error " + head);
+            LOG.error("recover error " + head, e);
         } finally {
             if (reader != null) {
                 try {
@@ -107,7 +106,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
         }
         
         if (!doAdapter(head, body)) {
-            LOG.warn("recover error " + head);
+//            LOG.warn("recover error " + head);
         }
     }
 
@@ -118,7 +117,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
             LOG.info("recover head " + head);
             return true;
         } catch (Exception e) {
-            LOG.error(e);
+            LOG.error("doAdapter ", e);
             return false;
         }
     }
