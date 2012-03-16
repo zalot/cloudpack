@@ -64,8 +64,9 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
 
     @Override
     public void doRun() throws Exception {
-        init();
+        LOG.info("recover start...");
         doRecover();
+        LOG.info("recover end...");
     }
 
     public void doRecover() throws Exception {
@@ -89,30 +90,32 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
                         break;
                     }
                 }
-                if (!doAdapter(head, body)) {
-                    LOG.error("recover error " + head);
-                }
             }
         } catch (Exception e) {
-            LOG.error(e.getStackTrace());
+            LOG.error(e);
+            LOG.error("recover error " + head);
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    LOG.error(e.getStackTrace());
+                    LOG.error(e);
                 } finally {
                     reader = null;
                 }
             }
         }
-
+        
+        if (!doAdapter(head, body)) {
+            LOG.warn("recover error " + head);
+        }
     }
 
     private boolean doAdapter(Head head, Body body) {
         Version1 version1 = new Version1(head, body);
         try {
             adapter.recover(version1);
+            LOG.info("recover head " + head);
             return true;
         } catch (Exception e) {
             LOG.error(e);
