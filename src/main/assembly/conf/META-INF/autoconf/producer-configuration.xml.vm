@@ -51,19 +51,19 @@
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.lock.scan.sleeptime</name>
-		<value>${replication_producer_zoo_scan_sleeptime}</value>
+		<value>${replication_producer_zoo_lock_scan_sleeptime}</value>
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.lock.scan.retrytime</name>
-		<value>${replication_producer_zoo_scan_retrytime}</value>
+		<value>${replication_producer_zoo_lock_scan_retrytime}</value>
 	</property>
 		<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.lock.reject.sleeptime</name>
-		<value>${replication_producer_zoo_scan_sleeptime}</value>
+		<value>${replication_producer_zoo_lock_reject_sleeptime}</value>
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.lock.reject.retrytime</name>
-		<value>${replication_producer_zoo_scan_retrytime}</value>
+		<value>${replication_producer_zoo_lock_reject_retrytime}</value>
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.hlog.readerbuffer</name>
