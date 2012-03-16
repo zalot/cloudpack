@@ -43,20 +43,26 @@
 		<name>com.alibaba.hbase.replication.producer.zoo.root</name>
 		<value>${replication_producer_zoo_root}</value>
 	</property>
+	
+	<!-- Thread Lock -->
 	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.lock.root</name>
-		<value>${replication_producer_zoo_rootlock}</value>
+		<value>${replication_producer_zoo_lock_root}</value>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.producer.zoo.scan.oldhlog.interval</name>
-		<value>${replication_producer_zoo_scan_oldhlog_interval}</value>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.producer.zoo.scan.sleeptime</name>
+		<name>com.alibaba.hbase.replication.producer.zoo.lock.scan.sleeptime</name>
 		<value>${replication_producer_zoo_scan_sleeptime}</value>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.producer.zoo.scan.retrytime</name>
+		<name>com.alibaba.hbase.replication.producer.zoo.lock.scan.retrytime</name>
+		<value>${replication_producer_zoo_scan_retrytime}</value>
+	</property>
+		<property>
+		<name>com.alibaba.hbase.replication.producer.zoo.lock.reject.sleeptime</name>
+		<value>${replication_producer_zoo_scan_sleeptime}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.producer.zoo.lock.reject.retrytime</name>
 		<value>${replication_producer_zoo_scan_retrytime}</value>
 	</property>
 	<property>
@@ -87,5 +93,4 @@
 		<name>com.alibaba.hbase.replication.producer.threadpool.keepAliveTime</name>
 		<value>${replication_producer_hlog_sleeptime}</value>
 	</property>
-	
 </configuration>

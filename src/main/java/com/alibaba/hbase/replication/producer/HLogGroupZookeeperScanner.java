@@ -85,9 +85,6 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
         lock.setTryLockTime(conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
                                          ProducerConstants.ZOO_SCAN_LOCK_RETRYTIME));
         this.setLock(lock);
-
-        scanOldHlogTimeOut = conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_OLDHLOG_INTERVAL,
-                                          ProducerConstants.ZOO_SCAN_OLDHLOG_INTERVAL);
     }
 
     @Override

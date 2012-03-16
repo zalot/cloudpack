@@ -20,13 +20,10 @@ public class ProducerConstants {
     // -----------------------------------------
     // Scan Thread
     // -----------------------------------------
-    public static String       CONFKEY_ZOO_SCAN_OLDHLOG_INTERVAL      = "com.alibaba.hbase.replication.producer.zoo.scan.oldhlog.interval";
-    public static long         ZOO_SCAN_OLDHLOG_INTERVAL              = 600000;
-
-    public static String       CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME   = "com.alibaba.hbase.replication.producer.zoo.scan.sleeptime";
+    public static String       CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME   = "com.alibaba.hbase.replication.producer.zoo.lock.scan.sleeptime";
     public static long         ZOO_SCAN_LOCK_FLUSHSLEEPTIME           = 20000;
 
-    public static String       CONFKEY_ZOO_SCAN_LOCK_RETRYTIME        = "com.alibaba.hbase.replication.producer.zoo.scan.retrytime";
+    public static String       CONFKEY_ZOO_SCAN_LOCK_RETRYTIME        = "com.alibaba.hbase.replication.producer.zoo.lock.scan.retrytime";
     public static long         ZOO_SCAN_LOCK_RETRYTIME                = 10000;
 
     // -----------------------------------------
@@ -44,10 +41,10 @@ public class ProducerConstants {
     // -----------------------------------------
     // Reject Thread
     // -----------------------------------------
-    public static String       CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME = "com.alibaba.hbase.replication.producer.zoo.scan.sleeptime";
+    public static String       CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME = "com.alibaba.hbase.replication.producer.zoo.lock.reject.sleeptime";
     public static long         ZOO_REJECT_LOCK_FLUSHSLEEPTIME         = 20000;
 
-    public static String       CONFKEY_ZOO_REJECT_LOCK_RETRYTIME      = "com.alibaba.hbase.replication.producer.zoo.scan.retrytime";
+    public static String       CONFKEY_ZOO_REJECT_LOCK_RETRYTIME      = "com.alibaba.hbase.replication.producer.zoo.lock.reject.retrytime";
     public static long         ZOO_REJECT_LOCK_RETRYTIME              = 10000;
 
     // -----------------------------------------
