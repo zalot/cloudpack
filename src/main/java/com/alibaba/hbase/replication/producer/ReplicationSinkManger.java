@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
+import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
@@ -36,21 +37,20 @@ public class ReplicationSinkManger {
     @Autowired
     protected ReplicationConf conf;
 
-    
     public ReplicationConf getConf() {
         return conf;
     }
 
     public void start() throws Exception {
         RecoverableZooKeeper zookeeper = ZKUtil.connect(conf, new NothingZookeeperWatch());
-        
-        HLogService hlogService = new HLogService(conf); 
+
+        HLogService hlogService = new HLogService(conf);
         ProtocolAdapter adapter = new DefaultHDFSFileAdapter();
-        
+
         adapter.init(conf);
         HLogEntryZookeeperPersistence hLogEntryPersistence = new HLogEntryZookeeperPersistence(conf);
         hLogEntryPersistence.setZookeeper(zookeeper);
-        
+
         ThreadPoolExecutor replicationPool = new ThreadPoolExecutor(
                                                                     conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
                                                                                 ProducerConstants.REP_SINK_POOL_SIZE),
@@ -73,6 +73,19 @@ public class ReplicationSinkManger {
                                                                 new ArrayBlockingQueue<Runnable>(
                                                                                                  conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                                              100)));
+
+        ThreadPoolExecutor recoverPool = new ThreadPoolExecutor(
+                                                                conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                                            ProducerConstants.REP_REJECT_POOL_SIZE),
+                                                                conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                                            ProducerConstants.REP_REJECT_POOL_SIZE),
+                                                                conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
+                                                                            100),
+                                                                TimeUnit.SECONDS,
+                                                                new ArrayBlockingQueue<Runnable>(
+                                                                                                 conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                                                                             100)));
+
         HLogGroupZookeeperScanner scan;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
                                         ProducerConstants.REP_SCANNER_POOL_SIZE); i++) {
@@ -82,7 +95,17 @@ public class ReplicationSinkManger {
             scan.setHlogEntryPersistence(hLogEntryPersistence);
             scannerPool.execute(scan);
         }
-        
+
+        HReplicationRejectRecoverScanner recover;
+        for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                        ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
+            recover = new HReplicationRejectRecoverScanner(conf);
+            recover.setZooKeeper(zookeeper);
+            recover.setHlogService(hlogService);
+            recover.setAdapter(adapter);
+            scannerPool.execute(recover);
+        }
+
         HReplicationProducer producer;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
                                         ProducerConstants.REP_SINK_POOL_SIZE); i++) {

@@ -57,7 +57,8 @@ public class ProducerConstants {
     public static final int    CROSSIDC_REPLICATION_SLEEPTIME         = 100;
     public static final String CONFKEY_REP_SINK_POOL_SIZE             = "com.alibaba.hbase.replication.producer.hlog.replicationPoolSize";
     public static final int    REP_SINK_POOL_SIZE                     = 10;
-
+    public static final String CONFKEY_REP_REJECT_POOL_SIZE          = "com.alibaba.hbase.replication.producer.scannerPoolSize";
+    public static final int    REP_REJECT_POOL_SIZE                  = 1;
     // -----------------------------------------
     // static field
     // -----------------------------------------
