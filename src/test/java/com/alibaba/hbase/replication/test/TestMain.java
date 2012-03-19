@@ -1,66 +1,137 @@
 package com.alibaba.hbase.replication.test;
 
-import org.apache.hadoop.conf.Configuration;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.unitils.UnitilsJUnit4TestClassRunner;
-import org.unitils.easymock.annotation.Mock;
-import org.unitils.inject.annotation.InjectInto;
-import org.unitils.spring.annotation.SpringApplicationContext;
-import org.unitils.spring.annotation.SpringBeanByName;
-import org.unitils.spring.annotation.SpringBeanByType;
+import junit.framework.Assert;
 
-import com.alibaba.hbase.replication.consumer.FileChannelManager;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.Path;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
+import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
+import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
-@RunWith(UnitilsJUnit4TestClassRunner.class)
-@SpringApplicationContext("classpath*:META-INF/spring/context.xml")
-public class TestMain extends BaseReplicationTest{
-    
+/**
+ * 主流成测试
+ * 
+ * 类TestMain.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 19, 2012 11:26:29 AM
+ */
+public class TestMain extends BaseReplicationTest {
 
-    @Mock
-    @InjectInto(target = "fileChannelManager", property = "fileAdapter")
-    private DefaultHDFSFileAdapter         fileAdapter;
-    @SpringBeanByType
-    private FileChannelManager  fileChannelManager;
-    @SpringBeanByName
-    private Configuration       consumerConf;
-    
-    
     @BeforeClass
-    public static void init() throws Exception{
+    public static void init() throws Exception {
         init1();
-        init2();
+        // init2();
     }
-    
-    public void testCrossIDCReplication() throws Exception{
-        fileAdapter.init(conf1);
+
+    public void testReplicationRunInfomation() throws Exception {
         HLogService service = new HLogService(conf1);
         RecoverableZooKeeper zk = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        
-        HLogEntryZookeeperPersistence dao = new HLogEntryZookeeperPersistence(conf1 ,zk);
-        
+
+        HLogEntryZookeeperPersistence dao = new HLogEntryZookeeperPersistence(conf1, zk);
+        DefaultHDFSFileAdapter ad = new DefaultHDFSFileAdapter();
+        ad.init(conf1);
+
         HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(conf1);
         scan.setHlogEntryPersistence(dao);
         scan.setHlogService(service);
         scan.setZooKeeper(zk);
-        
+
         Thread threadscan = new Thread(scan);
         threadscan.start();
-        
+
         HReplicationProducer pro = new HReplicationProducer(conf1);
-        pro.setAdapter(fileAdapter);
+        pro.setAdapter(ad);
         pro.setHlogEntryPersistence(dao);
         pro.setHlogService(service);
-        
+
         Thread threadpro = new Thread(pro);
         threadpro.start();
+
+        while (true) {
+            insertData(pool1, TABLEA, COLA, "test", 1000);
+            printDFS(service.getFileSystem(), service.getHBaseRootDir().getParent());
+            Thread.sleep(10000);
+        }
+    }
+
+    @Test
+    public void testReplicationRunInfomation2() throws Exception {
+        HLogService service = new HLogService(conf1);
+        RecoverableZooKeeper zookeeper = ZKUtil.connect(conf1, new NothingZookeeperWatch());
+
+        HLogEntryZookeeperPersistence dao = new HLogEntryZookeeperPersistence(conf1);
+        dao.setZookeeper(zookeeper);
+        
+        DefaultHDFSFileAdapter adapter = new DefaultHDFSFileAdapter();
+        adapter.init(conf1);
+
+        HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(conf1);
+        scan.setHlogEntryPersistence(dao);
+        scan.setHlogService(service);
+        scan.setZooKeeper(zookeeper);
+
+        HReplicationProducer producer = new HReplicationProducer(conf1);
+        producer.setAdapter(adapter);
+        producer.setHlogEntryPersistence(dao);
+        producer.setHlogService(service);
+
+        HReplicationRejectRecoverScanner recover = new HReplicationRejectRecoverScanner(conf1);
+        recover.setHlogService(service);
+        recover.setZooKeeper(zookeeper);
+        recover.setAdapter(adapter);
+        
+        
+        
+        // insert and run
+        insertData(pool1, TABLEA, COLA, "test", 1000);
+        scan.doScan();
+        producer.doProducer();
+
+        // check
+        FileStatus[] fss = service.getFileSystem().listStatus(adapter.getTargetPath());
+        FileStatus file = null;
+        Assert.assertTrue(fss != null && fss.length >= 1);
+        for (FileStatus fs : fss) {
+            if (!fs.isDir()) {
+                file = fs;
+                break;
+            }
+        }
+
+        Assert.assertTrue(file != null);
+
+        Path firstTarget = file.getPath();
+        long firstSize = file.getLen();
+        Assert.assertTrue(firstSize > 0);
+
+        FileStatus[] rejFss = service.getFileSystem().listStatus(adapter.getRejectPath());
+        Assert.assertTrue(rejFss.length == 0);
+        
+        Head head = adapter.validataFileName(firstTarget.getName());
+        adapter.reject(head, service.getFileSystem());
+
+        fss = service.getFileSystem().listStatus(adapter.getTargetPath());
+        for (FileStatus fs : fss) {
+            if (!fs.isDir()) {
+                Assert.assertTrue(false);
+            }
+        }
+        
+        rejFss = service.getFileSystem().listStatus(adapter.getRejectPath());
+        Assert.assertTrue(rejFss.length > 0);
+        
+        recover.doRecover();
+        
+        fss = service.getFileSystem().listStatus(adapter.getTargetPath());
+        Assert.assertTrue(fss.length > 0);
     }
 }
