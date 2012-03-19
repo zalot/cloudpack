@@ -10,7 +10,7 @@ import org.apache.hadoop.fs.Path;
 
 
 /**
- * 默认 HLogs 实现类， ( 后期可以优化 ) 类DefaultHLogs.java的实现描述：TODO 类实现描述
+ * 默认 HLogEntryGroup 的数据结构对象， ( 后期可以优化 ) 
  * 
  * @author zalot.zhaoh Feb 28, 2012 4:27:35 PM
  */

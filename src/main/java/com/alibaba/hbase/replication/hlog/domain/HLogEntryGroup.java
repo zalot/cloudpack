@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * HLog 组，给HLogs 使用
+ * HLogEntryGroup 代表了一个 EntryGroup
  * 
  * @author zalot.zhaoh
  */

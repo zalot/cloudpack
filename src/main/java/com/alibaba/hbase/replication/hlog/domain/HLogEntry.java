@@ -5,6 +5,12 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog;
 
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 
+/**
+ * 支持排序的 HlogEntry
+ * 
+ * 类HLogEntry.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 19, 2012 10:52:37 AM
+ */
 public class HLogEntry implements Comparable<HLogEntry> {
 
     @Override
@@ -131,9 +137,5 @@ public class HLogEntry implements Comparable<HLogEntry> {
         if (this.getTimestamp() > o.getTimestamp()) return 1;
         if (o.getTimestamp() == this.getTimestamp()) return 0;
         return -1;
-    }
-    
-    public static void main(String[] args){
-        System.out.println(HLogEntry.Type.toType(new Path("abc/.oldlogs/dfadsf.121213")));
     }
 }
