@@ -43,7 +43,12 @@
 		<name>com.alibaba.hbase.replication.producer.zoo.root</name>
 		<value>${replication_producer_zoo_root}</value>
 	</property>
-	
+	<!-- -->
+	<property>
+		<name>com.alibaba.hbase.replication.producer.hbase.rootdir</name>
+		<value>${replication_producer_hbase_rootdir}</value>
+		<description>根路径</description>
+	</property>
 	<!-- Thread Lock -->
 	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.lock.root</name>

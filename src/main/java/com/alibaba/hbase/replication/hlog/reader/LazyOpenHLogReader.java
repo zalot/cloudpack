@@ -1,6 +1,7 @@
 package com.alibaba.hbase.replication.hlog.reader;
 
 import java.io.EOFException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
@@ -8,9 +9,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
+import org.apache.hadoop.security.AccessControlException;
 
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
@@ -55,13 +58,12 @@ public class LazyOpenHLogReader implements HLogReader {
     }
 
     private void lazyOpen() {
+        Path file = null;
         try {
             if (reader == null && !hasOpened) {
-                Path file = getHLogPath();
+                file = getHLogPath();
                 if (file == null) {
-                    isOpen = false;
-                    hasOpened = true;
-                    return;
+                    throw new FileNotFoundException(entry.toString());
                 }
                 reader = HLog.getReader(operator.getFileSystem(), file, operator.getConf());
                 if (reader != null) {
@@ -71,8 +73,13 @@ public class LazyOpenHLogReader implements HLogReader {
                     }
                 }
             }
+        }catch(EOFException eof){
+        } catch(AccessControlException ace){
+            LOG.error("read hlog error " + ace.getMessage());
+        }catch (FileNotFoundException e) {
+            entry.setType(Type.NOFOUND);
         } catch (Exception e) {
-            isOpen = false;
+            LOG.error("read hlog error " + file, e);
         } finally {
             hasOpened = true;
         }
@@ -141,5 +148,12 @@ public class LazyOpenHLogReader implements HLogReader {
         this.operator = operator;
         this.entry = info;
         seek(entry.getPos());
+    }
+
+    @Override
+    public HLogEntry getEntry() throws IOException {
+        if(isOpen())
+            entry.setPos(reader.getPosition());
+        return entry;
     }
 }

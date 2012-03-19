@@ -25,8 +25,7 @@ public class HLogEntry implements Comparable<HLogEntry> {
      * @author zalot.zhaoh
      */
     public static enum Type {
-        LIFE(1), OLD(2), END(3), UNKNOW(255);
-
+        LIFE(1), OLD(2), END(3), NOFOUND(4), UNKNOW(255);
         int typeValue;
 
         Type(int typeValue){

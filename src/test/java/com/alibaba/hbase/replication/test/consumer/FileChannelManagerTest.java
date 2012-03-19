@@ -58,19 +58,19 @@ import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 @SpringApplicationContext("classpath*:META-INF/spring/context.xml")
 public class FileChannelManagerTest {
 
-    private static final long   DEFAULT_TIMESTAMP = 1330923080;
-    private static final String TABLE             = "FCM";
+    private static final long      DEFAULT_TIMESTAMP = 1330923080;
+    private static final String    TABLE             = "FCM";
     @SpringBeanByType
-    private FileChannelManager  fileChannelManager;
+    private FileChannelManager     fileChannelManager;
     @SpringBeanByType
-    private Configuration       consumerConf;
+    private Configuration          consumerConf;
 
     // careful with your asm version!
     @Mock
     @InjectInto(target = "fileChannelManager", property = "fileAdapter")
-    private DefaultHDFSFileAdapter         fileAdapter;
+    private DefaultHDFSFileAdapter fileAdapter;
 
-    Head                        mockHead          = new Head();
+    Head                           mockHead          = new Head();
 
     @BeforeClass
     public static void vmSetUp() {
@@ -80,7 +80,6 @@ public class FileChannelManagerTest {
         // "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
         // System.setProperty("javax.xml.parsers.SAXParserFactory",
         // "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-        ReplicationConf.setFilePath(ConsumerConstants.CONSUMER_CONFIG_FILE);
     }
 
     @Before

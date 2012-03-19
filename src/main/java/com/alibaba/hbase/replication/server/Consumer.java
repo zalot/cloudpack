@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.hbase.replication.consumer.FileChannelManager;
-import com.alibaba.hbase.replication.utility.ConsumerConstants;
 
 /**
  * 类Consumer.java的实现描述：Consumer的main线程
@@ -30,7 +29,6 @@ public class Consumer {
 
     public static void main(String args[]) {
         try {
-            ReplicationConf.setFilePath(ConsumerConstants.CONSUMER_CONFIG_FILE);
             final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(SPRING_PATH);
             // 钩子
             Runtime.getRuntime().addShutdownHook(new Thread() {

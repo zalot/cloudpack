@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alibaba.hbase.replication.producer.ReplicationSinkManger;
-import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
  * 类Producer.java的实现描述：Producer的main线程
@@ -30,7 +29,6 @@ public class Producer {
 
     public static void main(String args[]) {
         try {
-            ReplicationConf.setFilePath(ProducerConstants.PRODUCER_CONFIG_FILE);
             final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(SPRING_PATH);
             // 钩子
             Runtime.getRuntime().addShutdownHook(new Thread() {

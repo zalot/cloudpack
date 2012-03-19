@@ -42,6 +42,7 @@ public class ReplicationSinkManger {
     }
 
     public void start() throws Exception {
+        conf.addResource(ProducerConstants.PRODUCER_CONFIG_FILE);
         RecoverableZooKeeper zookeeper = ZKUtil.connect(conf, new NothingZookeeperWatch());
 
         HLogService hlogService = new HLogService(conf);

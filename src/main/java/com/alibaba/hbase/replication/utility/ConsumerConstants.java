@@ -9,8 +9,6 @@ package com.alibaba.hbase.replication.utility;
 
 import java.util.UUID;
 
-import org.apache.hadoop.hbase.HConstants;
-
 /**
  * 类Constant.java的实现描述：常量数据
  * 

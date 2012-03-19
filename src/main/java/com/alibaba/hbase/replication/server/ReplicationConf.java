@@ -19,18 +19,10 @@ import org.springframework.stereotype.Service;
 @Service("conf")
 public class ReplicationConf extends Configuration {
 
-    private static String filePath = null;
-
-    public static void setFilePath(String filePath) {
-        ReplicationConf.filePath = filePath;
-    }
-
     public ReplicationConf(){
         super();
         // 添加hbase的默认配置
         HBaseConfiguration.addHbaseResources(this);
-        // 添加自定义的配置
-        this.addResource(filePath);
     }
 
 }

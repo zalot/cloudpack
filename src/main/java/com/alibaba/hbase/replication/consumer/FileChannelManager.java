@@ -51,24 +51,27 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 @Service("fileChannelManager")
 public class FileChannelManager {
 
-    private static final Logger    LOG      = LoggerFactory.getLogger(FileChannelManager.class);
+    private static final Logger      LOG      = LoggerFactory.getLogger(FileChannelManager.class);
 
-    protected AtomicBoolean        stopflag = new AtomicBoolean(false);
-    protected ThreadPoolExecutor   fileChannelPool;
-    protected FileSystem           fs;
-    protected RecoverableZooKeeper zoo;
+    protected AtomicBoolean          stopflag = new AtomicBoolean(false);
+    protected ThreadPoolExecutor     fileChannelPool;
+    protected FileSystem             fs;
+    protected RecoverableZooKeeper   zoo;
+
     @Autowired
-    protected ReplicationConf      conf;
+    protected ReplicationConf        conf;
+
     @Autowired
-    protected DataLoadingManager   dataLoadingManager;
+    protected DataLoadingManager     dataLoadingManager;
     @Autowired
-    protected DefaultHDFSFileAdapter          fileAdapter;
+    protected DefaultHDFSFileAdapter fileAdapter;
 
     @PostConstruct
     public void init() throws IOException, KeeperException, InterruptedException {
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager is pendding to start.");
         }
+        conf.addResource(ConsumerConstants.CONSUMER_CONFIG_FILE);
         fileChannelPool = new ThreadPoolExecutor(
                                                  conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
                                                  conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),

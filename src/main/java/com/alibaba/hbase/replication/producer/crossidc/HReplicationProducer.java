@@ -16,7 +16,6 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
-import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
@@ -34,7 +33,7 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
  */
 public class HReplicationProducer implements Runnable {
 
-    protected static final Log     LOG                      = LogFactory.getLog(HLogGroupZookeeperScanner.class);
+    protected static final Log     LOG                      = LogFactory.getLog(HReplicationProducer.class);
     private long                   minGroupOperatorInterval = ProducerConstants.HLOG_GROUP_INTERVAL;
     private long                   maxReaderBuffer          = ProducerConstants.HLOG_READERBUFFER;
     private long                   replicationSleepTime;
@@ -103,8 +102,7 @@ public class HReplicationProducer implements Runnable {
                 if (count > maxReaderBuffer) {
                     if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
                                    body, count)) {
-                        entry.setPos(reader.getPosition());
-                        hlogEntryPersistence.updateEntry(entry);
+                        hlogEntryPersistence.updateEntry(reader.getEntry());
                         body = new Body();
                     } else {
                         reader.seek(entry.getPos());
@@ -116,22 +114,17 @@ public class HReplicationProducer implements Runnable {
             if (count > 0) {
                 if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(), body,
                                 count)) {
-                    LOG.warn("doSinkPart error");
                     // 如果失败则返回,不再继续更新
                     return;
                 }
             }
 
-            // 如果指针移动了则更新
-            if (entry.getPos() < reader.getPosition()) {
-                entry.setPos(reader.getPosition());
-            }
-
             // 如果后面还有 HLogEntry 则说明这个 Reader 的数据都以经读完 (优化后)
-            if (idx + 1 < entrys.size()) {
-                entry.setType(Type.END);
+            if (reader.getPosition() > 0 && idx + 1 < entrys.size()) {
+                reader.getEntry().setType(Type.END);
             }
-
+            
+            hlogEntryPersistence.updateEntry(reader.getEntry());
             body = new Body();
             reader.close();
         }
@@ -154,10 +147,10 @@ public class HReplicationProducer implements Runnable {
         Version1 version1 = new Version1(head, body);
         try {
             adapter.write(version1);
-            LOG.debug("doAdapter - > " + head.toString());
+            LOG.info("doAdapter - > " + head);
             return true;
         } catch (Exception e) {
-            LOG.error("", e);
+            LOG.error("doAdapter error " + head , e);
             return false;
         }
     }

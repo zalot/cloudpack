@@ -113,6 +113,7 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
                     init();
                 }
                 isLock = lock();
+                LOG.info(getJobName() + " try lock ....");
                 if (isLock) {
                     LOG.info(getJobName() + " lock ....");
                     innnerRun();
@@ -140,6 +141,6 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
     public abstract void doRun() throws Exception;
 
     public String getJobName() {
-        return mName + ":" + getClass().getName();
+        return "[host]" + mName + " [thread]" + Thread.currentThread().getName() + " [class]" + getClass().getName();
     }
 }

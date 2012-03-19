@@ -1,7 +1,8 @@
 package com.alibaba.hbase.replication.utility;
 
 /**
- * 类ProducerConstants.java的实现描述：TODO 类实现描述 
+ * 类ProducerConstants.java的实现描述：TODO 类实现描述
+ * 
  * @author zalot.zhaoh Mar 16, 2012 11:07:56 AM
  */
 public class ProducerConstants {
@@ -37,10 +38,11 @@ public class ProducerConstants {
     public static long         HLOG_READERBUFFER                      = 50000;
 
     public static String       CONFKEY_HLOG_GROUP_INTERVAL            = "com.alibaba.hbase.replication.producer.hlog.group.interval";
-    public static long         HLOG_GROUP_INTERVAL                    = 5000;
+    public static long         HLOG_GROUP_INTERVAL                    = 3000;
 
     public static final String CONFKEY_LOGREADER_CLASS                = "com.alibaba.hbase.replication.producer.hlog.logreader.class";
     public static final String CONFKEY_CROSSIDC_REPLICATION_SLEEPTIME = "com.alibaba.hbase.replication.producer.hlog.sleeptime";
+    public static final int    CROSSIDC_REPLICATION_SLEEPTIME         = 2000;
 
     // -----------------------------------------
     // Reject Thread
@@ -58,11 +60,10 @@ public class ProducerConstants {
     public static final int    REP_SCANNER_POOL_SIZE                  = 1;
     public static final String CONFKEY_THREADPOOL_SIZE                = "com.alibaba.hbase.replication.producer.threadpool.queuesize";
     public static final String CONFKEY_THREADPOOL_KEEPALIVE_TIME      = "com.alibaba.hbase.replication.producer.threadpool.keepAliveTime";
-    public static final int    CROSSIDC_REPLICATION_SLEEPTIME         = 100;
     public static final String CONFKEY_REP_SINK_POOL_SIZE             = "com.alibaba.hbase.replication.producer.hlog.replicationPoolSize";
     public static final int    REP_SINK_POOL_SIZE                     = 10;
-    public static final String CONFKEY_REP_REJECT_POOL_SIZE          = "com.alibaba.hbase.replication.producer.scannerPoolSize";
-    public static final int    REP_REJECT_POOL_SIZE                  = 1;
+    public static final String CONFKEY_REP_REJECT_POOL_SIZE           = "com.alibaba.hbase.replication.producer.scannerPoolSize";
+    public static final int    REP_REJECT_POOL_SIZE                   = 1;
     // -----------------------------------------
     // static field
     // -----------------------------------------

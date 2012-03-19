@@ -35,7 +35,7 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
     protected static final Log     LOG  = LogFactory.getLog(HLogEntryZookeeperPersistence.class);
     protected RecoverableZooKeeper zookeepr;
     protected String               baseDir;
-    protected ThreadLocal<String>  uuid = new ThreadLocal<String>();                          ;
+    protected ThreadLocal<String>  uuid = new ThreadLocal<String>();                              ;
 
     // public ArrayList<ACL> perms;
 
@@ -72,6 +72,10 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
     }
 
     public void updateEntry(HLogEntry entry) throws Exception {
+        if (entry.getType() == HLogEntry.Type.NOFOUND) {
+            deleteEntry(entry);
+            return;
+        }
         String path = getEntryPath(entry);
         Stat stat = zookeepr.exists(path, false);
         if (stat != null) {
@@ -150,9 +154,16 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
                     if (tmpEntry == null) {
                         createEntry(entry);
                     } else {
-                        if (tmpEntry.getType() != HLogEntry.Type.END && tmpEntry.getType() != entry.getType()) {
-                            tmpEntry.setType(entry.getType());
-                            updateEntry(tmpEntry);
+                        if (tmpEntry.getType() != HLogEntry.Type.END) {
+                            if (tmpEntry.getType() != entry.getType()) {
+                                tmpEntry.setType(entry.getType());
+                                updateEntry(tmpEntry);
+                            }
+                        } else {
+                            if (tmpEntry.getPos() <= 0) {
+                                tmpEntry.setType(entry.getType());
+                                updateEntry(tmpEntry);
+                            }
                         }
                     }
                 }
