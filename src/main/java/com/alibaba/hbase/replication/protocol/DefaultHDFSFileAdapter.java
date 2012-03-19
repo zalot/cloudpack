@@ -36,57 +36,19 @@ import com.google.protobuf.InvalidProtocolBufferException;
 @Service("fileAdapter")
 public class DefaultHDFSFileAdapter implements ProtocolAdapter {
 
-    public static final String SPLIT_SYMBOL = "|";
     protected static final Log LOG          = LogFactory.getLog(DefaultHDFSFileAdapter.class);
-    /**
-     * 待处理的中间文件存放位置
-     */
-    protected Path             targetPath;
+    public static final String SPLIT_SYMBOL = "|";
 
-    public Path getTargetPath() {
-        return targetPath;
-    }
-
-    public Path getDigestPath() {
-        return digestPath;
-    }
-
-    public Path getOldPath() {
-        return oldPath;
-    }
-
-    public Path getRejectPath() {
-        return rejectPath;
-    }
-
-    public Path getTargetTmpPath() {
-        return targetTmpPath;
-    }
-
-    /**
-     * md5摘要文件位置
-     */
-    protected Path          digestPath;
-    /**
-     * 已处理的中间文件存放位置
-     */
-    protected Path          oldPath;
-    /**
-     * 退回的中间文件存放位置（需要producer端重做）
-     */
-    protected Path          rejectPath;
-    /**
-     * 生成文件时使用的临时目录
-     */
-    protected Path          targetTmpPath;
-
-    protected FileSystem    fs;
-
-    @Autowired
-    protected Configuration conf;
-
-    public void setFileSystem(FileSystem fs) {
-        this.fs = fs;
+    public static String head2FileName(Head head) {
+        return head.version + SPLIT_SYMBOL // [0]
+               + head.groupName + SPLIT_SYMBOL // [1]
+               + head.fileTimestamp + SPLIT_SYMBOL // [2]
+               + head.headTimestamp + SPLIT_SYMBOL // [3]
+               + head.startOffset + SPLIT_SYMBOL // [4]
+               + head.endOffset + SPLIT_SYMBOL // [5]
+               + head.count + SPLIT_SYMBOL // [6]
+               + head.retry + SPLIT_SYMBOL // [7]
+        ;
     }
 
     public static Head validataFileName(String fileName) {
@@ -113,26 +75,153 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         return null;
     }
 
-    public static String head2FileName(Head head) {
-        return head.version + SPLIT_SYMBOL // [0]
-               + head.groupName + SPLIT_SYMBOL // [1]
-               + head.fileTimestamp + SPLIT_SYMBOL // [2]
-               + head.headTimestamp + SPLIT_SYMBOL // [3]
-               + head.startOffset + SPLIT_SYMBOL // [4]
-               + head.endOffset + SPLIT_SYMBOL // [5]
-               + head.count + SPLIT_SYMBOL // [6]
-               + head.retry + SPLIT_SYMBOL // [7]
-        ;
+    @Autowired
+    protected Configuration conf;
+
+    /**
+     * md5摘要文件位置
+     */
+    protected Path          digestPath;
+
+    /**
+     * 已处理的中间文件存放位置
+     */
+    protected Path          oldPath;
+
+    /**
+     * 退回的中间文件存放位置（需要producer端重做）
+     */
+    protected Path          rejectPath;
+    /**
+     * 待处理的中间文件存放位置
+     */
+    protected Path          targetPath;
+    /**
+     * 生成文件时使用的临时目录
+     */
+    protected Path          targetTmpPath;
+
+    protected FileSystem    fs;
+
+    /**
+     * 清理producer端已处理的中间文件和slave端的临时文件
+     * 
+     * @param fileHead 中间文件文件名
+     * @param fs
+     * @throws IOException
+     */
+    public void clean(Head head, FileSystem fs) throws IOException {
+        fs.rename(new Path(targetPath, head2FileName(head)), new Path(oldPath, head2FileName(head)));
+        fs.rename(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX),
+                  new Path(oldPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
+    }
+
+    private void consumer_check() {
+        try {
+            if (!fs.exists(oldPath)) {
+                fs.mkdirs(oldPath);
+            }
+            if (!fs.exists(rejectPath)) {
+                fs.mkdirs(rejectPath);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 方便测试
+     * 
+     * @return
+     */
+    public Path getDigestPath() {
+        return digestPath;
+    }
+
+    /**
+     * 方便测试
+     * 
+     * @return
+     */
+    public Path getOldPath() {
+        return oldPath;
+    }
+
+    /**
+     * 方便测试
+     * 
+     * @return
+     */
+    public Path getRejectPath() {
+        return rejectPath;
+    }
+
+    /**
+     * 方便测试
+     * 
+     * @return
+     */
+    public Path getTargetPath() {
+        return targetPath;
+    }
+
+    /**
+     * 方便测试
+     * 
+     * @return
+     */
+    public Path getTargetTmpPath() {
+        return targetTmpPath;
+    }
+
+    public void init(Configuration conf) {
+        this.conf = conf;
+        setPath();
+    }
+
+    @Override
+    public List<Head> listHead() throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<Head> listRejectHead() {
+        List<Head> heads = new ArrayList<Head>();
+        try {
+            FileStatus[] fss = fs.listStatus(rejectPath);
+            Head head;
+            for (FileStatus fs : fss) {
+                head = validataFileName(fs.getPath().getName());
+                if (head != null) {
+                    heads.add(head);
+                } else {
+                    // TODO
+                }
+            }
+        } catch (Exception e) {
+        }
+        return heads;
+    }
+
+    protected void producter_check() {
+        try {
+            if (!fs.exists(targetPath)) {
+                fs.mkdirs(targetPath);
+            }
+            if (!fs.exists(targetTmpPath)) {
+                fs.mkdirs(targetTmpPath);
+            }
+            if (!fs.exists(digestPath)) {
+                fs.mkdirs(digestPath);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public MetaData read(Head head) throws Exception {
         return read(head, fs);
-    }
-
-    @Override
-    public void write(MetaData data) throws Exception {
-        write(data, fs);
     }
 
     public MetaData read(Head head, FileSystem fs) throws FileParsingException, FileReadingException {
@@ -172,22 +261,15 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         return null;
     }
 
-    public void init(Configuration conf) {
-        this.conf = conf;
-        setPath();
-    }
-
-    /**
-     * 清理producer端已处理的中间文件和slave端的临时文件
-     * 
-     * @param fileHead 中间文件文件名
-     * @param fs
-     * @throws IOException
-     */
-    public void clean(Head head, FileSystem fs) throws IOException {
-        fs.rename(new Path(targetPath, head2FileName(head)), new Path(oldPath, head2FileName(head)));
-        fs.rename(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX),
-                  new Path(oldPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
+    @Override
+    public void recover(MetaData data) {
+        try {
+            write(data);
+            String fileName = head2FileName(data.getHead());
+            Path rejectFile = new Path(rejectPath, fileName);
+            fs.deleteOnExit(rejectFile);
+        } catch (Exception e) {
+        }
     }
 
     /**
@@ -200,6 +282,10 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
     public void reject(Head head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(rejectPath, head2FileName(head)));
         fs.deleteOnExit(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
+    }
+
+    public void setFileSystem(FileSystem fs) {
+        this.fs = fs;
     }
 
     @PostConstruct
@@ -229,33 +315,9 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         consumer_check();
     }
 
-    private void consumer_check() {
-        try {
-            if (!fs.exists(oldPath)) {
-                fs.mkdirs(oldPath);
-            }
-            if (!fs.exists(rejectPath)) {
-                fs.mkdirs(rejectPath);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void producter_check() {
-        try {
-            if (!fs.exists(targetPath)) {
-                fs.mkdirs(targetPath);
-            }
-            if (!fs.exists(targetTmpPath)) {
-                fs.mkdirs(targetTmpPath);
-            }
-            if (!fs.exists(digestPath)) {
-                fs.mkdirs(digestPath);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void write(MetaData data) throws Exception {
+        write(data, fs);
     }
 
     public void write(MetaData data, FileSystem fs) {
@@ -315,40 +377,5 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
                 }
             }
         }
-    }
-
-    @Override
-    public List<Head> listRejectHead() {
-        List<Head> heads = new ArrayList<Head>();
-        try{
-            FileStatus[] fss = fs.listStatus(rejectPath);
-            Head head;
-            for(FileStatus fs : fss){
-               head = validataFileName(fs.getPath().getName());
-               if(head != null){
-                   heads.add(head);
-               }else{
-                   // TODO
-               }
-            }
-        }catch(Exception e){
-        }
-        return heads;
-    }
-
-    @Override
-    public void recover(MetaData data) {
-        try {
-            write(data);
-            String fileName = head2FileName(data.getHead());
-            Path rejectFile = new Path(rejectPath, fileName);
-            fs.deleteOnExit(rejectFile);
-        } catch (Exception e) {
-        }
-    }
-
-    @Override
-    public List<Head> listHead() throws Exception {
-        return null;
     }
 }

@@ -35,11 +35,9 @@ import org.unitils.easymock.EasyMockUnitils;
 import org.unitils.easymock.annotation.Mock;
 import org.unitils.inject.annotation.InjectInto;
 import org.unitils.spring.annotation.SpringApplicationContext;
-import org.unitils.spring.annotation.SpringBeanByName;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import com.alibaba.hbase.replication.consumer.FileChannelManager;
-import com.alibaba.hbase.replication.consumer.ReplicationZookeeperWatcher;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
@@ -49,6 +47,7 @@ import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 
 /**
  * 类FileChannelManagerTest.java的实现描述
@@ -108,7 +107,7 @@ public class FileChannelManagerTest {
         fs.create(new Path(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath),
                            DefaultHDFSFileAdapter.head2FileName(mockHead)), true);
         // 清理zk的偏移量
-        RecoverableZooKeeper zoo = ZKUtil.connect(consumerConf, new ReplicationZookeeperWatcher());
+        RecoverableZooKeeper zoo = ZKUtil.connect(consumerConf, new NothingZookeeperWatch());
         Stat statZkRoot = zoo.exists(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         if (statZkRoot == null) {
             zoo.create(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
