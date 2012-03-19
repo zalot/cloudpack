@@ -1,5 +1,6 @@
 package com.alibaba.hbase.replication.zookeeper;
 
+import java.lang.management.ManagementFactory;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -21,7 +22,7 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
 
     protected static final Log     LOG        = LogFactory.getLog(ZookeeperSingleLockThread.class);
     protected ThreadLocal<String>  uuid       = new ThreadLocal<String>();
-
+    protected String               name       = ManagementFactory.getRuntimeMXBean().getName();
     protected int                  errorCount = 0;
     // 休息时间
     // 争抢到 reject scanner 后 间隔时间
@@ -111,17 +112,19 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
                 if (!init) {
                     init();
                 }
-                LOG.debug("Scanner Start ....");
                 isLock = lock();
                 if (isLock) {
+                    LOG.info(getJobName() + " lock ....");
                     innnerRun();
                 }
             } catch (Exception e) {
                 isLock = false;
-                LOG.error("Scanner error ", e);
+                LOG.error(getJobName() + " error ....",e);
             } finally {
                 if (isLock) {
-                    unlock();
+                    if(unlock()){
+                        LOG.info(getJobName() + " unlock ....");
+                    }
                 }
             }
         }
@@ -135,4 +138,8 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
     }
 
     public abstract void doRun() throws Exception;
+
+    public String getJobName() {
+        return name + ":" + getClass().getName();
+    }
 }
