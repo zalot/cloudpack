@@ -31,7 +31,6 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
     protected static final Log LOG  = LogFactory.getLog(HReplicationRejectRecoverScanner.class);
 
     protected boolean          init = false;
-    protected Path             dfsRejectHLogPath;
     protected HLogService      hlogService;
     protected ProtocolAdapter  adapter;
 
@@ -47,11 +46,15 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
         this.hlogService = hlogService;
     }
 
+    public HReplicationRejectRecoverScanner(){
+    }
+
     public HReplicationRejectRecoverScanner(ZookeeperLock lock){
         this.setLock(lock);
     }
 
     public HReplicationRejectRecoverScanner(Configuration conf){
+        if (conf == null) return;
         ZookeeperLock lock = new ZookeeperLock();
         lock.setBasePath(conf.get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT, ProducerConstants.ZOO_LOCK_ROOT));
         lock.setLockPath(ProducerConstants.ZOO_LOCK_REJECT_SCAN);
@@ -104,9 +107,9 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
                 }
             }
         }
-        
+
         if (!doAdapter(head, body)) {
-//            LOG.warn("recover error " + head);
+            // LOG.warn("recover error " + head);
         }
     }
 
