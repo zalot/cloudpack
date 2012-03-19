@@ -39,6 +39,7 @@ import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
 import com.alibaba.hbase.replication.utility.ZKUtil;
+import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
@@ -66,7 +67,7 @@ public class FileChannelRunnable implements Runnable {
         this.conf = conf;
         this.stopflag = stopflag;
         this.dataLoadingManager = dataLoadingManager;
-        zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+        zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());
         //注意：fs上的操作非线程安全，需要每线程一个
         fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
     }

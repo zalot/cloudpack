@@ -10,6 +10,7 @@ package com.alibaba.hbase.replication.consumer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.zookeeper.RecoverableZooKeeper;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
@@ -39,6 +39,9 @@ import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.utility.ZKUtil;
+import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
+import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
  * 类Manager.java的实现描述：持有consumer端的中间文件同步线程池
@@ -74,16 +77,16 @@ public class FileChannelManager {
                                                  new ArrayBlockingQueue<Runnable>(
                                                                                   conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                               100)));
-//        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
-//        zoo = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
-//        Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
-//        if (statZkRoot == null) {
-//            zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
-//                       CreateMode.PERSISTENT);
-//        }
-//        if (LOG.isInfoEnabled()) {
-//            LOG.info("FileChannelManager init.");
-//        }
+        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
+        zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());
+        Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
+        if (statZkRoot == null) {
+            zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
+                       CreateMode.PERSISTENT);
+        }
+        if (LOG.isInfoEnabled()) {
+            LOG.info("FileChannelManager init.");
+        }
     }
 
     public void start() throws IOException {
