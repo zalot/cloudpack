@@ -18,12 +18,12 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import com.alibaba.hbase.replication.consumer.ReplicationZookeeperWatcher;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.ZKUtil;
+import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
 
@@ -305,7 +305,7 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
     @Override
     public void init(Configuration conf) throws Exception {
         // TODO Auto-generated method stub
-        if (zookeepr == null) zookeepr = ZKUtil.connect(conf, new ReplicationZookeeperWatcher());
+        if (zookeepr == null) zookeepr = ZKUtil.connect(conf, new NothingZookeeperWatch());
         String rootDir = conf.get(ProducerConstants.CONFKEY_ZOO_ROOT, ProducerConstants.ZOO_ROOT);
         Stat stat = zookeepr.exists(rootDir, false);
         if (stat == null) {
