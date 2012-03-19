@@ -64,7 +64,7 @@ public class TestMain extends BaseReplicationTest {
     }
 
     @Test
-    public void testReplicationRunInfomation2() throws Exception {
+    public void testReplicationAndDFSFileAdapter() throws Exception {
         HLogService service = new HLogService(conf1);
         RecoverableZooKeeper zookeeper = ZKUtil.connect(conf1, new NothingZookeeperWatch());
 
