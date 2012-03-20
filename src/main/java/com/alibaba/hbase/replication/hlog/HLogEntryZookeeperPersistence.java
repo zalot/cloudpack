@@ -146,7 +146,11 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
         String path = getGroupPath(group.getGroupName());
         Stat stat = zookeepr.exists(path, false);
         if (stat != null) {
-            zookeepr.setData(path, getGroupData(group), stat.getVersion());
+            try {
+                zookeepr.setData(path, getGroupData(group), stat.getVersion());
+                // set time error ( no pb )
+            } catch (Exception e) {
+            }
             if (updateChild) {
                 HLogEntry tmpEntry;
                 for (HLogEntry entry : group.getEntrys()) {
@@ -191,7 +195,7 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
     public boolean lockGroup(String groupName) throws Exception {
         return lockGroup(groupName, false);
     }
-    
+
     protected boolean lockGroup(String groupName, boolean is) throws Exception {
         if (!isLockGroup(groupName)) {
             try {
@@ -350,14 +354,13 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
     public void deleteGroup(String groupName) throws Exception {
         String groupPath = getGroupPath(groupName);
         Stat stat = zookeepr.exists(groupPath, false);
-        if(stat != null){
+        if (stat != null) {
             Stat cstat;
             String childPath;
-            for(String child : zookeepr.getChildren(groupPath, false)){
+            for (String child : zookeepr.getChildren(groupPath, false)) {
                 childPath = groupPath + "/" + child;
                 cstat = zookeepr.exists(childPath, false);
-                if(cstat != null)
-                    zookeepr.delete(childPath, cstat.getVersion());
+                if (cstat != null) zookeepr.delete(childPath, cstat.getVersion());
             }
             stat = zookeepr.exists(groupPath, false);
             zookeepr.delete(groupPath, stat.getVersion());
