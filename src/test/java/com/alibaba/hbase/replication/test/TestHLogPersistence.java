@@ -23,12 +23,12 @@ public class TestHLogPersistence extends BaseReplicationTest {
     @Test
     public void testZookeeperHLogPersistenceSimple() throws Exception {
         RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryZookeeperPersistence dao1 = new HLogEntryZookeeperPersistence(conf1);
+        final HLogEntryZookeeperPersistence dao1 = new HLogEntryZookeeperPersistence(conf1, zk1);
         dao1.setZookeeper(zk1);
         dao1.init(conf1);
 
         RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryZookeeperPersistence dao2 = new HLogEntryZookeeperPersistence(conf1);
+        final HLogEntryZookeeperPersistence dao2 = new HLogEntryZookeeperPersistence(conf1, zk2);
         dao2.setZookeeper(zk2);
         dao2.init(conf1);
 
@@ -65,12 +65,12 @@ public class TestHLogPersistence extends BaseReplicationTest {
         final HLogEntryGroup group = new HLogEntryGroup("testB");
 
         RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryZookeeperPersistence dao1 = new HLogEntryZookeeperPersistence(conf1);
+        final HLogEntryZookeeperPersistence dao1 = new HLogEntryZookeeperPersistence(conf1,zk1);
         dao1.setZookeeper(zk1);
         dao1.init(conf1);
 
         RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryZookeeperPersistence dao2 = new HLogEntryZookeeperPersistence(conf1);
+        final HLogEntryZookeeperPersistence dao2 = new HLogEntryZookeeperPersistence(conf1,zk2);
         dao2.setZookeeper(zk2);
         dao2.init(conf1);
 

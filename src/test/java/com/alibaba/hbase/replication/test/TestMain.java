@@ -68,7 +68,7 @@ public class TestMain extends BaseReplicationTest {
         HLogService service = new HLogService(conf1);
         RecoverableZooKeeper zookeeper = ZKUtil.connect(conf1, new NothingZookeeperWatch());
 
-        HLogEntryZookeeperPersistence dao = new HLogEntryZookeeperPersistence(conf1);
+        HLogEntryZookeeperPersistence dao = new HLogEntryZookeeperPersistence(conf1, zookeeper);
         dao.setZookeeper(zookeeper);
         
         DefaultHDFSFileAdapter adapter = new DefaultHDFSFileAdapter();
