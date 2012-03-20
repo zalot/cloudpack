@@ -12,6 +12,7 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.protocol.Version1;
 import com.alibaba.hbase.replication.utility.HLogUtil;
@@ -111,9 +112,9 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
     }
 
     private boolean doAdapter(Head head, Body body) {
-        Version1 version1 = new Version1(head, body);
+        MetaData data = MetaData.getMetaData(head, body);
         try {
-            adapter.recover(version1);
+            adapter.recover(data);
             LOG.info("recover head " + head);
             return true;
         } catch (Exception e) {

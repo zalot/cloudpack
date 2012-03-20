@@ -18,6 +18,7 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
 import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.protocol.Version1;
 import com.alibaba.hbase.replication.utility.HLogUtil;
@@ -143,6 +144,7 @@ public class HReplicationProducer implements Runnable {
         head.setFileTimestamp(timeStamp);
         head.setStartOffset(start);
         head.setEndOffset(end);
+        head.setVersion(1);
         if (doAdapter(head, body)) {
             return true;
         }
@@ -150,9 +152,9 @@ public class HReplicationProducer implements Runnable {
     }
 
     private boolean doAdapter(Head head, Body body) {
-        Version1 version1 = new Version1(head, body);
+        MetaData data = MetaData.getMetaData(head, body);
         try {
-            adapter.write(version1);
+            adapter.write(data);
             LOG.info("doAdapter - > " + head);
             return true;
         } catch (Exception e) {
