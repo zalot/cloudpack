@@ -47,10 +47,10 @@ public class ReplicationSinkManger {
 
         HLogService hlogService = new HLogService(conf);
         ProtocolAdapter adapter = new DefaultHDFSFileAdapter();
-
         adapter.init(conf);
-        HLogEntryZookeeperPersistence hLogEntryPersistence = new HLogEntryZookeeperPersistence(conf);
-        hLogEntryPersistence.setZookeeper(zookeeper);
+        
+        
+        HLogEntryZookeeperPersistence hLogEntryPersistence = new HLogEntryZookeeperPersistence(conf, zookeeper);
 
         ThreadPoolExecutor replicationPool = new ThreadPoolExecutor(
                                                                     conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,

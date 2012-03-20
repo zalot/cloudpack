@@ -66,7 +66,6 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
     public HLogGroupZookeeperScanner(String name, Configuration conf, RecoverableZooKeeper zoo) throws KeeperException,
                                                                                                InterruptedException,
                                                                                                IOException{
-        if (zoo == null) zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());
         this.zooKeeper = zoo;
         this.name = name;
         init(conf);
