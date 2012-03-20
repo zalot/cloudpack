@@ -1,7 +1,6 @@
 package com.alibaba.hbase.replication.producer;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -15,8 +14,6 @@ import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
-import com.alibaba.hbase.replication.utility.ZKUtil;
-import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 import com.alibaba.hbase.replication.zookeeper.ZookeeperLock;
 import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
