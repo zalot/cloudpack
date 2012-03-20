@@ -24,6 +24,7 @@ public interface HLogEntryPersistence{
     public HLogEntryGroup getGroupByName(String groupName , boolean getChild) throws Exception;
     public void updateGroup(HLogEntryGroup entry, boolean updateChild) throws Exception;
     public void createOrUpdateGroup(HLogEntryGroup entry, boolean updateChild) throws Exception;
+    public void deleteGroup(String groupName) throws Exception;
     public boolean isLockGroup(String groupName) throws Exception;
     public boolean isMeLockGroup(String groupName) throws Exception;
     public boolean lockGroup(String groupName) throws Exception;

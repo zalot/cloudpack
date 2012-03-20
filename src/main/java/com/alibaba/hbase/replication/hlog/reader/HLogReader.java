@@ -24,5 +24,4 @@ public interface HLogReader{
     boolean isOpen();
     boolean hasOpened();
     void init(HLogService operator, HLogEntry info);
-    HLogEntry getEntry() throws IOException;
 }

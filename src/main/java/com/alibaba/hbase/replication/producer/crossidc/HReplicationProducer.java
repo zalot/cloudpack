@@ -25,7 +25,7 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
  * HReplicationProducer <BR>
- * 1.  <BR>
+ * 1. <BR>
  * 2. 负责将 group 中的数据搬运至 Protocol 中 <BR>
  * 类HBaseReplicationSink.java的实现描述：TODO 类实现描述
  * 
@@ -102,7 +102,8 @@ public class HReplicationProducer implements Runnable {
                 if (count > maxReaderBuffer) {
                     if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
                                    body, count)) {
-                        hlogEntryPersistence.updateEntry(reader.getEntry());
+                        entry.setPos(reader.getPosition());
+                        hlogEntryPersistence.updateEntry(entry);
                         body = new Body();
                     } else {
                         reader.seek(entry.getPos());
@@ -119,12 +120,17 @@ public class HReplicationProducer implements Runnable {
                 }
             }
 
+            // 如果指针移动了则更新
+            if (entry.getPos() < reader.getPosition()) {
+                entry.setPos(reader.getPosition());
+            }
+
             // 如果后面还有 HLogEntry 则说明这个 Reader 的数据都以经读完 (优化后)
             if (reader.getPosition() > 0 && idx + 1 < entrys.size()) {
-                reader.getEntry().setType(Type.END);
+                entry.setType(Type.END);
             }
-            
-            hlogEntryPersistence.updateEntry(reader.getEntry());
+
+            hlogEntryPersistence.updateEntry(entry);
             body = new Body();
             reader.close();
         }
@@ -150,7 +156,7 @@ public class HReplicationProducer implements Runnable {
             LOG.info("doAdapter - > " + head);
             return true;
         } catch (Exception e) {
-            LOG.error("doAdapter error " + head , e);
+            LOG.error("doAdapter error " + head, e);
             return false;
         }
     }

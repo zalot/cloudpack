@@ -1,6 +1,7 @@
 package com.alibaba.hbase.replication.producer;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -91,8 +92,20 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
         HLogEntryGroups groups = new HLogEntryGroups();
         putHLog(groups);
         putOldHLog(groups);
+
+        for (String groupStr : hlogEntryPersistence.listGroupName()) {
+            if(groups.get(groupStr) == null){
+                hlogEntryPersistence.deleteGroup(groupStr);
+            }
+        }
+
         for (HLogEntryGroup group : groups.getGroups()) {
-            hlogEntryPersistence.createOrUpdateGroup(group, true);
+            HLogEntryGroup tmpGroup = hlogEntryPersistence.getGroupByName(group.getGroupName(), false);
+            if (tmpGroup == null) {
+                hlogEntryPersistence.createGroup(group, true);
+            } else {
+                hlogEntryPersistence.updateGroup(group, true);
+            }
         }
     }
 

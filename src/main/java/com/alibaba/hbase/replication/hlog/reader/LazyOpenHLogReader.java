@@ -77,7 +77,6 @@ public class LazyOpenHLogReader implements HLogReader {
         } catch(AccessControlException ace){
             LOG.error("read hlog error " + ace.getMessage());
         }catch (FileNotFoundException e) {
-            entry.setType(Type.NOFOUND);
         } catch (Exception e) {
             LOG.error("read hlog error " + file, e);
         } finally {
@@ -148,12 +147,5 @@ public class LazyOpenHLogReader implements HLogReader {
         this.operator = operator;
         this.entry = info;
         seek(entry.getPos());
-    }
-
-    @Override
-    public HLogEntry getEntry() throws IOException {
-        if(isOpen())
-            entry.setPos(reader.getPosition());
-        return entry;
     }
 }

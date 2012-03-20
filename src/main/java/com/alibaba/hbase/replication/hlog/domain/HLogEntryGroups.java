@@ -20,9 +20,8 @@ public class HLogEntryGroups {
 
     protected Configuration          conf   = null;
 
-    public Path get(String name) {
-        Path path = null;
-        return path;
+    public HLogEntryGroup get(String name) {
+        return groups.get(name);
     }
 
     public void put(Path path) {

@@ -189,16 +189,14 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
     }
 
     public boolean lockGroup(String groupName) throws Exception {
+        return lockGroup(groupName, false);
+    }
+    
+    protected boolean lockGroup(String groupName, boolean is) throws Exception {
         if (!isLockGroup(groupName)) {
             try {
                 zookeepr.create(getGroupLockPath(groupName), getGroupLockData(), Ids.OPEN_ACL_UNSAFE,
                                 CreateMode.EPHEMERAL);
-                // String lockPath = getGroupLockPath(groupName);
-                // String seqPath = zoo.create(lockPath, null, Ids.OPEN_ACL_UNSAFE , CreateMode.EPHEMERAL);
-                // if(getLockSeq(lockPath, seqPath) != 0){
-                // zoo.delete(seqPath, 0);
-                // return false;
-                // }
                 return true;
             } catch (Exception e) {
                 return false;
@@ -346,5 +344,23 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
             }
         }
         return false;
+    }
+
+    @Override
+    public void deleteGroup(String groupName) throws Exception {
+        String groupPath = getGroupPath(groupName);
+        Stat stat = zookeepr.exists(groupPath, false);
+        if(stat != null){
+            Stat cstat;
+            String childPath;
+            for(String child : zookeepr.getChildren(groupPath, false)){
+                childPath = groupPath + "/" + child;
+                cstat = zookeepr.exists(childPath, false);
+                if(cstat != null)
+                    zookeepr.delete(childPath, cstat.getVersion());
+            }
+            stat = zookeepr.exists(groupPath, false);
+            zookeepr.delete(groupPath, stat.getVersion());
+        }
     }
 }
