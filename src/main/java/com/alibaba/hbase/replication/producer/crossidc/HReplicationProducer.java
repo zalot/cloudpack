@@ -1,6 +1,5 @@
 package com.alibaba.hbase.replication.producer.crossidc;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
