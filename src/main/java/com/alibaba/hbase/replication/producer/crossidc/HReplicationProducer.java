@@ -1,5 +1,6 @@
 package com.alibaba.hbase.replication.producer.crossidc;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +21,6 @@ import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
-import com.alibaba.hbase.replication.protocol.Version1;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 
@@ -88,7 +88,6 @@ public class HReplicationProducer implements Runnable {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);
         HLogReader reader = null;
-        Entry ent = null;
         Body body = new Body();
         HLogEntry entry;
         for (int idx = 0; idx < entrys.size(); idx++) {
@@ -98,7 +97,24 @@ public class HReplicationProducer implements Runnable {
             }
             reader = hlogService.getReader(entry);
             int count = 0;
-            while ((ent = reader.next()) != null) {
+            while (true) {
+                Entry ent = null;
+                try {
+                    ent = reader.next();
+                } catch (OutOfMemoryError e) {
+                    entry.setPos(reader.getPosition());
+                    hlogEntryPersistence.updateEntry(entry);
+                    return;
+                } catch (Exception e) {
+                    entry.setPos(entry.getLastVerifiedPos());
+                    hlogEntryPersistence.updateEntry(entry);
+                    return;
+                }
+                if (ent == null) {
+                    break;
+                } else {
+                    entry.setLastVerifiedPos(reader.getPosition());
+                }
                 count = count + HLogUtil.put2Body(ent, body);
                 if (count > maxReaderBuffer) {
                     if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
@@ -155,7 +171,7 @@ public class HReplicationProducer implements Runnable {
         MetaData data = MetaData.getMetaData(head, body);
         try {
             adapter.write(data);
-            LOG.info("doAdapter - > " + head);
+            if (LOG.isInfoEnabled()) LOG.info("doAdapter - > " + head);
             return true;
         } catch (Exception e) {
             LOG.error("doAdapter error " + head, e);

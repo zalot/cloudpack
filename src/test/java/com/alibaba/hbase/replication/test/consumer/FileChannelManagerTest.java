@@ -160,8 +160,8 @@ public class FileChannelManagerTest {
         e1.setType(Body.Type.Put);
         e1.setValue(Bytes.toBytes("FCM_SP_1_VALUE"));
         expectedBody.addEdit(TABLE, e1);
-        MetaData expMeta = new Version1(mockHead, expectedBody);
-        EasyMock.expect(fileAdapter.read(EasyMock.isA(Head.class), EasyMock.isA(FileSystem.class))).andReturn(expMeta);
+//        MetaData expMeta = new Version1(mockHead, expectedBody);
+//        EasyMock.expect(fileAdapter.read(EasyMock.isA(Head.class), EasyMock.isA(FileSystem.class))).andReturn(expMeta);
         EasyMockUnitils.replay();
         fileChannelManager.start();
         // EasyMock.verify(fileAdapter);
