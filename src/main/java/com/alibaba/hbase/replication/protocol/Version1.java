@@ -5,8 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.lang.UnhandledException;
-
 import com.alibaba.hbase.replication.protocol.protobuf.BodySerializingHandler;
 
 /**

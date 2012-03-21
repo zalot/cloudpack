@@ -24,9 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
-import com.alibaba.hbase.replication.protocol.protobuf.BodySerializingHandler;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
