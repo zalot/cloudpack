@@ -293,8 +293,8 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
                     }
                     // 执行完成后清除相关文件
                     try {
-                        fileAdapter.clean(fileHead, fs);
-                    } catch (IOException e) {
+                        fileAdapter.clean(fileHead);
+                    } catch (Exception e) {
                         if (LOG.isWarnEnabled()) {
                             LOG.warn("clean failed.", e);
                         }
