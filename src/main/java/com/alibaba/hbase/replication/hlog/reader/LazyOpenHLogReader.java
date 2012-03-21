@@ -13,7 +13,6 @@ import org.apache.hadoop.security.AccessControlException;
 
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
-import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
@@ -73,10 +72,10 @@ public class LazyOpenHLogReader implements HLogReader {
                     }
                 }
             }
-        }catch(EOFException eof){
-        } catch(AccessControlException ace){
+        } catch (EOFException eof) {
+        } catch (AccessControlException ace) {
             LOG.error("read hlog error " + ace.getMessage());
-        }catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
         } catch (Exception e) {
             LOG.error("read hlog error " + file, e);
         } finally {
@@ -87,11 +86,9 @@ public class LazyOpenHLogReader implements HLogReader {
     public Entry next() throws IOException {
         lazyOpen();
         if (isOpen) {
-            try {
-                return reader.next();
-            } catch (EOFException eof) {
-                return null;
-            }
+            Entry entry = null;
+            entry = reader.next();
+            return entry;
         }
         return null;
     }
@@ -114,8 +111,8 @@ public class LazyOpenHLogReader implements HLogReader {
         } else {
             try {
                 reader.seek(pos);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                LOG.error("OpenReader seek error", e);
             }
         }
     }
@@ -147,5 +144,10 @@ public class LazyOpenHLogReader implements HLogReader {
         this.operator = operator;
         this.entry = info;
         seek(entry.getPos());
+    }
+
+    @Override
+    public HLogEntry getHLogEntry() {
+        return entry;
     }
 }

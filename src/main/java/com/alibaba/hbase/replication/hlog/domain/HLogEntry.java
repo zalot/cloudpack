@@ -6,17 +6,16 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
- * 支持排序的 HlogEntry
+ * 支持排序的 HlogEntry 类HLogEntry.java的实现描述：TODO 类实现描述
  * 
- * 类HLogEntry.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 19, 2012 10:52:37 AM
  */
 public class HLogEntry implements Comparable<HLogEntry> {
 
     @Override
     public String toString() {
-        return "HLogEntry [groupName=" + groupName + ", timestamp=" + timestamp + ", type=" + type
-               + ", pos=" + pos + "]";
+        return "HLogEntry [groupName=" + groupName + ", timestamp=" + timestamp + ", type=" + type + ", pos=" + pos
+               + "]";
     }
 
     /**
@@ -26,6 +25,7 @@ public class HLogEntry implements Comparable<HLogEntry> {
      */
     public static enum Type {
         LIFE(1), OLD(2), END(3), NOFOUND(4), UNKNOW(255);
+
         int typeValue;
 
         Type(int typeValue){
@@ -64,6 +64,21 @@ public class HLogEntry implements Comparable<HLogEntry> {
 
     protected long   lastReadtime = 0;
 
+    // pos
+    private long     pos          = 0;
+
+    private long     lastVerifiedPos          = 0;
+    
+    
+    public long getLastVerifiedPos() {
+        return lastVerifiedPos;
+    }
+
+    
+    public void setLastVerifiedPos(long lastVerifiedPos) {
+        this.lastVerifiedPos = lastVerifiedPos;
+    }
+
     public long getLastReadtime() {
         return lastReadtime;
     }
@@ -81,9 +96,6 @@ public class HLogEntry implements Comparable<HLogEntry> {
     public void setType(Type type) {
         this.type = type;
     }
-
-    // pos
-    private long pos = 0;
 
     public String getGroupName() {
         return groupName;
@@ -103,7 +115,7 @@ public class HLogEntry implements Comparable<HLogEntry> {
 
     public HLogEntry(){
     }
-    
+
     public HLogEntry(Path path){
         this(path.getName());
         this.type = HLogEntry.Type.toType(path);
