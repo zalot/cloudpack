@@ -52,7 +52,6 @@ public abstract class MetaData {
     public static MetaData getMetaData(Head head, Body body) {
         MetaData minData;
         try {
-            Class clazz = Version1.class;
             minData = getClass(head).newInstance();
             minData.setHead(head);
             minData.setBody(body);
