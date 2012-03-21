@@ -95,7 +95,7 @@ public class Head implements Serializable {
     /**
      * 版本号
      */
-    protected int    version;
+    protected int    version = 1;
 
     /**
      * 组名 HLog 文件名 = groupName + timeStamp

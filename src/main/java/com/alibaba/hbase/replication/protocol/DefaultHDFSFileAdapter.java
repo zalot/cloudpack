@@ -125,7 +125,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
                 fs.mkdirs(rejectPath);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("consumer check error", e);
         }
     }
 
@@ -244,18 +244,17 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
             try {
                 MessageDigest digest = MessageDigest.getInstance("MD5");
                 if (Bytes.equals(md5ByteArray, digest.digest(byteArray))) {
-                    Body body = BodySerializingHandler.deserialize(byteArray);
-                    Version1 result = new Version1(head, body);
-                    return result;
+                    MetaData data = MetaData.getMetaData(head, byteArray);
+                    return data;
                 } else {
                     throw new FileParsingException("Fail with MD5 digest.The file corrupts probably.");
                 }
-            } catch (InvalidProtocolBufferException e) {
-                throw new FileParsingException("error while parsing body with protobuf.", e);
             } catch (NoSuchAlgorithmException e) {
                 if (LOG.isErrorEnabled()) {
                     LOG.error("Coding error!", e);
                 }
+            } catch (Exception e) {
+                throw new FileParsingException("error while parsing body with protobuf.", e);
             }
         }
         return null;
@@ -320,7 +319,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         write(data, fs);
     }
 
-    public void write(MetaData data, FileSystem fs) {
+    public void write(MetaData data, FileSystem fs) throws Exception {
         FSDataOutputStream targetOutput = null;
         FSDataOutputStream targetMD5Output = null;
         try {
@@ -349,14 +348,6 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
             if (!fs.rename(tmpMD5Path, sourceMd5FilePath)) {
                 throw new RuntimeException(targetTmpPath + " rename to " + sourceFilePath);
             }
-        } catch (IOException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("Create file failed.", e);
-            }
-        } catch (NoSuchAlgorithmException e) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("Coding error!", e);
-            }
         } finally {
             if (targetOutput != null) {
                 try {
@@ -376,6 +367,18 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
                     targetMD5Output = null;
                 }
             }
+        }
+    }
+
+    @Override
+    public void clean(Head head) throws Exception {
+        clean(head, fs);
+    }
+
+    @Override
+    public void crush() throws Exception {
+        for (FileStatus fst : fs.listStatus(oldPath)) {
+            fs.delete(fst.getPath(), true);
         }
     }
 }
