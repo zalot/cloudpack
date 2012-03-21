@@ -27,6 +27,8 @@
 	<group name="consumer">
 		<property name="replication.consumer.zookeeper.quorum"
 			defaultValue="localhost" description="hbase.zookeeper.quorum" />
+		<property name="replication.consumer.zookeeper.quorum.port"
+			defaultValue="2181" description="hbase.zookeeper.quorum.port" />
 		<property name="replication.consumer.zookeeper.znoderoot"
 			defaultValue="/consumer" description="断点保留位置" />
 		<property name="replication.consumer.fileChannelPoolSize"
@@ -47,6 +49,8 @@
 			defaultValue="/hbase" description="hbase.rootdir" />
 		<property name="replication.producer.zookeeper.quorum"
 			defaultValue="localhost" description="hbase.zookeeper.quorum" />
+		<property name="replication.producer.zookeeper.quorum.port"
+			defaultValue="2181" description="hbase.zookeeper.quorum.port" />
 		<property name="replication.producer.zoo.root" defaultValue="/producer"
 			description="断点保留位置" />
 		<property name="replication.producer.zoo.lock.root"

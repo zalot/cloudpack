@@ -40,6 +40,10 @@
 		<value>${replication_producer_zookeeper_quorum}</value>
 	</property>
 	<property>
+		<name>hbase.zookeeper.property.clientPort</name>
+		<value>${replication_producer_zookeeper_quorum_port}</value>
+	</property>
+	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.root</name>
 		<value>${replication_producer_zoo_root}</value>
 	</property>
@@ -97,5 +101,9 @@
 	<property>
 		<name>com.alibaba.hbase.replication.producer.threadpool.keepAliveTime</name>
 		<value>${replication_producer_hlog_sleeptime}</value>
+	</property>
+	<property>
+		<name>dfs.permissions</name>
+		<value>false</value>
 	</property>
 </configuration>

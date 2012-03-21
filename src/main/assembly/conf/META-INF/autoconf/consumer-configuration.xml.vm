@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
 <configuration>
 	<property>
-		<name>com.alibaba.hbase.replication.producer.fs</name>
+		<name>fs.default.name</name>
 		<value>${replication_producer_fs}</value>
+		<description>根路径</description>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.producer.fs</name>
+		<value>${replication_producer_fs}${replication_producer_fs_root}</value>
 		<description>同步生产端的filesystem位置</description>
 	</property>
 	<property>
@@ -29,6 +34,10 @@
 		<name>hbase.zookeeper.quorum</name>
 		<value>${replication_consumer_zookeeper_quorum}</value>
 	</property>
+		<property>
+		<name>hbase.zookeeper.property.clientPort</name>
+		<value>${replication_consumer_zookeeper_quorum_port}</value>
+	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.consumer.zookeeper.znoderoot</name>
 		<value>${replication_consumer_zookeeper_znoderoot}</value>
@@ -52,5 +61,9 @@
 	<property>
 		<name>com.alibaba.hbase.replication.consumer.threadpool.keepAliveTime</name>
 		<value>${replication_consumer_threadpool_keepAliveTime}</value>
+	</property>
+	<property>
+		<name>dfs.permissions</name>
+		<value>false</value>
 	</property>
 </configuration>
