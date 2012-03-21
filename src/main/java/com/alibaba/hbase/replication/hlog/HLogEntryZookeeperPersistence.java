@@ -32,10 +32,11 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  */
 public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
 
-    protected static final Log     LOG  = LogFactory.getLog(HLogEntryZookeeperPersistence.class);
+    protected static final String  SPLIT = "|";
+    protected static final Log     LOG   = LogFactory.getLog(HLogEntryZookeeperPersistence.class);
     protected RecoverableZooKeeper zookeepr;
     protected String               baseDir;
-    protected ThreadLocal<String>  uuid = new ThreadLocal<String>();                              ;
+    protected ThreadLocal<String>  uuid  = new ThreadLocal<String>();                              ;
 
     // public ArrayList<ACL> perms;
 
@@ -225,7 +226,8 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
     }
 
     private byte[] getEntryData(HLogEntry entry) {
-        String data = entry.getPos() + "|" + entry.getType().getTypeValue() + "|" + entry.getLastReadtime();
+        String data = entry.getPos() + SPLIT + entry.getLastVerifiedPos() + SPLIT + entry.getType().getTypeValue()
+                      + SPLIT + entry.getLastReadtime();
         return Bytes.toBytes(data);
     }
 
@@ -238,12 +240,24 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
     private void setEntryData(HLogEntry entry, byte[] data) {
         if (data != null && entry != null) {
             String dataString = Bytes.toString(data);
-            String[] idxs = StringUtils.split(dataString, "|");
-            if (idxs.length == 3) {
-                entry.setPos(Long.parseLong(idxs[0]));
-                entry.setType(Type.toType(Integer.valueOf(idxs[1])));
-                entry.setLastReadtime(Long.parseLong(idxs[2]));
-            }
+            String[] idxs = StringUtils.split(dataString, SPLIT);
+            setEntryDataVersion(idxs, entry);
+        }
+    }
+
+    protected static void setEntryDataVersion(String[] idxs, HLogEntry entry) {
+        // len 3
+        if (idxs.length == 3) {
+            entry.setPos(Long.parseLong(idxs[0]));
+            entry.setType(Type.toType(Integer.valueOf(idxs[1])));
+            entry.setLastReadtime(Long.parseLong(idxs[2]));
+        }
+        // len4
+        if (idxs.length == 4) {
+            entry.setPos(Long.parseLong(idxs[0]));
+            entry.setLastVerifiedPos(Long.parseLong(idxs[1]));
+            entry.setType(Type.toType(Integer.valueOf(idxs[2])));
+            entry.setLastReadtime(Long.parseLong(idxs[3]));
         }
     }
 
