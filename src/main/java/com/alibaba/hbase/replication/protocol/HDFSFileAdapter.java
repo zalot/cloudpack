@@ -30,9 +30,9 @@ import com.alibaba.hbase.replication.utility.ConsumerConstants;
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
 @Service("fileAdapter")
-public class DefaultHDFSFileAdapter implements ProtocolAdapter {
+public class HDFSFileAdapter implements ProtocolAdapter {
 
-    protected static final Log LOG          = LogFactory.getLog(DefaultHDFSFileAdapter.class);
+    protected static final Log LOG          = LogFactory.getLog(HDFSFileAdapter.class);
     public static final String SPLIT_SYMBOL = "|";
 
     public static String head2FileName(ProtocolHead head) {
