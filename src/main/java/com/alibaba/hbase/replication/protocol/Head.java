@@ -10,72 +10,72 @@ import java.io.Serializable;
  */
 public class Head implements Serializable {
 
-    @Override
-    public String toString() {
-        return "Head [version=" + version + ", groupName=" + groupName + ", fileTimestamp=" + fileTimestamp
-               + ", headTimestamp=" + headTimestamp + ", startOffset=" + startOffset + ", endOffset=" + endOffset
-               + ", count=" + count + ", retry=" + retry + "]";
-    }
-
     /**
      * 
      */
     private static final long serialVersionUID = 8360136866546325565L;
 
-    public int getVersion() {
-        return version;
-    }
+    /**
+     * 数量
+     */
+    protected long   count;
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
+    /**
+     * 结束偏移量 （用于 HLog.Reader 中的 position ）
+     */
+    protected long   endOffset;
 
-    public String getGroupName() {
-        return groupName;
-    }
+    /**
+     * 文件时间 HLog 文件名 = groupName + timeStamp
+     */
+    protected long   fileTimestamp;
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
+    /**
+     * 组名 HLog 文件名 = groupName + timeStamp
+     */
+    protected String groupName;
 
-    public long getFileTimestamp() {
-        return fileTimestamp;
-    }
+    /**
+     * 头部时间 头部产生的时间，可用于 HLog文件名归类后的 二次排序
+     */
+    protected long   headTimestamp;
 
-    public void setFileTimestamp(long fileTimestamp) {
-        this.fileTimestamp = fileTimestamp;
-    }
+    /**
+     * 重试次数，对于正常文件此项为0
+     */
+    protected int    retry = 0;
 
-    public long getHeadTimestamp() {
-        return headTimestamp;
-    }
+    /**
+     * 起始偏移量 （用于 HLog.Reader 中的 position ）
+     */
+    protected long   startOffset;
 
-    public void setHeadTimestamp(long headTimestamp) {
-        this.headTimestamp = headTimestamp;
-    }
+    /**
+     * 版本号
+     */
+    protected int    version = 1;
 
-    public long getStartOffset() {
-        return startOffset;
+    public Head(){
+        this.setHeadTimestamp(System.currentTimeMillis());
     }
-
-    public void setStartOffset(long startOffset) {
-        this.startOffset = startOffset;
+    public long getCount() {
+        return count;
     }
 
     public long getEndOffset() {
         return endOffset;
     }
 
-    public void setEndOffset(long endOffset) {
-        this.endOffset = endOffset;
+    public long getFileTimestamp() {
+        return fileTimestamp;
     }
 
-    public long getCount() {
-        return count;
+    public String getGroupName() {
+        return groupName;
     }
 
-    public void setCount(long count) {
-        this.count = count;
+    public long getHeadTimestamp() {
+        return headTimestamp;
     }
 
     /**
@@ -85,6 +85,34 @@ public class Head implements Serializable {
         return retry;
     }
 
+    public long getStartOffset() {
+        return startOffset;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setCount(long count) {
+        this.count = count;
+    }
+
+    public void setEndOffset(long endOffset) {
+        this.endOffset = endOffset;
+    }
+
+    public void setFileTimestamp(long fileTimestamp) {
+        this.fileTimestamp = fileTimestamp;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    protected void setHeadTimestamp(long headTimestamp) {
+        this.headTimestamp = headTimestamp;
+    }
+
     /**
      * @param retry the retry to set
      */
@@ -92,44 +120,19 @@ public class Head implements Serializable {
         this.retry = retry;
     }
 
-    /**
-     * 版本号
-     */
-    protected int    version = 1;
+    public void setStartOffset(long startOffset) {
+        this.startOffset = startOffset;
+    }
 
-    /**
-     * 组名 HLog 文件名 = groupName + timeStamp
-     */
-    protected String groupName;
+    protected void setVersion(int version) {
+        this.version = version;
+    }
 
-    /**
-     * 文件时间 HLog 文件名 = groupName + timeStamp
-     */
-    protected long   fileTimestamp;
-
-    /**
-     * 头部时间 头部产生的时间，可用于 HLog文件名归类后的 二次排序
-     */
-    protected long   headTimestamp;
-
-    /**
-     * 起始偏移量 （用于 HLog.Reader 中的 position ）
-     */
-    protected long   startOffset;
-
-    /**
-     * 结束偏移量 （用于 HLog.Reader 中的 position ）
-     */
-    protected long   endOffset;
-
-    /**
-     * 数量
-     */
-    protected long   count;
-
-    /**
-     * 重试次数，对于正常文件此项为0
-     */
-    protected int    retry = 0;
+    @Override
+    public String toString() {
+        return "Head [version=" + version + ", groupName=" + groupName + ", fileTimestamp=" + fileTimestamp
+               + ", headTimestamp=" + headTimestamp + ", startOffset=" + startOffset + ", endOffset=" + endOffset
+               + ", count=" + count + ", retry=" + retry + "]";
+    }
 
 }

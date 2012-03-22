@@ -52,6 +52,12 @@ public class MetaData {
         return clazz;
     }
 
+    public static Head getDefaultHead() {
+        Head head = new Head();
+        head.setVersion(1); // 可以将版本号设在外面
+        return head;
+    }
+    
     public static Body getDefaultBody() {
         return new Body1();
     }
