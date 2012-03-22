@@ -13,11 +13,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class MetaData {
 
-    protected static final Log                   LOG                              = LogFactory.getLog(MetaData.class);
-    protected static final String                DEFAULT_BODYPROTOCOL_CLASS_SUFIX = "com.alibaba.hbase.replication.protocol.Body";
-    protected static final Class<? extends ProtocolBody> DEFAULT_BODYPROTOCOL_CLASS       = ProtocolBodyV1.class;
-    protected ProtocolHead                               _head;
-    protected ProtocolBody                               _body;
+    protected static final Log    LOG                              = LogFactory.getLog(MetaData.class);
+    protected static final String DEFAULT_BODYPROTOCOL_CLASS_SUFIX = ProtocolBody.class.getCanonicalName() + "V";
+    protected ProtocolHead        _head;
+    protected ProtocolBody        _body;
 
     public ProtocolHead getHead() {
         return _head;
@@ -47,7 +46,6 @@ public class MetaData {
                 clazzes.put(versionClass, clazz);
             }
         } catch (Exception e) {
-            clazz = DEFAULT_BODYPROTOCOL_CLASS;
         }
         return clazz;
     }
@@ -57,7 +55,7 @@ public class MetaData {
         head.setVersion(1); // 可以将版本号设在外面
         return head;
     }
-    
+
     public static ProtocolBody getDefaultBody() {
         return new ProtocolBodyV1();
     }
