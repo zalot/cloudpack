@@ -4,7 +4,7 @@
 	<property>
 		<name>fs.default.name</name>
 		<value>${replication_protocol_adapter_hdfs_fs}</value>
-		<description>根路径今后删除用 protocol</description>
+		<description>pls delete, use protocol</description>
 	</property>
 	<property>
 		<name>hbase.zookeeper.quorum</name>
