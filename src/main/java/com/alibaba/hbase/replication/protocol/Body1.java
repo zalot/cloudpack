@@ -1,5 +1,6 @@
 package com.alibaba.hbase.replication.protocol;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.hbase.KeyValue;
@@ -55,7 +56,7 @@ public class Body1 extends Body {
         serBody.addEdit(tableName, edit);
     }
 
-    public Map getEditMap() {
+    public Map<String, List<Edit>> getEditMap() {
         return serBody.getEditMap();
     }
 }
