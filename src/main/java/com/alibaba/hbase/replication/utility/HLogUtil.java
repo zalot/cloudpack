@@ -16,15 +16,13 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.KeyValue.Type;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
-import com.alibaba.hbase.replication.protocol.Body;
-import com.alibaba.hbase.replication.protocol.Head;
-import com.alibaba.hbase.replication.protocol.protobuf.SerBody;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
+import com.alibaba.hbase.replication.protocol.ProtocolBody;
 import com.alibaba.hbase.replication.protocol.protobuf.SerBody.Edit;
 
 /**
@@ -61,7 +59,7 @@ public class HLogUtil {
         return hlogs;
     }
 
-    public static int put2Body(Entry entry, Body body) {
+    public static int put2Body(Entry entry, ProtocolBody body) {
         Edit edit = null;
         byte[] tableName = entry.getKey().getTablename();
         UUID clusterId = entry.getKey().getClusterId();
@@ -98,7 +96,7 @@ public class HLogUtil {
         return null;
     }
     
-    public static HLogEntry getHLogEntryByHead(Head head) {
+    public static HLogEntry getHLogEntryByHead(ProtocolHead head) {
         HLogEntry entry = new HLogEntry();
         entry.setGroupName(head.getGroupName());
         entry.setTimestamp(head.getFileTimestamp());

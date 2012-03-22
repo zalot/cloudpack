@@ -15,35 +15,35 @@ public class MetaData {
 
     protected static final Log                   LOG                              = LogFactory.getLog(MetaData.class);
     protected static final String                DEFAULT_BODYPROTOCOL_CLASS_SUFIX = "com.alibaba.hbase.replication.protocol.Body";
-    protected static final Class<? extends Body> DEFAULT_BODYPROTOCOL_CLASS       = Body1.class;
-    protected Head                               _head;
-    protected Body                               _body;
+    protected static final Class<? extends ProtocolBody> DEFAULT_BODYPROTOCOL_CLASS       = Body1.class;
+    protected ProtocolHead                               _head;
+    protected ProtocolBody                               _body;
 
-    public Head getHead() {
+    public ProtocolHead getHead() {
         return _head;
     }
 
-    public Body getBody() {
+    public ProtocolBody getBody() {
         return _body;
     }
 
-    public void setBody(Body body) {
+    public void setBody(ProtocolBody body) {
         this._body = body;
     }
 
-    public void setHead(Head head) {
+    public void setHead(ProtocolHead head) {
         this._head = head;
     }
 
-    protected static Map<String, Class<? extends Body>> clazzes = new ConcurrentHashMap<String, Class<? extends Body>>();
+    protected static Map<String, Class<? extends ProtocolBody>> clazzes = new ConcurrentHashMap<String, Class<? extends ProtocolBody>>();
 
-    public static Class<? extends Body> getBodyClass(Head head) {
-        Class<? extends Body> clazz = null;
+    public static Class<? extends ProtocolBody> getBodyClass(ProtocolHead head) {
+        Class<? extends ProtocolBody> clazz = null;
         try {
             String versionClass = DEFAULT_BODYPROTOCOL_CLASS_SUFIX + head.getVersion();
             clazz = clazzes.get(versionClass);
             if (clazz == null) {
-                clazz = (Class<? extends Body>) Class.forName(versionClass);
+                clazz = (Class<? extends ProtocolBody>) Class.forName(versionClass);
                 clazzes.put(versionClass, clazz);
             }
         } catch (Exception e) {
@@ -52,26 +52,26 @@ public class MetaData {
         return clazz;
     }
 
-    public static Head getDefaultHead() {
-        Head head = new Head();
+    public static ProtocolHead getDefaultHead() {
+        ProtocolHead head = new ProtocolHead();
         head.setVersion(1); // 可以将版本号设在外面
         return head;
     }
     
-    public static Body getDefaultBody() {
+    public static ProtocolBody getDefaultBody() {
         return new Body1();
     }
 
-    public static MetaData getMetaData(Head head, Body body) {
+    public static MetaData getMetaData(ProtocolHead head, ProtocolBody body) {
         MetaData minData = new MetaData();
         minData.setHead(head);
         minData.setBody(body);
         return minData;
     }
 
-    public static MetaData getMetaData(Head head, byte[] bodyData) {
+    public static MetaData getMetaData(ProtocolHead head, byte[] bodyData) {
         MetaData minData = new MetaData();
-        Body body;
+        ProtocolBody body;
         try {
             body = getBodyClass(head).newInstance();
             body.setBodyData(bodyData);

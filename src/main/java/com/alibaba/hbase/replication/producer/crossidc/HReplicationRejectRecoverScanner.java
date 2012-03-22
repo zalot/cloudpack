@@ -10,8 +10,8 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
-import com.alibaba.hbase.replication.protocol.Body;
-import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.ProtocolBody;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.utility.HLogUtil;
@@ -70,16 +70,16 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
     }
 
     public void doRecover() throws Exception {
-        for (Head head : adapter.listRejectHead()) {
+        for (ProtocolHead head : adapter.listRejectHead()) {
             doRecover(head);
         }
     }
 
-    public void doRecover(Head head) {
+    public void doRecover(ProtocolHead head) {
         head.setRetry(head.getRetry() + 1);
         HLogEntry entry = HLogUtil.getHLogEntryByHead(head);
         Entry ent = null;
-        Body body = MetaData.getDefaultBody();
+        ProtocolBody body = MetaData.getDefaultBody();
         HLogReader reader = null;
         try {
             reader = hlogService.getReader(entry);
@@ -110,7 +110,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
         }
     }
 
-    private boolean doAdapter(Head head, Body body) {
+    private boolean doAdapter(ProtocolHead head, ProtocolBody body) {
         MetaData data = MetaData.getMetaData(head, body);
         try {
             adapter.recover(data);

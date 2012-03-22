@@ -2,7 +2,7 @@ package com.alibaba.hbase.replication.consumer.v2;
 
 import java.util.List;
 
-import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 
 /**
  * v2 Consumer 资源池
@@ -14,7 +14,7 @@ public interface ConsumerResourcePool {
 
     public List<String> listGroup();
 
-    public List<Head> listHead(String groupName);
+    public List<ProtocolHead> listHead(String groupName);
 
     public boolean lockGroup(String groupName);
 }

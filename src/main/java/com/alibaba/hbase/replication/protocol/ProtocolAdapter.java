@@ -13,17 +13,17 @@ public interface ProtocolAdapter {
 
     public void write(MetaData data) throws Exception;
 
-    public MetaData read(Head head) throws Exception;
+    public MetaData read(ProtocolHead head) throws Exception;
 
-    public void clean(Head head) throws Exception;
+    public void clean(ProtocolHead head) throws Exception;
 
     public void crush() throws Exception;
 
-    public List<Head> listHead() throws Exception;
+    public List<ProtocolHead> listHead() throws Exception;
 
     public void recover(MetaData data) throws Exception;
 
     public void init(Configuration conf);
 
-    public List<Head> listRejectHead();
+    public List<ProtocolHead> listRejectHead();
 }

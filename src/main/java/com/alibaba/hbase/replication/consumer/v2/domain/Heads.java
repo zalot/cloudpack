@@ -1,6 +1,6 @@
 package com.alibaba.hbase.replication.consumer.v2.domain;
 
-import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 
 /**
  * v2 数据结构
@@ -13,7 +13,7 @@ public class Heads {
         
     }
     
-    public void put(Head head){
+    public void put(ProtocolHead head){
         
     }
 }

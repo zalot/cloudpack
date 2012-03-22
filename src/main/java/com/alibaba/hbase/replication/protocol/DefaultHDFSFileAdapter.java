@@ -35,7 +35,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
     protected static final Log LOG          = LogFactory.getLog(DefaultHDFSFileAdapter.class);
     public static final String SPLIT_SYMBOL = "|";
 
-    public static String head2FileName(Head head) {
+    public static String head2FileName(ProtocolHead head) {
         return head.version + SPLIT_SYMBOL // [0]
                + head.groupName + SPLIT_SYMBOL // [1]
                + head.fileTimestamp + SPLIT_SYMBOL // [2]
@@ -47,15 +47,15 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         ;
     }
     
-    public static String head2MD5FileName(Head head) {
+    public static String head2MD5FileName(ProtocolHead head) {
         return head2FileName(head) + ConsumerConstants.MD5_SUFFIX;
     }
 
-    public static Head validataFileName(String fileName) {
+    public static ProtocolHead validataFileName(String fileName) {
         String[] info = StringUtils.split(fileName, SPLIT_SYMBOL);
         if (info.length == 8) {
             try {
-                Head head = new Head();
+                ProtocolHead head = new ProtocolHead();
                 head.setVersion(Integer.parseInt(info[0]));
                 if (StringUtils.isBlank(info[1])) {
                     return null;
@@ -110,7 +110,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
      * @param fs
      * @throws IOException
      */
-    public void clean(Head head, FileSystem fs) throws IOException {
+    public void clean(ProtocolHead head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(oldPath, head2FileName(head)));
         fs.rename(new Path(digestPath, head2MD5FileName(head)),
                   new Path(oldPath, head2MD5FileName(head)));
@@ -181,11 +181,11 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
     }
 
     @Override
-    public List<Head> listHead() throws Exception {
-        List<Head> heads = new ArrayList<Head>();
+    public List<ProtocolHead> listHead() throws Exception {
+        List<ProtocolHead> heads = new ArrayList<ProtocolHead>();
         try {
             FileStatus[] fss = fs.listStatus(targetPath);
-            Head head;
+            ProtocolHead head;
             for (FileStatus fs : fss) {
                 head = validataFileName(fs.getPath().getName());
                 if (head != null) {
@@ -200,11 +200,11 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
     }
 
     @Override
-    public List<Head> listRejectHead() {
-        List<Head> heads = new ArrayList<Head>();
+    public List<ProtocolHead> listRejectHead() {
+        List<ProtocolHead> heads = new ArrayList<ProtocolHead>();
         try {
             FileStatus[] fss = fs.listStatus(rejectPath);
-            Head head;
+            ProtocolHead head;
             for (FileStatus fs : fss) {
                 head = validataFileName(fs.getPath().getName());
                 if (head != null) {
@@ -235,11 +235,11 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
     }
 
     @Override
-    public MetaData read(Head head) throws Exception {
+    public MetaData read(ProtocolHead head) throws Exception {
         return read(head, fs);
     }
 
-    public MetaData read(Head head, FileSystem fs) throws FileParsingException, FileReadingException {
+    public MetaData read(ProtocolHead head, FileSystem fs) throws FileParsingException, FileReadingException {
         FSDataInputStream in = null;
         byte[] byteArray = null;
         FSDataInputStream md5In = null;
@@ -293,7 +293,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
      * @param fs
      * @throws IOException
      */
-    public void reject(Head head, FileSystem fs) throws IOException {
+    public void reject(ProtocolHead head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(rejectPath, head2FileName(head)));
         fs.deleteOnExit(new Path(digestPath, head2MD5FileName(head)));
     }
@@ -387,7 +387,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
     }
 
     @Override
-    public void clean(Head head) throws Exception {
+    public void clean(ProtocolHead head) throws Exception {
         clean(head, fs);
     }
 

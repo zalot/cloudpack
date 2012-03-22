@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alibaba.hbase.replication.consumer.v2.domain.Heads;
-import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 
 /**
@@ -41,7 +41,7 @@ public class DefaultConsumerResourcePool implements ConsumerResourcePool {
     }
 
     @Override
-    public List<Head> listHead(String groupName) {
+    public List<ProtocolHead> listHead(String groupName) {
         // TODO Auto-generated method stub
         return null;
     }

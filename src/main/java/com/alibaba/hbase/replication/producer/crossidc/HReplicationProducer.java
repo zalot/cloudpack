@@ -16,8 +16,8 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
-import com.alibaba.hbase.replication.protocol.Body;
-import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.ProtocolBody;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.utility.HLogUtil;
@@ -87,7 +87,7 @@ public class HReplicationProducer implements Runnable {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);
         HLogReader reader = null;
-        Body body = MetaData.getDefaultBody();
+        ProtocolBody body = MetaData.getDefaultBody();
         HLogEntry entry;
         for (int idx = 0; idx < entrys.size(); idx++) {
             entry = entrys.get(idx);
@@ -152,8 +152,8 @@ public class HReplicationProducer implements Runnable {
         }
     }
 
-    private boolean doSinkPart(String groupName, long timeStamp, long start, long end, Body body, long count) {
-        Head head = MetaData.getDefaultHead();
+    private boolean doSinkPart(String groupName, long timeStamp, long start, long end, ProtocolBody body, long count) {
+        ProtocolHead head = MetaData.getDefaultHead();
         head.setCount(count);
         head.setGroupName(groupName);
         head.setFileTimestamp(timeStamp);
@@ -165,7 +165,7 @@ public class HReplicationProducer implements Runnable {
         return false;
     }
 
-    private boolean doAdapter(Head head, Body body) {
+    private boolean doAdapter(ProtocolHead head, ProtocolBody body) {
         MetaData data = MetaData.getMetaData(head, body);
         try {
             adapter.write(data);

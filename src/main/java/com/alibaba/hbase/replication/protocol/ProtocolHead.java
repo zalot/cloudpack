@@ -8,7 +8,7 @@ import java.io.Serializable;
  * 
  * @author zalot.zhaoh Feb 28, 2012 3:53:56 PM
  */
-public class Head implements Serializable {
+public class ProtocolHead implements Serializable {
 
     /**
      * 
@@ -55,7 +55,7 @@ public class Head implements Serializable {
      */
     protected int    version = 1;
 
-    public Head(){
+    public ProtocolHead(){
         this.setHeadTimestamp(System.currentTimeMillis());
     }
     public long getCount() {
