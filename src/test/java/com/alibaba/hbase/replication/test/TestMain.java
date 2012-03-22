@@ -13,7 +13,7 @@ import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
-import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
@@ -116,7 +116,7 @@ public class TestMain extends BaseReplicationTest {
         FileStatus[] rejFss = service.getFileSystem().listStatus(adapter.getRejectPath());
         Assert.assertTrue(rejFss.length == 0);
         
-        Head head = adapter.validataFileName(firstTarget.getName());
+        ProtocolHead head = adapter.validataFileName(firstTarget.getName());
         adapter.reject(head, service.getFileSystem());
 
         fss = service.getFileSystem().listStatus(adapter.getTargetPath());

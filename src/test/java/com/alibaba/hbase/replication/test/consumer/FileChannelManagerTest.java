@@ -38,7 +38,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
 
 import com.alibaba.hbase.replication.consumer.FileChannelManager;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
-import com.alibaba.hbase.replication.protocol.Head;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.protocol.protobuf.SerBody;
@@ -66,7 +66,7 @@ public class FileChannelManagerTest {
     @InjectInto(target = "fileChannelManager", property = "fileAdapter")
     private DefaultHDFSFileAdapter fileAdapter;
 
-    Head                           mockHead          = new Head();
+    ProtocolHead                           mockHead          = new ProtocolHead();
 
     @BeforeClass
     public static void vmSetUp() {
