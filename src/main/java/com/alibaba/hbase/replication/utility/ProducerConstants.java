@@ -15,6 +15,7 @@ public class ProducerConstants {
     public static final String CONFKEY_HDFS_HBASE_ROOT                = "com.alibaba.hbase.replication.producer.hbase.rootdir";
     public static final String HDFS_HBASE_ROOT                        = "/hbase";
     public static final String PRODUCER_CONFIG_FILE                   = "META-INF/producer-configuration.xml";
+    public static final String COMMON_CONFIG_FILE                     = "META-INF/common-configuration.xml";
     public static String       CONFKEY_ZOO_ROOT                       = "com.alibaba.hbase.replication.producer.zoo.root";
     public static String       ZOO_ROOT                               = "/alirep";
 
@@ -76,7 +77,6 @@ public class ProducerConstants {
     public static final String CONFKEY_PROTOCOL_CLASS                 = "com.alibaba.hbase.replication.protocol.class";
     public static final String PROTOCOL_CLASS                         = HDFSFileAdapter.class.getCanonicalName();
 
-    public static final String CONFKEY_PROTOCOL_ADAPTER_HDFS_FS       = "com.alibaba.hbase.replication.protocol.adapter.hdfs.fs";
     // -----------------------------------------
     // static field
     // -----------------------------------------

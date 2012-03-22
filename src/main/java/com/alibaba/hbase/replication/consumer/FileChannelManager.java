@@ -46,8 +46,12 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 类Manager.java的实现描述：持有consumer端的中间文件同步线程池
  * 
  * @author dongsh 2012-2-28 上午11:17:17
- * @author zalot.zhaoh ------------------------------------------ 1.取消了部分注入，采用原始的 set方法, 以及init 2.修改了 MetaData 协议的使用方式，
- * 3.后期将用 v2 代替 ------------------------------------------
+ * @author zalot.zhaoh <BR>
+ * ------------------------------------------ <BR>
+ * 1.取消了部分注入，采用原始的 set方法, 以及init <BR>
+ * 2.修改了 MetaData 协议的使用方式<BR>
+ * 3.将用 v2 代替 来获取 Heads ，而非直接操作磁盘，将操作磁盘的过程放在 Protocol中<BR>
+ * ------------------------------------------
  */
 @Service("fileChannelManager")
 public class FileChannelManager {
@@ -70,6 +74,7 @@ public class FileChannelManager {
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager is pendding to start.");
         }
+        conf.addResource(ConsumerConstants.COMMON_CONFIG_FILE);
         conf.addResource(ConsumerConstants.CONSUMER_CONFIG_FILE);
         fileAdapter.init(conf);
         fileChannelPool = new ThreadPoolExecutor(
@@ -135,9 +140,12 @@ public class FileChannelManager {
     private void scanProducerFilesAndAddToZK() throws IOException {
         // s1. scanProducerFiles
         // <group,filename set>
+
+        // 不合适的方法
+        // 请通过 ProtocolAdapter.listHead() 方法获取所有 Head 而不要直接操作 ProtocolAdapter 的内容
         Map<String, ArrayList<String>> fstMap = new HashMap<String, ArrayList<String>>();
-        Path targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS),
-                                   conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH));
+        Path targetPath = new Path(conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS),
+                                   conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS_TARGETPATH));
         FileStatus[] fstList = fs.listStatus(targetPath);
         if (fstList == null || fstList.length < 1) {
             if (LOG.isWarnEnabled()) {

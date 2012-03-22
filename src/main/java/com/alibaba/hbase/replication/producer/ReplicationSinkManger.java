@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
-import com.alibaba.hbase.replication.producer.crossidc.HReplicationCrushScanner;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
+import com.alibaba.hbase.replication.utility.ConsumerConstants;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
@@ -42,6 +42,7 @@ public class ReplicationSinkManger {
     }
 
     public void start() throws Exception {
+        conf.addResource(ProducerConstants.COMMON_CONFIG_FILE);
         conf.addResource(ProducerConstants.PRODUCER_CONFIG_FILE);
         RecoverableZooKeeper zookeeper = ZKUtil.connect(conf, new NothingZookeeperWatch());
 
@@ -119,14 +120,14 @@ public class ReplicationSinkManger {
             recoverPool.execute(recover);
         }
         
-        HReplicationCrushScanner crush;
-        for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
-                                        ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
-            crush = new HReplicationCrushScanner(conf);
-            crush.setZooKeeper(zookeeper);
-            crush.setAdapter(adapter);
-            crushPool.execute(crush);
-        }
+//        HReplicationCrushScanner crush;
+//        for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+//                                        ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
+//            crush = new HReplicationCrushScanner(conf);
+//            crush.setZooKeeper(zookeeper);
+//            crush.setAdapter(adapter);
+//            crushPool.execute(crush);
+//        }
 
         HReplicationProducer producer;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,

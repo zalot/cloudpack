@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
-import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
  * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
@@ -33,8 +32,14 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
 @Service("fileAdapter")
 public class HDFSFileAdapter extends ProtocolAdapter {
 
-    protected static final Log LOG          = LogFactory.getLog(HDFSFileAdapter.class);
-    public static final String SPLIT_SYMBOL = "|";
+    public static final String CONFKEY_HDFS_FS            = "com.alibaba.hbase.replication.protocol.adapter.hdfs.fs";
+    public static final String CONFKEY_HDFS_FS_OLDPATH    = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.oldpath";
+    public static final String CONFKEY_HDFS_FS_REJECTPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.rejectpath";
+    public static final String CONFKEY_HDFS_FS_TARGETPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.targetpath";
+    public static final String CONFKEY_HDFS_FS_ROOT       = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.root";
+
+    protected static final Log LOG                        = LogFactory.getLog(HDFSFileAdapter.class);
+    public static final String SPLIT_SYMBOL               = "|";
 
     public static String head2FileName(ProtocolHead head) {
         return head.version + SPLIT_SYMBOL // [0]
@@ -77,7 +82,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
     }
 
     @Autowired
-    protected Configuration conf;
+    protected Configuration _conf;
 
     /**
      * md5摘要文件位置
@@ -176,8 +181,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
     }
 
     public void init(Configuration conf) {
-        this.conf = conf;
-        setPath();
+        setPath(conf);
     }
 
     @Override
@@ -298,30 +302,25 @@ public class HDFSFileAdapter extends ProtocolAdapter {
         fs.deleteOnExit(new Path(digestPath, head2MD5FileName(head)));
     }
 
-    public void setPath() {
+    public void setPath(Configuration conf) {
         if (fs == null) {
             try {
-                String defaultFs = conf.get(ProducerConstants.CONFKEY_PROTOCOL_ADAPTER_HDFS_FS);
+                Configuration newconf = new Configuration(conf);
+                String defaultFs = conf.get(CONFKEY_HDFS_FS);
                 if (defaultFs == null) return;
-                conf.set("fs.default.name", defaultFs);
-                fs = FileSystem.get(conf);
+                newconf.set("fs.default.name", defaultFs);
+                fs = FileSystem.get(newconf);
+                this._conf = newconf;
             } catch (IOException e) {
+                LOG.error("init error", e);
                 return;
             }
         }
-
-        targetPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS, ConsumerConstants.PRODUCER_EMPTY_FS)
-                              + conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH,
-                                         ConsumerConstants.TMPFILE_TARGETPATH));
-        targetTmpPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS, ConsumerConstants.PRODUCER_EMPTY_FS)
-                                 + conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETTMPPATH,
-                                            ConsumerConstants.TMPFILE_TARGETTMPPATH));
-        oldPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS, ConsumerConstants.PRODUCER_EMPTY_FS)
-                           + conf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH, ConsumerConstants.TMPFILE_OLDPATH));
-        rejectPath = new Path(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS, ConsumerConstants.PRODUCER_EMPTY_FS)
-                              + conf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH,
-                                         ConsumerConstants.TMPFILE_REJECTPATH));
-
+        
+        targetPath = new Path(conf.get(CONFKEY_HDFS_FS_ROOT) + conf.get(CONFKEY_HDFS_FS_TARGETPATH));
+        targetTmpPath = new Path(conf.get(CONFKEY_HDFS_FS_ROOT) + conf.get(CONFKEY_HDFS_FS_TARGETPATH) + "tmp/");
+        oldPath = new Path(conf.get(CONFKEY_HDFS_FS_ROOT) + conf.get(CONFKEY_HDFS_FS_OLDPATH));
+        rejectPath = new Path(conf.get(CONFKEY_HDFS_FS_ROOT) + conf.get(CONFKEY_HDFS_FS_REJECTPATH));
         digestPath = new Path(targetPath, ConsumerConstants.MD5_DIR);
         producter_check();
         consumer_check();
