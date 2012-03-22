@@ -20,6 +20,7 @@ import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
+import com.alibaba.hbase.replication.protocol.protobuf.SerBody;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 
@@ -87,7 +88,7 @@ public class HReplicationProducer implements Runnable {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);
         HLogReader reader = null;
-        Body body = new Body();
+        Body body = MetaData.getDefaultBody();
         HLogEntry entry;
         for (int idx = 0; idx < entrys.size(); idx++) {
             entry = entrys.get(idx);
@@ -120,7 +121,7 @@ public class HReplicationProducer implements Runnable {
                                    body, count)) {
                         entry.setPos(reader.getPosition());
                         hlogEntryPersistence.updateEntry(entry);
-                        body = new Body();
+                        body = MetaData.getDefaultBody();
                     } else {
                         reader.seek(entry.getPos());
                     }
@@ -147,7 +148,7 @@ public class HReplicationProducer implements Runnable {
             }
 
             hlogEntryPersistence.updateEntry(entry);
-            body = new Body();
+            body = MetaData.getDefaultBody();
             reader.close();
         }
     }
@@ -170,7 +171,6 @@ public class HReplicationProducer implements Runnable {
         MetaData data = MetaData.getMetaData(head, body);
         try {
             adapter.write(data);
-            if (LOG.isInfoEnabled()) LOG.info("doAdapter - > " + head);
             return true;
         } catch (Exception e) {
             LOG.error("doAdapter error " + head, e);
