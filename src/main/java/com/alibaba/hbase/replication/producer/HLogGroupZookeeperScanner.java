@@ -9,7 +9,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 
-import com.alibaba.hbase.replication.hlog.HLogEntryPersistence;
+import com.alibaba.hbase.replication.hlog.HLogEntryPoolPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
@@ -33,13 +33,13 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
     protected HLogService          hlogService;
 
     // 外部对象引用
-    protected HLogEntryPersistence hlogEntryPersistence;
+    protected HLogEntryPoolPersistence hlogEntryPersistence;
 
-    public HLogEntryPersistence getHlogEntryPersistence() {
+    public HLogEntryPoolPersistence getHlogEntryPersistence() {
         return hlogEntryPersistence;
     }
 
-    public void setHlogEntryPersistence(HLogEntryPersistence hlogEntryPersistence) {
+    public void setHlogEntryPersistence(HLogEntryPoolPersistence hlogEntryPersistence) {
         this.hlogEntryPersistence = hlogEntryPersistence;
     }
 

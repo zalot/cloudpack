@@ -30,10 +30,10 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 
  * @author zalot.zhaoh Mar 7, 2012 10:24:18 AM
  */
-public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
+public class HLogEntryPoolZookeeperPersistence implements HLogEntryPoolPersistence {
 
     protected static final String  SPLIT = "|";
-    protected static final Log     LOG   = LogFactory.getLog(HLogEntryZookeeperPersistence.class);
+    protected static final Log     LOG   = LogFactory.getLog(HLogEntryPoolZookeeperPersistence.class);
     protected RecoverableZooKeeper zookeepr;
     protected String               baseDir;
     protected ThreadLocal<String>  uuid  = new ThreadLocal<String>();                              ;
@@ -51,7 +51,7 @@ public class HLogEntryZookeeperPersistence implements HLogEntryPersistence {
         this.zookeepr = zoo;
     }
 
-    public HLogEntryZookeeperPersistence(Configuration conf, RecoverableZooKeeper zoo) throws Exception{
+    public HLogEntryPoolZookeeperPersistence(Configuration conf, RecoverableZooKeeper zoo) throws Exception{
         this.zookeepr = zoo;
         init(conf);
     }

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
+import com.alibaba.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
@@ -50,7 +50,7 @@ public class ReplicationSinkManger {
         adapter.init(conf);
         
         
-        HLogEntryZookeeperPersistence hLogEntryPersistence = new HLogEntryZookeeperPersistence(conf, zookeeper);
+        HLogEntryPoolZookeeperPersistence hLogEntryPersistence = new HLogEntryPoolZookeeperPersistence(conf, zookeeper);
 
         ThreadPoolExecutor replicationPool = new ThreadPoolExecutor(
                                                                     conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,

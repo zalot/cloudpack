@@ -13,7 +13,7 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
  * 类HLogPersistence.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 12, 2012 4:09:06 PM
  */
-public interface HLogEntryPersistence{
+public interface HLogEntryPoolPersistence{
     public void createEntry(HLogEntry entry) throws Exception;
     public void deleteEntry(HLogEntry entry) throws Exception;
     public void updateEntry(HLogEntry entry) throws Exception;

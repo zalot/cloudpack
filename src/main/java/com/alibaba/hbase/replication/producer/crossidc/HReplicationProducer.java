@@ -10,7 +10,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.zookeeper.KeeperException;
 
-import com.alibaba.hbase.replication.hlog.HLogEntryPersistence;
+import com.alibaba.hbase.replication.hlog.HLogEntryPoolPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
@@ -40,7 +40,7 @@ public class HReplicationProducer implements Runnable {
 
     // 外部对象
     protected ProtocolAdapter      adapter;
-    protected HLogEntryPersistence hlogEntryPersistence;
+    protected HLogEntryPoolPersistence hlogEntryPersistence;
     protected HLogService          hlogService;
 
     public HReplicationProducer(Configuration conf) throws IOException, KeeperException, InterruptedException{
@@ -186,11 +186,11 @@ public class HReplicationProducer implements Runnable {
         this.adapter = adapter;
     }
 
-    public HLogEntryPersistence getHlogEntryPersistence() {
+    public HLogEntryPoolPersistence getHlogEntryPersistence() {
         return hlogEntryPersistence;
     }
 
-    public void setHlogEntryPersistence(HLogEntryPersistence hlogEntryPersistence) {
+    public void setHlogEntryPersistence(HLogEntryPoolPersistence hlogEntryPersistence) {
         this.hlogEntryPersistence = hlogEntryPersistence;
     }
 
@@ -203,7 +203,7 @@ public class HReplicationProducer implements Runnable {
     }
 
     public static HReplicationProducer newInstance(Configuration conf, ProtocolAdapter adapter,
-                                                   HLogEntryPersistence dao, HLogService service) throws IOException,
+                                                   HLogEntryPoolPersistence dao, HLogService service) throws IOException,
                                                                                                  KeeperException,
                                                                                                  InterruptedException {
         HReplicationProducer prod = new HReplicationProducer(conf);
