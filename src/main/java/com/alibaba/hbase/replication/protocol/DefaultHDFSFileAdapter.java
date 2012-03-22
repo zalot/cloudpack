@@ -48,6 +48,10 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
                + head.retry + SPLIT_SYMBOL // [7]
         ;
     }
+    
+    public static String head2MD5FileName(Head head) {
+        return head2FileName(head) + ConsumerConstants.MD5_SUFFIX;
+    }
 
     public static Head validataFileName(String fileName) {
         String[] info = StringUtils.split(fileName, SPLIT_SYMBOL);
@@ -110,8 +114,8 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
      */
     public void clean(Head head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(oldPath, head2FileName(head)));
-        fs.rename(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX),
-                  new Path(oldPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
+        fs.rename(new Path(digestPath, head2MD5FileName(head)),
+                  new Path(oldPath, head2MD5FileName(head)));
     }
 
     private void consumer_check() {
@@ -230,8 +234,8 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         try {
             in = fs.open(new Path(targetPath, head2FileName(head)));
             byteArray = IOUtils.toByteArray(in);
-            md5In = fs.open(new Path(targetPath, head2FileName(head)));
-            md5ByteArray = IOUtils.toByteArray(in);
+            md5In = fs.open(new Path(digestPath, head2MD5FileName(head)));
+            md5ByteArray = IOUtils.toByteArray(md5In);
         } catch (IOException e1) {
             throw new FileReadingException("error while reading hdfs file to bytes. file: " + head2FileName(head), e1);
         } finally {
@@ -278,14 +282,13 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
      */
     public void reject(Head head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(rejectPath, head2FileName(head)));
-        fs.deleteOnExit(new Path(digestPath, head2FileName(head) + ConsumerConstants.MD5_SUFFIX));
+        fs.deleteOnExit(new Path(digestPath, head2MD5FileName(head)));
     }
 
     public void setFileSystem(FileSystem fs) {
         this.fs = fs;
     }
 
-    @PostConstruct
     public void setPath() {
         if (fs == null) {
             try {
@@ -330,8 +333,9 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
             targetOutput.close();
 
             // write MD5
+            String md5fileName = head2MD5FileName(data.getHead());
             MessageDigest digest = MessageDigest.getInstance("MD5");
-            Path tmpMD5Path = new Path(targetTmpPath, fileName + ConsumerConstants.MD5_SUFFIX);
+            Path tmpMD5Path = new Path(targetTmpPath, md5fileName);
             targetMD5Output = fs.create(tmpMD5Path, true);
             targetMD5Output.write(digest.digest(bodyBytes));
             targetMD5Output.close();

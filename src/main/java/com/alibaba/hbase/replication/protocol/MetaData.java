@@ -3,6 +3,9 @@ package com.alibaba.hbase.replication.protocol;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * 协议元数据 类MetaData.java的实现描述：TODO 类实现描述
  * 
@@ -10,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class MetaData {
 
+    protected static final Log    LOG                 = LogFactory.getLog(MetaData.class);
     protected static final String DEFAULT_CLASS_SUFIX = "com.alibaba.hbase.replication.protocol.Version";
     protected static final Class  DEFAULT_CLASS       = com.alibaba.hbase.replication.protocol.Version1.class;
     protected Head                _head;
@@ -57,7 +61,7 @@ public abstract class MetaData {
             minData.setBody(body);
             return minData;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("meta", e);
         }
         return null;
     }
@@ -70,8 +74,8 @@ public abstract class MetaData {
             minData.setBodyData(bodyData);
             return minData;
         } catch (Exception e) {
+            LOG.error("meta", e);
         }
-
         return null;
     }
 }

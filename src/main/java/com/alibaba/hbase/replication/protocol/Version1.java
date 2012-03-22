@@ -16,7 +16,7 @@ public class Version1 extends MetaData {
 
     public static final int VERSION = 1;
 
-    public Version1() throws Exception{
+    public Version1(){
         super();
     }
 
