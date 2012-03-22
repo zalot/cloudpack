@@ -38,7 +38,7 @@ public class ConsumerConstants {
     public static final String CONFKEY_THREADPOOL_SIZE             = "com.alibaba.hbase.replication.consumer.threadpool.queuesize";
     public static final String CONFKEY_THREADPOOL_KEEPALIVE_TIME   = "com.alibaba.hbase.replication.consumer.threadpool.keepAliveTime";
     public static final String CONFKEY_TMPFILE_TARGETPATH          = "com.alibaba.hbase.replication.tmpfile.targetPath";
-    public static final String TMPFILE_TARGETPATH                  = "/targetsources";
+    public static final String TMPFILE_TARGETPATH                  = "/target";
     public static final String CONFKEY_TMPFILE_TARGETTMPPATH       = "com.alibaba.hbase.replication.tmpfile.targetTmpPath";
     public static final String TMPFILE_TARGETTMPPATH               = "/tmptargetsources";
     public static final String CONFKEY_TMPFILE_OLDPATH             = "com.alibaba.hbase.replication.tmpfile.oldPath";

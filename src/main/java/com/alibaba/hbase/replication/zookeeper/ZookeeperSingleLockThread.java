@@ -22,7 +22,7 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
 
     protected static final Log     LOG        = LogFactory.getLog(ZookeeperSingleLockThread.class);
     protected ThreadLocal<String>  uuid       = new ThreadLocal<String>();
-    protected String               mName       = ManagementFactory.getRuntimeMXBean().getName();
+    protected String               mName      = ManagementFactory.getRuntimeMXBean().getName();
     protected int                  errorCount = 0;
     // 休息时间
     // 争抢到 reject scanner 后 间隔时间
@@ -113,18 +113,18 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
                     init();
                 }
                 isLock = lock();
-                LOG.debug(getJobName() + " try lock ....");
+                if (LOG.isInfoEnabled()) LOG.info(getJobName() + " try lock ....");
                 if (isLock) {
-                    LOG.info(getJobName() + " lock ....");
+                    if (LOG.isInfoEnabled()) LOG.info(getJobName() + " lock ....");
                     innnerRun();
                 }
             } catch (Exception e) {
                 isLock = false;
-                LOG.error(getJobName() + " error ....",e);
+                LOG.error(getJobName() + " error ....", e);
             } finally {
                 if (isLock) {
-                    if(unlock()){
-                        LOG.info(getJobName() + " unlock ....");
+                    if (unlock()) {
+                        if (LOG.isInfoEnabled()) LOG.info(getJobName() + " unlock ....");
                     }
                 }
             }
