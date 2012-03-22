@@ -34,11 +34,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.hbase.replication.consumer.v2.HReplicationCrushScanner;
 import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
@@ -70,6 +72,8 @@ public class FileChannelManager {
     @Autowired
     protected DataLoadingManager   dataLoadingManager;
     protected ProtocolAdapter      adapter;
+
+    protected ThreadPoolExecutor   crushPool;
 
     public void init() throws IOException, KeeperException, InterruptedException {
         if (LOG.isInfoEnabled()) {
@@ -112,6 +116,27 @@ public class FileChannelManager {
             runn.setZoo(zoo);
             fileChannelPool.execute(runn);
         }
+
+        crushPool = new ThreadPoolExecutor(
+                                                              conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                                          ProducerConstants.REP_REJECT_POOL_SIZE),
+                                                              conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                                          ProducerConstants.REP_REJECT_POOL_SIZE),
+                                                              conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
+                                                                          100),
+                                                              TimeUnit.SECONDS,
+                                                              new ArrayBlockingQueue<Runnable>(
+                                                                                               conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                                                                           100)));
+        HReplicationCrushScanner crush;
+        for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                        ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
+            crush = new HReplicationCrushScanner(conf);
+            crush.setZooKeeper(zoo);
+            crush.setAdapter(adapter);
+            crushPool.execute(crush);
+        }
+
         while (true) {
             try {
                 Thread.sleep(5000);
@@ -147,8 +172,8 @@ public class FileChannelManager {
         // 不合适的方法
         // 请通过 ProtocolAdapter.listHead() 方法获取所有 Head 而不要直接操作 ProtocolAdapter 的内容
         Map<String, ArrayList<String>> fstMap = new HashMap<String, ArrayList<String>>();
-        Path targetPath = new Path(conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS_ROOT) +
-                                   conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS_TARGETPATH));
+        Path targetPath = new Path(conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS_ROOT)
+                                   + conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS_TARGETPATH));
         FileStatus[] fstList = fs.listStatus(targetPath);
         if (fstList == null || fstList.length < 1) {
             if (LOG.isWarnEnabled()) {
