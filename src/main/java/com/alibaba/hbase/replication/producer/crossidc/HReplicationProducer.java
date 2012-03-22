@@ -20,7 +20,6 @@ import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
-import com.alibaba.hbase.replication.protocol.protobuf.SerBody;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 
@@ -154,13 +153,12 @@ public class HReplicationProducer implements Runnable {
     }
 
     private boolean doSinkPart(String groupName, long timeStamp, long start, long end, Body body, long count) {
-        Head head = new Head();
+        Head head = MetaData.getDefaultHead();
         head.setCount(count);
         head.setGroupName(groupName);
         head.setFileTimestamp(timeStamp);
         head.setStartOffset(start);
         head.setEndOffset(end);
-        head.setVersion(1);
         if (doAdapter(head, body)) {
             return true;
         }
