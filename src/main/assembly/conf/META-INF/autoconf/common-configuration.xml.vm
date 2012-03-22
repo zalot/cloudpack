@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<configuration>
+	<!-- protocol -->
+	<property>
+		<name>com.alibaba.hbase.replication.protocol.version</name>
+		<value>${replication_protocol_version}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.protocol.class</name>
+		<value>${replication_protocol_class}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs</name>
+		<value>${replication_protocol_adapter_hdfs_fs}</value>
+	</property>
+
+	<property>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.root</name>
+		<value>${replication_protocol_adapter_hdfs_fs_root}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.targetpath</name>
+		<value>${replication_protocol_adapter_hdfs_fs_targetpath}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.oldpath</name>
+		<value>${replication_protocol_adapter_hdfs_fs_oldpath}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.rejectpath</name>
+		<value>${replication_protocol_adapter_hdfs_fs_rejectpath}</value>
+	</property>
+	<!-- protocol end -->
+	<property>
+		<name>dfs.permissions</name>
+		<value>false</value>
+	</property>
+</configuration>
