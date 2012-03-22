@@ -32,7 +32,7 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
 import com.alibaba.hbase.replication.protocol.ProtocolBodyV1;
-import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
+import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
@@ -80,12 +80,12 @@ public class FileChannelRunnable implements Runnable {
     protected String                 name          = ConsumerConstants.CHANNEL_NAME
                                                      + UUID.randomUUID().toString().substring(0, 8);
     protected DataLoadingManager     dataLoadingManager;
-    protected DefaultHDFSFileAdapter fileAdapter;
+    protected HDFSFileAdapter fileAdapter;
     protected List<ConsumerZNode>    errorNodeList = new ArrayList<ConsumerZNode>();
     protected AtomicBoolean          stopflag;
 
     public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager,
-                               DefaultHDFSFileAdapter fileAdapter, AtomicBoolean stopflag) throws IOException{
+                               HDFSFileAdapter fileAdapter, AtomicBoolean stopflag) throws IOException{
         this.fileAdapter = fileAdapter;
         this.conf = conf;
         this.stopflag = stopflag;
@@ -97,7 +97,7 @@ public class FileChannelRunnable implements Runnable {
         while (!stopflag.get()) {
             ConsumerZNode currentNode = tryToMakeACurrentNode();
             if (currentNode != null) {
-                ProtocolHead fileHead = DefaultHDFSFileAdapter.validataFileName(currentNode.getFileName());
+                ProtocolHead fileHead = HDFSFileAdapter.validataFileName(currentNode.getFileName());
                 if (fileHead == null) {
                     if (LOG.isErrorEnabled()) {
                         LOG.error("validataFileName fail. fileName: " + currentNode.getFileName());
@@ -270,7 +270,7 @@ public class FileChannelRunnable implements Runnable {
                             continue;
                         }
                         String fileName = ftsSet.first();
-                        ProtocolHead fileHead = DefaultHDFSFileAdapter.validataFileName(fileName);
+                        ProtocolHead fileHead = HDFSFileAdapter.validataFileName(fileName);
                         if (fileHead == null && LOG.isErrorEnabled()) {
                             throw new RuntimeException("validataFileName fail. fileName: " + fileName);
                         }
@@ -309,8 +309,8 @@ public class FileChannelRunnable implements Runnable {
      * @return
      */
     protected boolean isRetry(String retry, String orig) {
-        ProtocolHead r = DefaultHDFSFileAdapter.validataFileName(retry);
-        ProtocolHead o = DefaultHDFSFileAdapter.validataFileName(orig);
+        ProtocolHead r = HDFSFileAdapter.validataFileName(retry);
+        ProtocolHead o = HDFSFileAdapter.validataFileName(orig);
         if (r != null && o != null && StringUtils.equals(r.getGroupName(), o.getGroupName())
             && r.getFileTimestamp() == o.getFileTimestamp() && r.getHeadTimestamp() == o.getHeadTimestamp()
             && r.getRetry() > o.getRetry()) {
@@ -333,8 +333,8 @@ public class FileChannelRunnable implements Runnable {
             @Override
             public int compare(String o1, String o2) {
                 // 二次排序，优先fileTimestamp，然后是headTimestamp
-                ProtocolHead o1Head = DefaultHDFSFileAdapter.validataFileName(o1);
-                ProtocolHead o2Head = DefaultHDFSFileAdapter.validataFileName(o2);
+                ProtocolHead o1Head = HDFSFileAdapter.validataFileName(o1);
+                ProtocolHead o2Head = HDFSFileAdapter.validataFileName(o2);
                 if (o1Head.getFileTimestamp() > o2Head.getFileTimestamp()) return 1;
                 if (o1Head.getFileTimestamp() < o2Head.getFileTimestamp()) return -1;
                 if (o1Head.getHeadTimestamp() > o2Head.getHeadTimestamp()) return 1;
