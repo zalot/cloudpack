@@ -117,7 +117,7 @@ public class TestMain extends BaseReplicationTest {
         Assert.assertTrue(rejFss.length == 0);
         
         ProtocolHead head = adapter.validataFileName(firstTarget.getName());
-        adapter.reject(head, service.getFileSystem());
+        adapter.reject(head);
 
         fss = service.getFileSystem().listStatus(adapter.getTargetPath());
         for (FileStatus fs : fss) {
