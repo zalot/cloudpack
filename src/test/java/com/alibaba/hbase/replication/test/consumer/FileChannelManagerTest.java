@@ -25,7 +25,6 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,14 +37,11 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import com.alibaba.hbase.replication.consumer.FileChannelManager;
-import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
-import com.alibaba.hbase.replication.protocol.MetaData;
-import com.alibaba.hbase.replication.protocol.Version1;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
-import com.alibaba.hbase.replication.server.ReplicationConf;
+import com.alibaba.hbase.replication.protocol.protobuf.SerBody;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 
@@ -149,15 +145,14 @@ public class FileChannelManagerTest {
     }
 
     @Test
-    public void testSinglePut() throws FileParsingException, FileReadingException, IOException, KeeperException,
-                               InterruptedException {
-        Body expectedBody = new Body();
-        Body.Edit e1 = new Body.Edit();
+    public void testSinglePut() throws Exception {
+        SerBody expectedBody = new SerBody();
+        SerBody.Edit e1 = new SerBody.Edit();
         e1.setFamily(Bytes.toBytes("cf"));
         e1.setQualifier(Bytes.toBytes("q"));
         e1.setRowKey(Bytes.toBytes("FCM_SP_1"));
         e1.setTimeStamp(DEFAULT_TIMESTAMP);
-        e1.setType(Body.Type.Put);
+        e1.setType(SerBody.Type.Put);
         e1.setValue(Bytes.toBytes("FCM_SP_1_VALUE"));
         expectedBody.addEdit(TABLE, e1);
 //        MetaData expMeta = new Version1(mockHead, expectedBody);

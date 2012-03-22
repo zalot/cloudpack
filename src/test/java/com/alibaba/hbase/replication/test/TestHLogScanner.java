@@ -24,6 +24,10 @@ import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
+/**
+ * 类TestHLogScanner.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 22, 2012 1:50:42 PM
+ */
 public class TestHLogScanner extends BaseReplicationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestHLogScanner.class);

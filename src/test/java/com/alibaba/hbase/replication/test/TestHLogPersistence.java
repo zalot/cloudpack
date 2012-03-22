@@ -12,6 +12,10 @@ import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
+/**
+ * 类TestHLogPersistence.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 22, 2012 1:50:48 PM
+ */
 public class TestHLogPersistence extends BaseReplicationTest {
 
     @BeforeClass

@@ -14,6 +14,10 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.junit.BeforeClass;
 
+/**
+ * 类TestHBaseReplicationSink.java的实现描述：TODO 类实现描述 
+ * @author zalot.zhaoh Mar 22, 2012 1:50:52 PM
+ */
 public class TestHBaseReplicationSink {
 
     protected static final ThreadPoolExecutor   threadPool        = new ThreadPoolExecutor(
