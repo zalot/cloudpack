@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <configuration>
+	<!-- base -->
 	<property>
 		<name>fs.default.name</name>
 		<value>${replication_producer_fs}</value>
@@ -9,31 +10,6 @@
 		<name>com.alibaba.hbase.replication.producer.hbase.rootdir</name>
 		<value>${replication_producer_hbase_rootdir}</value>
 		<description>根路径</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.producer.fs</name>
-		<value>${replication_producer_fs}${replication_producer_fs_root}</value>
-		<description>同步生产端的filesystem位置</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.tmpfile.targetPath</name>
-		<value>${replication_tmpfile_targetPath}</value>
-		<description>待处理的中间文件存放位置</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.tmpfile.oldPath</name>
-		<value>${replication_tmpfile_oldPath}</value>
-		<description>已处理的中间文件存放位置</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.tmpfile.rejectPath</name>
-		<value>${replication_tmpfile_rejectPath}</value>
-		<description>退回的中间文件存放位置（需要producer端重做）</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.tmpfile.tmpPath</name>
-		<value>${replication_tmpfile_tmpPath}</value>
-		<description>tmp文件存放位置</description>
 	</property>
 	<property>
 		<name>hbase.zookeeper.quorum</name>
@@ -54,10 +30,6 @@
 		<description>根路径</description>
 	</property>
 	<!-- Thread Lock -->
-	<property>
-		<name>com.alibaba.hbase.replication.producer.zoo.lock.root</name>
-		<value>${replication_producer_zoo_lock_root}</value>
-	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.producer.zoo.lock.scan.sleeptime</name>
 		<value>${replication_producer_zoo_lock_scan_sleeptime}</value>
@@ -101,9 +73,5 @@
 	<property>
 		<name>com.alibaba.hbase.replication.producer.threadpool.keepAliveTime</name>
 		<value>${replication_producer_hlog_sleeptime}</value>
-	</property>
-	<property>
-		<name>dfs.permissions</name>
-		<value>false</value>
 	</property>
 </configuration>

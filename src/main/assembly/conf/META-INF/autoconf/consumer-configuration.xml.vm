@@ -6,35 +6,10 @@
 		<description>根路径</description>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.producer.fs</name>
-		<value>${replication_producer_fs}${replication_producer_fs_root}</value>
-		<description>同步生产端的filesystem位置</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.tmpfile.targetPath</name>
-		<value>${replication_tmpfile_targetPath}</value>
-		<description>待处理的中间文件存放位置</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.tmpfile.oldPath</name>
-		<value>${replication_tmpfile_oldPath}</value>
-		<description>已处理的中间文件存放位置</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.tmpfile.rejectPath</name>
-		<value>${replication_tmpfile_rejectPath}</value>
-		<description>退回的中间文件存放位置（需要producer端重做）</description>
-	</property>
-	<property>
-		<name>com.alibaba.hbase.replication.tmpfile.tmpPath</name>
-		<value>${replication_tmpfile_tmpPath}</value>
-		<description>tmp文件存放位置</description>
-	</property>
-	<property>
 		<name>hbase.zookeeper.quorum</name>
 		<value>${replication_consumer_zookeeper_quorum}</value>
 	</property>
-		<property>
+	<property>
 		<name>hbase.zookeeper.property.clientPort</name>
 		<value>${replication_consumer_zookeeper_quorum_port}</value>
 	</property>
@@ -61,9 +36,5 @@
 	<property>
 		<name>com.alibaba.hbase.replication.consumer.threadpool.keepAliveTime</name>
 		<value>${replication_consumer_threadpool_keepAliveTime}</value>
-	</property>
-	<property>
-		<name>dfs.permissions</name>
-		<value>false</value>
 	</property>
 </configuration>

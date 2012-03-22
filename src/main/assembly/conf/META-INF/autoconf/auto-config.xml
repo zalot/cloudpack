@@ -9,21 +9,6 @@
 			description="应用服务器端口" />
 	</group>
 
-	<group name="configuration">
-		<property name="replication.producer.fs" defaultValue="hdfs://localhost/"
-			description="同步生产端的filesystem位置" />
-		<property name="replication.producer.fs.root" defaultValue="replication/"
-			description="同步生产端的filesystem位置" />
-		<property name="replication.tmpfile.targetPath" defaultValue="target/"
-			description="待处理的中间文件存放位置" />
-		<property name="replication.tmpfile.oldPath" defaultValue="old/"
-			description="已处理的中间文件存放位置" />
-		<property name="replication.tmpfile.rejectPath" defaultValue="reject/"
-			description="退回的中间文件存放位置（需要producer端重做）" />
-		<property name="replication.tmpfile.tmpPath" defaultValue="tmp/"
-			description="tmp文件存放位置" />
-	</group>
-
 	<group name="consumer">
 		<property name="replication.consumer.zookeeper.quorum"
 			defaultValue="localhost" description="hbase.zookeeper.quorum" />
@@ -43,18 +28,44 @@
 			defaultValue="100" description="线程池空闲线程keepAliveTime" />
 	</group>
 
+	<group name="common-protocol">
+		<!-- protocol adapter base -->
+		<property name="replication.protocol.version" defaultValue="1"
+			description="protocol version" />
+		<property name="replication.protocol.class"
+			defaultValue="com.alibaba.hbase.replication.protocol.HDFSFileAdapter"
+			description="protocol class" />
+		<!-- ************************* dfs adapter ************************* -->
+		<property name="replication.protocol.adapter.hdfs.fs"
+			defaultValue="hdfs://localhost/" description="dfs adapter conf" />
+		<property name="replication.protocol.adapter.hdfs.dir.root"
+			defaultValue="replication/" description="同步生产端的filesystem位置" />
+		<property name="replication.protocol.adapter.hdfs.dir.targetpath"
+			defaultValue="target/" description="待处理的中间文件存放位置" />
+		<property name="replication.protocol.adapter.hdfs.dir.oldpath"
+			defaultValue="old/" description="已处理的中间文件存放位置" />
+		<property name="replication.protocol.adapter.hdfs.dir.rejectpath"
+			defaultValue="reject/" description="退回的中间文件存放位置（需要producer端重做）" />
+		<!-- ************************* end dfs adapter ************************* -->
+	</group>
+
+	<group name="common-conf">
+		<property name="replication.zookeeper.lock.root"
+			defaultValue="/alireplock" description="扫描根锁：有很多子锁可以建立在这个上面" />
+	</group>
+
 	<group name="producer">
-		<!-- 基本信息配置 -->
+		<property name="replication.producer.fs" defaultValue="hdfs://localhost/"
+			description="同步生产端的filesystem位置" />
 		<property name="replication.producer.hbase.rootdir"
 			defaultValue="/hbase" description="hbase.rootdir" />
+		<!-- 基本信息配置 -->
 		<property name="replication.producer.zookeeper.quorum"
 			defaultValue="localhost" description="hbase.zookeeper.quorum" />
 		<property name="replication.producer.zookeeper.quorum.port"
 			defaultValue="2181" description="hbase.zookeeper.quorum.port" />
 		<property name="replication.producer.zoo.root" defaultValue="/producer"
 			description="断点保留位置" />
-		<property name="replication.producer.zoo.lock.root"
-			defaultValue="/alireplock" description="扫描根锁：有很多子锁可以建立在这个上面" />
 
 		<!-- 线程池启动器配置 -->
 		<property name="replication.producer.scannerPoolSize"
@@ -117,6 +128,8 @@
 		<generate template="consumer-configuration.xml.vm" destfile="conf/META-INF/consumer-configuration.xml"
 			charset="UTF-8" />
 		<generate template="producer-configuration.xml.vm" destfile="conf/META-INF/producer-configuration.xml"
+			charset="UTF-8" />
+		<generate template="common-configuration.xml.vm" destfile="conf/META-INF/common-configuration.xml"
 			charset="UTF-8" />
 		<generate template="log4j.xml.vm" destfile="conf/log4j.xml"
 			charset="UTF-8" />

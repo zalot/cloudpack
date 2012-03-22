@@ -16,21 +16,27 @@
 
 	<property>
 		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.root</name>
-		<value>${replication_protocol_adapter_hdfs_fs_root}</value>
+		<value>${replication_protocol_adapter_hdfs_dir_root}</value>
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.targetpath</name>
-		<value>${replication_protocol_adapter_hdfs_fs_targetpath}</value>
+		<value>${replication_protocol_adapter_hdfs_dir_targetpath}</value>
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.oldpath</name>
-		<value>${replication_protocol_adapter_hdfs_fs_oldpath}</value>
+		<value>${replication_protocol_adapter_hdfs_dir_oldpath}</value>
 	</property>
 	<property>
 		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.rejectpath</name>
-		<value>${replication_protocol_adapter_hdfs_fs_rejectpath}</value>
+		<value>${replication_protocol_adapter_hdfs_dir_rejectpath}</value>
 	</property>
 	<!-- protocol end -->
+	
+	<property>
+		<name>com.alibaba.hbase.replication.zoo.lock.root</name>
+		<value>${replication_producer_zoo_lock_root}</value>
+	</property>
+	
 	<property>
 		<name>dfs.permissions</name>
 		<value>false</value>
