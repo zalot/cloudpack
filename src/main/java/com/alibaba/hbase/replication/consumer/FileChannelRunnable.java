@@ -10,7 +10,6 @@ package com.alibaba.hbase.replication.consumer;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
@@ -38,43 +38,145 @@ import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
-import com.alibaba.hbase.replication.utility.ProducerConstants;
-import com.alibaba.hbase.replication.zookeeper.ZookeeperLock;
-import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
+import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类
  * 
  * @author dongsh 2012-2-29 下午03:42:49
  */
-public class FileChannelRunnable extends ZookeeperSingleLockThread {
+public class FileChannelRunnable implements Runnable {
 
-    protected static final Log       LOG           = LogFactory.getLog(FileChannelRunnable.class);
+    protected static final Log     LOG           = LogFactory.getLog(FileChannelRunnable.class);
 
-    protected Configuration          conf;
-    protected FileSystem             fs;
-    protected String                 name          = ConsumerConstants.CHANNEL_NAME
-                                                     + UUID.randomUUID().toString().substring(0, 8);
-    protected DataLoadingManager     dataLoadingManager;
-    protected DefaultHDFSFileAdapter fileAdapter;
-    protected List<ConsumerZNode>    errorNodeList = new ArrayList<ConsumerZNode>();
-    protected AtomicBoolean          stopflag;
+    protected RecoverableZooKeeper zoo;
+    
+    public RecoverableZooKeeper getZoo() {
+        return zoo;
+    }
 
-    public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager,
-                               DefaultHDFSFileAdapter fileAdapter, AtomicBoolean stopflag) throws IOException{
+    
+    public void setZoo(RecoverableZooKeeper zoo) {
+        this.zoo = zoo;
+    }
+
+    
+    public FileSystem getFs() {
+        return fs;
+    }
+
+    
+    public void setFs(FileSystem fs) {
+        this.fs = fs;
+    }
+
+    protected Configuration        conf;
+    protected FileSystem           fs;
+    protected String               name          = ConsumerConstants.CHANNEL_NAME
+                                                   + UUID.randomUUID().toString().substring(0, 8);
+    protected DataLoadingManager   dataLoadingManager;
+    protected DefaultHDFSFileAdapter          fileAdapter;
+    protected List<ConsumerZNode>  errorNodeList = new ArrayList<ConsumerZNode>();
+    protected AtomicBoolean        stopflag;
+
+    public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager, DefaultHDFSFileAdapter fileAdapter,
+                               AtomicBoolean stopflag) throws IOException{
         this.fileAdapter = fileAdapter;
         this.conf = conf;
         this.stopflag = stopflag;
         this.dataLoadingManager = dataLoadingManager;
-        // 注意：fs上的操作非线程安全，需要每线程一个
-        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
-        
-        ZookeeperLock lock = new ZookeeperLock();
-        lock.setBasePath(conf.get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT, ProducerConstants.ZOO_LOCK_ROOT));
-        lock.setLockPath("/consumer");
-        lock.setSleepTime(100);
-        lock.setTryLockTime(10000);
-        this.setLock(lock);
+    }
+
+    @Override
+    public void run() {
+        while (!stopflag.get()) {
+            ConsumerZNode currentNode = tryToMakeACurrentNode();
+            if (currentNode != null) {
+                Head fileHead = DefaultHDFSFileAdapter.validataFileName(currentNode.getFileName());
+                if (fileHead == null) {
+                    if (LOG.isErrorEnabled()) {
+                        LOG.error("validataFileName fail. fileName: " + currentNode.getFileName());
+                    }
+                } else {
+                    MetaData metaData = null;
+                    try {
+                        // TODO: ERROR 操作失败 资源容易出问题
+                        metaData = fileAdapter.read(fileHead, fs);
+                    } catch (FileReadingException e) {
+                        // 文件不存在、文件读取失败 => 跳过
+//                        if (LOG.isWarnEnabled()) {
+//                            LOG.warn(e);
+//                        }
+                        //TODO : 
+                    } catch (FileParsingException e) {
+                        // 文件解析出错,退回重做
+                        if (LOG.isErrorEnabled()) {
+                            LOG.error("error while parsing file: " + currentNode.getFileName(), e);
+                        }
+                        try {
+                            fileAdapter.reject(fileHead, fs);
+                            errorNodeList.add(currentNode);
+                        } catch (Exception e1) {
+                            // 文件退回出错，只能重做了
+                            if (LOG.isErrorEnabled()) {
+                                LOG.error("reject file failed. file name" + currentNode.getFileName(), e);
+                            }
+                            String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
+                                               + currentNode.getGroupName();
+                            String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
+                            try {
+                                // 清除zk上对此group的加锁
+                                zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
+                            } catch (Exception e2) {
+                                if (LOG.isWarnEnabled()) {
+                                    LOG.warn("error while deleting cur from zk . cur: " + cur, e);
+                                }
+                            }
+                        }
+                        // 跳出此次循环，尝试获取下一个consumerNode
+                        continue;
+                    }
+                    if (metaData != null && metaData.getBody() != null
+                        && MapUtils.isNotEmpty(metaData.getBody().getEditMap())) {
+                        // 对于能够解析出body数据的进行加载
+                        Map<String, List<Edit>> editMap = metaData.getBody().getEditMap();
+                        for (String tableName : editMap.keySet()) {
+                            // 按表并发加载数据
+                            dataLoadingManager.batchLoad(tableName, editMap.get(tableName));
+                        }
+                        // 执行完成后清除相关文件
+                        try {
+                            fileAdapter.clean(fileHead, fs);
+                        } catch (IOException e) {
+                            if (LOG.isWarnEnabled()) {
+                                LOG.warn("clean failed.", e);
+                            }
+                        }
+                    }
+                    // 清除zk上对此group的加锁
+                    String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
+                                       + currentNode.getGroupName();
+                    String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
+                    try {
+                        zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
+                    } catch (Exception e) {
+                        if (LOG.isWarnEnabled()) {
+                            LOG.warn("delete completed consumerNode failed.cur: " + cur, e);
+                        }
+                    }
+                }
+            } else {
+                // 没分配到任务的sleep再重试一段时间
+                try {
+                    Thread.sleep(ConsumerConstants.WAIT_MILLIS);
+                } catch (InterruptedException e) {
+                    if (LOG.isWarnEnabled()) {
+                        LOG.warn("wait Interrupted. Name: " + this.name, e);
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -88,8 +190,8 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
             ConsumerZNode orig = null;
             String retry = null;
             for (ConsumerZNode node : errorNodeList) {
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                   + ConsumerConstants.FILE_SEPERATOR + node.getGroupName();
+                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
+                                   + node.getGroupName();
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 try {
                     TreeSet<String> ftsSet = getQueueData(queue);
@@ -122,7 +224,7 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
         // 没有可重做的異常節點
         List<String> groupList = null;
         try {
-            groupList = getZooKeeper().getChildren(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
+            groupList = zoo.getChildren(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         } catch (Exception e) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn("no group found at zk. " + conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), e);
@@ -130,13 +232,12 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
         }
         if (CollectionUtils.isNotEmpty(groupList)) {
             for (String group : groupList) {
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                   + ConsumerConstants.FILE_SEPERATOR + group;
+                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR + group;
                 String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 Stat statZkCur;
                 try {
-                    statZkCur = getZooKeeper().exists(cur, false);
+                    statZkCur = zoo.exists(cur, false);
                 } catch (Exception e) {
                     if (LOG.isWarnEnabled()) {
                         LOG.warn("zk connection error while trying znode of cur: " + cur, e);
@@ -146,20 +247,18 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
                 if (statZkCur == null) {
                     // 此group未被处理过
                     try {
-                        getZooKeeper().create(cur, null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-                    } catch (Exception e) {
-                        if (LOG.isInfoEnabled()) {
-                            LOG.info("znode of cur create failed: " + cur, e);
-                        }
+                        zoo.create(cur, null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                    } catch (NodeExistsException e) {
                         continue;
+                    }  catch (Exception e){
+                        LOG.error("lock group error", e);
                     }
                     try {
-                        statZkCur = getZooKeeper().exists(cur, false);
+                        statZkCur = zoo.exists(cur, false);
                         TreeSet<String> ftsSet = getQueueData(queue);
                         if (CollectionUtils.isEmpty(ftsSet)) {
                             continue;
                         }
-                        // TODO: 需将 Head 获取 放在 ProtocolAdapter.listHead()
                         String fileName = ftsSet.first();
                         Head fileHead = DefaultHDFSFileAdapter.validataFileName(fileName);
                         if (fileHead == null && LOG.isErrorEnabled()) {
@@ -172,7 +271,7 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
                         tmpNode.setProcessorName(this.name);
                         tmpNode.setStatusLastModified(System.currentTimeMillis());
                         tmpNode.setVersion(statZkCur.getVersion());
-                        statZkCur = getZooKeeper().setData(cur, tmpNode.toByteArray(), statZkCur.getVersion());
+                        statZkCur = zoo.setData(cur, tmpNode.toByteArray(), statZkCur.getVersion());
                         tmpNode.setVersion(statZkCur.getVersion());
                         return tmpNode;
                     } catch (Exception e) {
@@ -180,7 +279,7 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
                             LOG.warn("error while creating znode of cur: " + cur, e);
                         }
                         try {
-                            getZooKeeper().delete(cur, ConsumerConstants.ZK_ANY_VERSION);
+                            zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
                         } catch (Exception e1) {
                             if (LOG.isErrorEnabled()) {
                                 LOG.error("error while deleting znode of cur: " + cur, e);
@@ -212,7 +311,7 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
 
     protected TreeSet<String> getQueueData(String queuePath) throws KeeperException, InterruptedException, IOException,
                                                             ClassNotFoundException {
-        byte[] data = getZooKeeper().getData(queuePath, null, null);
+        byte[] data = zoo.getData(queuePath, null, null);
         ByteArrayInputStream bi = new ByteArrayInputStream(data);
         ObjectInputStream oi = new ObjectInputStream(bi);
         Object ftsArray = oi.readObject();
@@ -242,94 +341,4 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
         return ftsSet;
     }
 
-    @Override
-    public void doRun() throws Exception {
-        doFile();
-    }
-
-    public void doFile() {
-        ConsumerZNode currentNode = tryToMakeACurrentNode();
-        if (currentNode != null) {
-            Head fileHead = DefaultHDFSFileAdapter.validataFileName(currentNode.getFileName());
-            if (fileHead == null) {
-                if (LOG.isErrorEnabled()) {
-                    LOG.error("validataFileName fail. fileName: " + currentNode.getFileName());
-                }
-            } else {
-                MetaData metaData = null;
-                try {
-                    metaData = fileAdapter.read(fileHead, fs);
-                } catch (FileReadingException e) {
-                    // 文件不存在、文件读取失败 => 跳过
-                    if (LOG.isWarnEnabled()) {
-                        LOG.warn(e);
-                    }
-                } catch (FileParsingException e) {
-                    // 文件解析出错,退回重做
-                    if (LOG.isErrorEnabled()) {
-                        LOG.error("error while parsing file: " + currentNode.getFileName(), e);
-                    }
-                    try {
-                        fileAdapter.reject(fileHead, fs);
-                        errorNodeList.add(currentNode);
-                    } catch (Exception e1) {
-                        // 文件退回出错，只能重做了
-                        if (LOG.isErrorEnabled()) {
-                            LOG.error("reject file failed. file name" + currentNode.getFileName(), e);
-                        }
-                        String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                           + ConsumerConstants.FILE_SEPERATOR + currentNode.getGroupName();
-                        String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
-                        try {
-                            // 清除zk上对此group的加锁
-                            getZooKeeper().delete(cur, ConsumerConstants.ZK_ANY_VERSION);
-                        } catch (Exception e2) {
-                            if (LOG.isWarnEnabled()) {
-                                LOG.warn("error while deleting cur from zk . cur: " + cur, e);
-                            }
-                        }
-                    }
-                    // 跳出此次循环，尝试获取下一个consumerNode
-                    return;
-                }
-                if (metaData != null && metaData.getBody() != null
-                    && MapUtils.isNotEmpty(metaData.getBody().getEditMap())) {
-                    // 对于能够解析出body数据的进行加载
-                    Map<String, List<Edit>> editMap = metaData.getBody().getEditMap();
-                    for (String tableName : editMap.keySet()) {
-                        // 按表并发加载数据
-                        dataLoadingManager.batchLoad(tableName, editMap.get(tableName));
-                    }
-                    // 执行完成后清除相关文件
-                    try {
-                        fileAdapter.clean(fileHead);
-                    } catch (Exception e) {
-                        if (LOG.isWarnEnabled()) {
-                            LOG.warn("clean failed.", e);
-                        }
-                    }
-                }
-                // 清除zk上对此group的加锁
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                   + ConsumerConstants.FILE_SEPERATOR + currentNode.getGroupName();
-                String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
-                try {
-                    getZooKeeper().delete(cur, ConsumerConstants.ZK_ANY_VERSION);
-                } catch (Exception e) {
-                    if (LOG.isWarnEnabled()) {
-                        LOG.warn("delete completed consumerNode failed.cur: " + cur, e);
-                    }
-                }
-            }
-        } else {
-            // 没分配到任务的sleep再重试一段时间
-            try {
-                Thread.sleep(ConsumerConstants.WAIT_MILLIS);
-            } catch (InterruptedException e) {
-                if (LOG.isWarnEnabled()) {
-                    LOG.warn("wait Interrupted. Name: " + this.name, e);
-                }
-            }
-        }
-    }
 }

@@ -72,6 +72,7 @@ public class FileChannelManager {
             LOG.info("FileChannelManager is pendding to start.");
         }
         conf.addResource(ConsumerConstants.CONSUMER_CONFIG_FILE);
+        fileAdapter.init(conf);
         fileChannelPool = new ThreadPoolExecutor(
                                                  conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
                                                  conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
@@ -94,9 +95,12 @@ public class FileChannelManager {
     public void start() throws IOException {
         scanProducerFilesAndAddToZK();
         FileChannelRunnable runn;
+        dataLoadingManager.setConf(conf);
+        dataLoadingManager.init();
         for (int i = 1; i < conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10); i++) {
             runn = new FileChannelRunnable(conf, dataLoadingManager, fileAdapter, stopflag);
-            runn.setZooKeeper(zoo);
+            runn.setZoo(zoo);
+            runn.setFs(fs);
             fileChannelPool.execute(runn);
         }
         while (true) {
@@ -155,9 +159,6 @@ public class FileChannelManager {
                     fstMap.put(group, ftsSet);
                 }
                 ftsSet.add(fileName);
-            } else if (LOG.isWarnEnabled()) {
-                LOG.warn("Dir occurs in " + conf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH) + " .path: "
-                         + fst.getPath());
             }
         }
         // s2. update ZK

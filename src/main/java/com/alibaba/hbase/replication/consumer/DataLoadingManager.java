@@ -15,15 +15,12 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.hbase.replication.protocol.Body.Edit;
@@ -39,19 +36,25 @@ import com.alibaba.hbase.replication.utility.ConsumerConstants;
 public class DataLoadingManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataLoadingManager.class);
-    @Autowired
     protected ReplicationConf   conf;
-    protected HTablePool        pool;
-    protected int               batchSize;
 
-    @PostConstruct
-    public void start() {
+    public ReplicationConf getConf() {
+        return conf;
+    }
+
+    public void setConf(ReplicationConf conf) {
+        this.conf = conf;
+    }
+
+    protected HTablePool pool;
+    protected int        batchSize;
+
+    public void init() {
         if (LOG.isInfoEnabled()) {
             LOG.info("DataLoadingManager start.");
         }
         batchSize = conf.getInt(ConsumerConstants.CONFKEY_REP_DATA_LAODING_BATCH_SIZE, 1000);
-        Configuration hbaseConf = HBaseConfiguration.create(conf);
-        pool = new HTablePool(hbaseConf, conf.getInt(ConsumerConstants.CONFKEY_REP_DATA_LAODING_POOL_SIZE, 30));
+        pool = new HTablePool(conf, conf.getInt(ConsumerConstants.CONFKEY_REP_DATA_LAODING_POOL_SIZE, 30));
     }
 
     /**
