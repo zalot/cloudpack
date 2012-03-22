@@ -84,9 +84,7 @@ public class FileChannelManagerTest {
         mockHead.setEndOffset(30001);
         mockHead.setFileTimestamp(DEFAULT_TIMESTAMP);
         mockHead.setGroupName("FileChannelManagerTest-A");
-        mockHead.setHeadTimestamp(DEFAULT_TIMESTAMP);
         mockHead.setStartOffset(1);
-        mockHead.setVersion(1);
         // 清理待处理文件
         FileSystem fs = FileSystem.get(URI.create(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)),
                                        consumerConf);
