@@ -69,6 +69,7 @@ public class ProducerConstants {
     // -----------------------------------------
     public static String       ZOO_LOCK_SCAN                          = "/lockscan";
     public static String       ZOO_LOCK_REJECT_SCAN                   = "/lockrejectscan";
+    public static String       ZOO_LOCK_CRUSH_SCAN                   = "/lockcrushscan";
     public static String       ZOO_PERSISTENCE_HLOG_GROUP             = "/aligroups";
     public static String       ZOO_PERSISTENCE_HLOG_GROUP_LOCK        = "/aliglock";
 
