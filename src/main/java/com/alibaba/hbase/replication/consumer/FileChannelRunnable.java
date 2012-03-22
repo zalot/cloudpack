@@ -31,7 +31,7 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import com.alibaba.hbase.replication.protocol.Body1;
+import com.alibaba.hbase.replication.protocol.ProtocolBodyV1;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.MetaData;
@@ -142,8 +142,8 @@ public class FileChannelRunnable implements Runnable {
                         continue;
                     }
                     if (metaData != null && metaData.getBody() != null) {
-                        if (metaData.getBody() instanceof Body1) {
-                            Body1 body = (Body1) metaData.getBody();
+                        if (metaData.getBody() instanceof ProtocolBodyV1) {
+                            ProtocolBodyV1 body = (ProtocolBodyV1) metaData.getBody();
                             if (MapUtils.isNotEmpty(body.getEditMap())) {
                                 // 对于能够解析出body数据的进行加载
                                 Map<String, List<Edit>> editMap = body.getEditMap();
