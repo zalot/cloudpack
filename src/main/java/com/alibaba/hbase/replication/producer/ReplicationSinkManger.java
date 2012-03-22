@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
+import com.alibaba.hbase.replication.producer.crossidc.HReplicationCrushScanner;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
@@ -87,6 +88,19 @@ public class ReplicationSinkManger {
                                                                                                  conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                                              100)));
 
+        ThreadPoolExecutor crushPool = new ThreadPoolExecutor(
+                                                                conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                                            ProducerConstants.REP_REJECT_POOL_SIZE),
+                                                                conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                                            ProducerConstants.REP_REJECT_POOL_SIZE),
+                                                                conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
+                                                                            100),
+                                                                TimeUnit.SECONDS,
+                                                                new ArrayBlockingQueue<Runnable>(
+                                                                                                 conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                                                                             100)));
+
+        
         HLogGroupZookeeperScanner scan;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
                                         ProducerConstants.REP_SCANNER_POOL_SIZE); i++) {
@@ -105,6 +119,15 @@ public class ReplicationSinkManger {
             recover.setHlogService(hlogService);
             recover.setAdapter(adapter);
             recoverPool.execute(recover);
+        }
+        
+        HReplicationCrushScanner crush;
+        for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                        ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
+            crush = new HReplicationCrushScanner(conf);
+            crush.setZooKeeper(zookeeper);
+            crush.setAdapter(adapter);
+            crushPool.execute(crush);
         }
 
         HReplicationProducer producer;
