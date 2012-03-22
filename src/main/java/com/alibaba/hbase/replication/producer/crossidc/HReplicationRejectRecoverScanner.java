@@ -14,7 +14,6 @@ import com.alibaba.hbase.replication.protocol.Body;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
-import com.alibaba.hbase.replication.protocol.protobuf.SerBody;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.zookeeper.ZookeeperLock;
