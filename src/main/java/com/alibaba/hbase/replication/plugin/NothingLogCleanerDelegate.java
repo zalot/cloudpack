@@ -5,8 +5,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.master.LogCleanerDelegate;
 
 /**
- * 日志清理策略
- * 
+ * 日志清理策略<BR>
+ * 主要是 HBase 的 plugin <BR>
  * @author zalot.zhaoh
  *
  */
