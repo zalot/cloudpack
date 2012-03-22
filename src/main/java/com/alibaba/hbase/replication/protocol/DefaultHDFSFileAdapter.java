@@ -114,6 +114,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(oldPath, head2FileName(head)));
         fs.rename(new Path(digestPath, head2MD5FileName(head)),
                   new Path(oldPath, head2MD5FileName(head)));
+        if (LOG.isInfoEnabled()) LOG.info("doAdapter Over - > " + head);
     }
 
     private void consumer_check() {
@@ -338,7 +339,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         try {
             // write tmpFile
             String fileName = head2FileName(data.getHead());
-            byte[] bodyBytes = data.getBodyData();
+            byte[] bodyBytes = data.getBody().getBodyData();
             Path targetTmpFilePath = new Path(targetTmpPath, fileName);
             targetOutput = fs.create(targetTmpFilePath, true);
             targetOutput.write(bodyBytes);
@@ -362,6 +363,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
             if (!fs.rename(tmpMD5Path, sourceMd5FilePath)) {
                 throw new RuntimeException(targetTmpPath + " rename to " + sourceFilePath);
             }
+            if (LOG.isInfoEnabled()) LOG.info("doAdapter - > " + data.getHead());
         } finally {
             if (targetOutput != null) {
                 try {
@@ -394,5 +396,7 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
         for (FileStatus fst : fs.listStatus(oldPath)) {
             fs.delete(fst.getPath(), true);
         }
+        if(LOG.isInfoEnabled())
+            LOG.info(" -------- crush ----------");
     }
 }

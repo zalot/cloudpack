@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import com.alibaba.hbase.replication.protocol.Body;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -24,17 +23,17 @@ public class BodySerializingHandler {
 
     // private static Logger LOG = LoggerFactory.getLogger(BodySerializingHandler.class);
 
-    public static Body deserialize(byte[] in) throws InvalidProtocolBufferException {
+    public static SerBody deserialize(byte[] in) throws InvalidProtocolBufferException {
         BodyBinObject.bodyBinObject bodyBinObject = BodyBinObject.bodyBinObject.parseFrom(in);
-        Body body = new Body();
+        SerBody body = new SerBody();
         List<BodyBinObject.tableBinObject> tableBinObjectList = bodyBinObject.getTableBinObjectListList();
         if (CollectionUtils.isNotEmpty(tableBinObjectList)) {
             for (BodyBinObject.tableBinObject tableBinObject : tableBinObjectList) {
                 String tableName = tableBinObject.getTableName();
                 List<BodyBinObject.editBinObject> editBinObjectList = tableBinObject.getEditBinObjectListList();
                 for (BodyBinObject.editBinObject editBinObject : editBinObjectList) {
-                    Body.Edit edit = new Body.Edit();
-                    edit.setType(Body.Type.valueOfCode(editBinObject.getType()));
+                    SerBody.Edit edit = new SerBody.Edit();
+                    edit.setType(SerBody.Type.valueOfCode(editBinObject.getType()));
                     edit.setFamily(editBinObject.getFamily().toByteArray());
                     edit.setQualifier(editBinObject.getQualifier().toByteArray());
                     edit.setValue(editBinObject.getValue().toByteArray());
@@ -46,13 +45,13 @@ public class BodySerializingHandler {
         return body;
     }
 
-    public static byte[] serialize(Body body) {
+    public static byte[] serialize(SerBody body) {
         // FIXME NPE
         BodyBinObject.bodyBinObject.Builder bodyBinObject = BodyBinObject.bodyBinObject.newBuilder();
         for (String tableName : body.getEditMap().keySet()) {
             BodyBinObject.tableBinObject.Builder tableBinObject = BodyBinObject.tableBinObject.newBuilder();
             tableBinObject.setTableName(tableName);
-            for (Body.Edit edit : body.getEditMap().get(tableName)) {
+            for (SerBody.Edit edit : body.getEditMap().get(tableName)) {
                 BodyBinObject.editBinObject.Builder editBinObject = BodyBinObject.editBinObject.newBuilder();
                 editBinObject.setType(edit.getType().getCode());
                 editBinObject.setFamily(ByteString.copyFrom(edit.getFamily()));

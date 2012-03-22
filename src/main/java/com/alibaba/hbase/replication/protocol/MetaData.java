@@ -11,67 +11,66 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author zalot.zhaoh Mar 19, 2012 11:51:21 AM
  */
-public abstract class MetaData {
+public class MetaData {
 
-    protected static final Log    LOG                 = LogFactory.getLog(MetaData.class);
-    protected static final String DEFAULT_CLASS_SUFIX = "com.alibaba.hbase.replication.protocol.Version";
-    protected static final Class  DEFAULT_CLASS       = com.alibaba.hbase.replication.protocol.Version1.class;
-    protected Head                _head;
-    protected Body                _body;
+    protected static final Log                   LOG                              = LogFactory.getLog(MetaData.class);
+    protected static final String                DEFAULT_BODYPROTOCOL_CLASS_SUFIX = "com.alibaba.hbase.replication.protocol.Body";
+    protected static final Class<? extends Body> DEFAULT_BODYPROTOCOL_CLASS       = Body1.class;
+    protected Head                               _head;
+    protected Body                               _body;
 
-    public abstract Head getHead();
+    public Head getHead() {
+        return _head;
+    }
 
-    public abstract Body getBody();
+    public Body getBody() {
+        return _body;
+    }
 
-    public abstract byte[] getBodyData() throws Exception;
-
-    public abstract void setBodyData(byte[] data) throws Exception;
-
-    public abstract void setBody(Body body) throws Exception;
-
-    public MetaData(){
+    public void setBody(Body body) {
+        this._body = body;
     }
 
     public void setHead(Head head) {
         this._head = head;
     }
 
-    protected static Map<String, Class<? extends MetaData>> clazzes = new ConcurrentHashMap<String, Class<? extends MetaData>>();
+    protected static Map<String, Class<? extends Body>> clazzes = new ConcurrentHashMap<String, Class<? extends Body>>();
 
-    public static Class<? extends MetaData> getClass(Head head) {
-        Class<? extends MetaData> clazz = null;
+    public static Class<? extends Body> getBodyClass(Head head) {
+        Class<? extends Body> clazz = null;
         try {
-            String versionClass = DEFAULT_CLASS_SUFIX + head.getVersion();
+            String versionClass = DEFAULT_BODYPROTOCOL_CLASS_SUFIX + head.getVersion();
             clazz = clazzes.get(versionClass);
             if (clazz == null) {
-                clazz = (Class<? extends MetaData>) Class.forName(versionClass);
+                clazz = (Class<? extends Body>) Class.forName(versionClass);
                 clazzes.put(versionClass, clazz);
             }
         } catch (Exception e) {
-            clazz = DEFAULT_CLASS;
+            clazz = DEFAULT_BODYPROTOCOL_CLASS;
         }
         return clazz;
     }
 
+    public static Body getDefaultBody() {
+        return new Body1();
+    }
+
     public static MetaData getMetaData(Head head, Body body) {
-        MetaData minData;
-        try {
-            minData = getClass(head).newInstance();
-            minData.setHead(head);
-            minData.setBody(body);
-            return minData;
-        } catch (Exception e) {
-            LOG.error("meta", e);
-        }
-        return null;
+        MetaData minData = new MetaData();
+        minData.setHead(head);
+        minData.setBody(body);
+        return minData;
     }
 
     public static MetaData getMetaData(Head head, byte[] bodyData) {
-        MetaData minData;
+        MetaData minData = new MetaData();
+        Body body;
         try {
-            minData = getClass(head).newInstance();
+            body = getBodyClass(head).newInstance();
+            body.setBodyData(bodyData);
             minData.setHead(head);
-            minData.setBodyData(bodyData);
+            minData.setBody(body);
             return minData;
         } catch (Exception e) {
             LOG.error("meta", e);
