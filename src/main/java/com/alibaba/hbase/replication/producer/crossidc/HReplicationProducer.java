@@ -101,7 +101,7 @@ public class HReplicationProducer implements Runnable {
                 try {
                     ent = reader.next();
                 } catch (OutOfMemoryError e) {
-                    entry.setPos(reader.getPosition());
+                    entry.setPos(entry.getLastVerifiedPos());
                     hlogEntryPersistence.updateEntry(entry);
                     return;
                 } catch (Exception e) {
