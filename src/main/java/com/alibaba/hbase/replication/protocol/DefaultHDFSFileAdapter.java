@@ -6,8 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -183,7 +181,21 @@ public class DefaultHDFSFileAdapter implements ProtocolAdapter {
 
     @Override
     public List<Head> listHead() throws Exception {
-        return null;
+        List<Head> heads = new ArrayList<Head>();
+        try {
+            FileStatus[] fss = fs.listStatus(targetPath);
+            Head head;
+            for (FileStatus fs : fss) {
+                head = validataFileName(fs.getPath().getName());
+                if (head != null) {
+                    heads.add(head);
+                } else {
+                    // TODO
+                }
+            }
+        } catch (Exception e) {
+        }
+        return heads;
     }
 
     @Override
