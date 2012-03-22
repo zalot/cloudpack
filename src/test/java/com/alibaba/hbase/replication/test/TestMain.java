@@ -7,7 +7,7 @@ import org.apache.hadoop.fs.Path;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
+import com.alibaba.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
@@ -36,7 +36,7 @@ public class TestMain extends BaseReplicationTest {
         HLogService service = new HLogService(conf1);
         RecoverableZooKeeper zk = ZKUtil.connect(conf1, new NothingZookeeperWatch());
 
-        HLogEntryZookeeperPersistence dao = new HLogEntryZookeeperPersistence(conf1, zk);
+        HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(conf1, zk);
         DefaultHDFSFileAdapter ad = new DefaultHDFSFileAdapter();
         ad.init(conf1);
 
@@ -68,7 +68,7 @@ public class TestMain extends BaseReplicationTest {
         HLogService service = new HLogService(conf1);
         RecoverableZooKeeper zookeeper = ZKUtil.connect(conf1, new NothingZookeeperWatch());
 
-        HLogEntryZookeeperPersistence dao = new HLogEntryZookeeperPersistence(conf1, zookeeper);
+        HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(conf1, zookeeper);
         dao.setZookeeper(zookeeper);
         
         DefaultHDFSFileAdapter adapter = new DefaultHDFSFileAdapter();

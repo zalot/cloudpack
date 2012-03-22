@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.hbase.replication.hlog.HLogEntryZookeeperPersistence;
+import com.alibaba.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
@@ -40,7 +40,7 @@ public class TestHLogScanner extends BaseReplicationTest {
         
         HLogGroupZookeeperScanner scan;
         RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        HLogEntryZookeeperPersistence dao1 = new HLogEntryZookeeperPersistence(conf1, zk1);
+        HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(conf1, zk1);
         dao1.setZookeeper(zk1);
         dao1.init(conf1);
 
@@ -74,17 +74,17 @@ public class TestHLogScanner extends BaseReplicationTest {
         final HLogGroupZookeeperScanner scan2;
 
         RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryZookeeperPersistence dao1 = new HLogEntryZookeeperPersistence(conf1 , zk1);
+        final HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(conf1 , zk1);
         dao1.setZookeeper(zk1);
         dao1.init(conf1);
 
         RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryZookeeperPersistence dao2 = new HLogEntryZookeeperPersistence(conf2, zk2);
+        final HLogEntryPoolZookeeperPersistence dao2 = new HLogEntryPoolZookeeperPersistence(conf2, zk2);
         dao2.setZookeeper(zk2);
         dao2.init(conf1);
 
         RecoverableZooKeeper zk3 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        HLogEntryZookeeperPersistence dao3 = new HLogEntryZookeeperPersistence(conf1 , zk3);
+        HLogEntryPoolZookeeperPersistence dao3 = new HLogEntryPoolZookeeperPersistence(conf1 , zk3);
         dao3.setZookeeper(zk3);
         dao3.init(conf1);
 
