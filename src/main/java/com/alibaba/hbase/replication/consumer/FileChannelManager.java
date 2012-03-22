@@ -19,7 +19,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.collections.MapUtils;
@@ -47,6 +46,13 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 类Manager.java的实现描述：持有consumer端的中间文件同步线程池
  * 
  * @author dongsh 2012-2-28 上午11:17:17
+ * 
+ * @author zalot.zhaoh 
+ * ------------------------------------------
+ * 1.取消了部分注入，采用原始的 set方法, 以及init
+ * 2.修改了 MetaData 协议的使用方式，
+ * 3.后期将用 v2 代替 
+ * ------------------------------------------
  */
 @Service("fileChannelManager")
 public class FileChannelManager {
@@ -66,7 +72,6 @@ public class FileChannelManager {
     @Autowired
     protected DefaultHDFSFileAdapter fileAdapter;
 
-    @PostConstruct
     public void init() throws IOException, KeeperException, InterruptedException {
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager is pendding to start.");
@@ -92,7 +97,8 @@ public class FileChannelManager {
         }
     }
 
-    public void start() throws IOException {
+    public void start() throws Exception {
+        init();
         scanProducerFilesAndAddToZK();
         FileChannelRunnable runn;
         dataLoadingManager.setConf(conf);

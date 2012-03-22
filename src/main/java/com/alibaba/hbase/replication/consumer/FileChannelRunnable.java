@@ -31,12 +31,13 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import com.alibaba.hbase.replication.protocol.Body.Edit;
+import com.alibaba.hbase.replication.protocol.Body1;
 import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.Head;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
+import com.alibaba.hbase.replication.protocol.protobuf.SerBody.Edit;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
@@ -44,43 +45,47 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类
  * 
  * @author dongsh 2012-2-29 下午03:42:49
+ * 
+ * @author zalot.zhaoh 
+ * ------------------------------------------
+ * 1.取消了部分注入，采用原始的 set方法, 以及init
+ * 2.去掉了FileNofound的错误判断，因为资源的不正确设置会导致这个错误，但暂未有时间解决 v2 将会替换该类
+ * 3.此版本仅支持 Body1 Protocol 的支持
+ * ------------------------------------------
  */
 public class FileChannelRunnable implements Runnable {
 
-    protected static final Log     LOG           = LogFactory.getLog(FileChannelRunnable.class);
+    protected static final Log     LOG = LogFactory.getLog(FileChannelRunnable.class);
 
     protected RecoverableZooKeeper zoo;
-    
+
     public RecoverableZooKeeper getZoo() {
         return zoo;
     }
 
-    
     public void setZoo(RecoverableZooKeeper zoo) {
         this.zoo = zoo;
     }
 
-    
     public FileSystem getFs() {
         return fs;
     }
 
-    
     public void setFs(FileSystem fs) {
         this.fs = fs;
     }
 
-    protected Configuration        conf;
-    protected FileSystem           fs;
-    protected String               name          = ConsumerConstants.CHANNEL_NAME
-                                                   + UUID.randomUUID().toString().substring(0, 8);
-    protected DataLoadingManager   dataLoadingManager;
-    protected DefaultHDFSFileAdapter          fileAdapter;
-    protected List<ConsumerZNode>  errorNodeList = new ArrayList<ConsumerZNode>();
-    protected AtomicBoolean        stopflag;
+    protected Configuration          conf;
+    protected FileSystem             fs;
+    protected String                 name          = ConsumerConstants.CHANNEL_NAME
+                                                     + UUID.randomUUID().toString().substring(0, 8);
+    protected DataLoadingManager     dataLoadingManager;
+    protected DefaultHDFSFileAdapter fileAdapter;
+    protected List<ConsumerZNode>    errorNodeList = new ArrayList<ConsumerZNode>();
+    protected AtomicBoolean          stopflag;
 
-    public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager, DefaultHDFSFileAdapter fileAdapter,
-                               AtomicBoolean stopflag) throws IOException{
+    public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager,
+                               DefaultHDFSFileAdapter fileAdapter, AtomicBoolean stopflag) throws IOException{
         this.fileAdapter = fileAdapter;
         this.conf = conf;
         this.stopflag = stopflag;
@@ -104,10 +109,10 @@ public class FileChannelRunnable implements Runnable {
                         metaData = fileAdapter.read(fileHead, fs);
                     } catch (FileReadingException e) {
                         // 文件不存在、文件读取失败 => 跳过
-//                        if (LOG.isWarnEnabled()) {
-//                            LOG.warn(e);
-//                        }
-                        //TODO : 
+                        // if (LOG.isWarnEnabled()) {
+                        // LOG.warn(e);
+                        // }
+                        // TODO :
                     } catch (FileParsingException e) {
                         // 文件解析出错,退回重做
                         if (LOG.isErrorEnabled()) {
@@ -121,8 +126,8 @@ public class FileChannelRunnable implements Runnable {
                             if (LOG.isErrorEnabled()) {
                                 LOG.error("reject file failed. file name" + currentNode.getFileName(), e);
                             }
-                            String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
-                                               + currentNode.getGroupName();
+                            String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
+                                               + ConsumerConstants.FILE_SEPERATOR + currentNode.getGroupName();
                             String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                             try {
                                 // 清除zk上对此group的加锁
@@ -136,26 +141,30 @@ public class FileChannelRunnable implements Runnable {
                         // 跳出此次循环，尝试获取下一个consumerNode
                         continue;
                     }
-                    if (metaData != null && metaData.getBody() != null
-                        && MapUtils.isNotEmpty(metaData.getBody().getEditMap())) {
-                        // 对于能够解析出body数据的进行加载
-                        Map<String, List<Edit>> editMap = metaData.getBody().getEditMap();
-                        for (String tableName : editMap.keySet()) {
-                            // 按表并发加载数据
-                            dataLoadingManager.batchLoad(tableName, editMap.get(tableName));
-                        }
-                        // 执行完成后清除相关文件
-                        try {
-                            fileAdapter.clean(fileHead, fs);
-                        } catch (IOException e) {
-                            if (LOG.isWarnEnabled()) {
-                                LOG.warn("clean failed.", e);
+                    if (metaData != null && metaData.getBody() != null) {
+                        if (metaData.getBody() instanceof Body1) {
+                            Body1 body = (Body1) metaData.getBody();
+                            if (MapUtils.isNotEmpty(body.getEditMap())) {
+                                // 对于能够解析出body数据的进行加载
+                                Map<String, List<Edit>> editMap = body.getEditMap();
+                                for (String tableName : editMap.keySet()) {
+                                    // 按表并发加载数据
+                                    dataLoadingManager.batchLoad(tableName, editMap.get(tableName));
+                                }
+                                // 执行完成后清除相关文件
+                                try {
+                                    fileAdapter.clean(fileHead, fs);
+                                } catch (IOException e) {
+                                    if (LOG.isWarnEnabled()) {
+                                        LOG.warn("clean failed.", e);
+                                    }
+                                }
                             }
                         }
                     }
                     // 清除zk上对此group的加锁
-                    String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
-                                       + currentNode.getGroupName();
+                    String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
+                                       + ConsumerConstants.FILE_SEPERATOR + currentNode.getGroupName();
                     String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                     try {
                         zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
@@ -190,8 +199,8 @@ public class FileChannelRunnable implements Runnable {
             ConsumerZNode orig = null;
             String retry = null;
             for (ConsumerZNode node : errorNodeList) {
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR
-                                   + node.getGroupName();
+                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
+                                   + ConsumerConstants.FILE_SEPERATOR + node.getGroupName();
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 try {
                     TreeSet<String> ftsSet = getQueueData(queue);
@@ -232,7 +241,8 @@ public class FileChannelRunnable implements Runnable {
         }
         if (CollectionUtils.isNotEmpty(groupList)) {
             for (String group : groupList) {
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT) + ConsumerConstants.FILE_SEPERATOR + group;
+                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
+                                   + ConsumerConstants.FILE_SEPERATOR + group;
                 String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 Stat statZkCur;
@@ -250,7 +260,7 @@ public class FileChannelRunnable implements Runnable {
                         zoo.create(cur, null, Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
                     } catch (NodeExistsException e) {
                         continue;
-                    }  catch (Exception e){
+                    } catch (Exception e) {
                         LOG.error("lock group error", e);
                     }
                     try {

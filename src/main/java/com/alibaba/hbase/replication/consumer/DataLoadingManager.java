@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.hbase.replication.protocol.Body.Edit;
+import com.alibaba.hbase.replication.protocol.protobuf.SerBody.Edit;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
 
@@ -31,6 +31,11 @@ import com.alibaba.hbase.replication.utility.ConsumerConstants;
  * 类DataLoadingManager.java的实现描述：持有consumer端的HbaseClient加载数据线程池
  * 
  * @author dongsh 2012-2-28 下午04:09:01
+ * 
+ * @author zalot.zhaoh 
+ * ------------------------------------------
+ * 1.取消了部分注入，采用原始的 set方法, 以及init
+ * ------------------------------------------
  */
 @Service("dataLoadingManager")
 public class DataLoadingManager {
@@ -105,7 +110,16 @@ public class DataLoadingManager {
                     break;
             }
         }
-        HTableInterface table = pool.getTable(tableName);
+        HTableInterface table = null;
+        try {
+            table = pool.getTable(tableName);
+        } catch (Exception e) {
+            table = null;
+        }
+        if (table == null) {
+            return;
+        }
+
         for (int i = 0; i < puts.size(); i += batchSize) {
             try {
                 table.put(puts.subList(i, i + batchSize < puts.size() ? i + batchSize : puts.size()));
