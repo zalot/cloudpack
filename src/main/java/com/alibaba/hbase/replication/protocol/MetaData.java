@@ -15,7 +15,7 @@ public class MetaData {
 
     protected static final Log                   LOG                              = LogFactory.getLog(MetaData.class);
     protected static final String                DEFAULT_BODYPROTOCOL_CLASS_SUFIX = "com.alibaba.hbase.replication.protocol.Body";
-    protected static final Class<? extends ProtocolBody> DEFAULT_BODYPROTOCOL_CLASS       = Body1.class;
+    protected static final Class<? extends ProtocolBody> DEFAULT_BODYPROTOCOL_CLASS       = ProtocolBodyV1.class;
     protected ProtocolHead                               _head;
     protected ProtocolBody                               _body;
 
@@ -59,7 +59,7 @@ public class MetaData {
     }
     
     public static ProtocolBody getDefaultBody() {
-        return new Body1();
+        return new ProtocolBodyV1();
     }
 
     public static MetaData getMetaData(ProtocolHead head, ProtocolBody body) {
