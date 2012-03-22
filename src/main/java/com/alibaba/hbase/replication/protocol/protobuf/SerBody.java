@@ -7,8 +7,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.alibaba.hbase.replication.protocol.Body;
-
 /**
  * 类Body.java的实现描述：中间文件的文件体对象
  * 
