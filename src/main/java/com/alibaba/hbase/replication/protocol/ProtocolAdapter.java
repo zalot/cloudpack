@@ -30,11 +30,13 @@ public abstract class ProtocolAdapter {
 
     public abstract List<ProtocolHead> listHead() throws Exception;
 
+    public abstract void reject(ProtocolHead head) throws Exception ;
+
     public abstract void recover(MetaData data) throws Exception;
 
     public abstract void init(Configuration conf);
 
-    public abstract List<ProtocolHead> listRejectHead();
+    public abstract List<ProtocolHead> listRejectHead() throws Exception ;
 
     protected static ProtocolAdapter _adapter;
 

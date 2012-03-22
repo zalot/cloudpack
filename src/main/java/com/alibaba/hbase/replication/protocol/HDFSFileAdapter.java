@@ -297,7 +297,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
      * @param fs
      * @throws IOException
      */
-    public void reject(ProtocolHead head, FileSystem fs) throws IOException {
+    public void reject(ProtocolHead head) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(rejectPath, head2FileName(head)));
         fs.deleteOnExit(new Path(digestPath, head2MD5FileName(head)));
     }
