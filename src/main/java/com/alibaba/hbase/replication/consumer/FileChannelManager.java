@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
+import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
@@ -68,7 +69,7 @@ public class FileChannelManager {
 
     @Autowired
     protected DataLoadingManager   dataLoadingManager;
-    protected HDFSFileAdapter      fileAdapter;
+    protected ProtocolAdapter      adapter;
 
     public void init() throws IOException, KeeperException, InterruptedException {
         if (LOG.isInfoEnabled()) {
@@ -76,7 +77,8 @@ public class FileChannelManager {
         }
         conf.addResource(ConsumerConstants.COMMON_CONFIG_FILE);
         conf.addResource(ConsumerConstants.CONSUMER_CONFIG_FILE);
-        fileAdapter.init(conf);
+        adapter = ProtocolAdapter.getAdapter(conf);
+
         fileChannelPool = new ThreadPoolExecutor(
                                                  conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
                                                  conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
@@ -85,7 +87,9 @@ public class FileChannelManager {
                                                  new ArrayBlockingQueue<Runnable>(
                                                                                   conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                               100)));
-        fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
+        // 不合适的方法
+        // 请通过 ProtocolAdapter.listHead() 方法获取所有 Head 而不要直接操作 ProtocolAdapter 的内容
+        fs = FileSystem.get(URI.create(conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS)), conf);
         zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());
         Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         if (statZkRoot == null) {
@@ -104,9 +108,8 @@ public class FileChannelManager {
         dataLoadingManager.setConf(conf);
         dataLoadingManager.init();
         for (int i = 1; i < conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10); i++) {
-            runn = new FileChannelRunnable(conf, dataLoadingManager, fileAdapter, stopflag);
+            runn = new FileChannelRunnable(conf, dataLoadingManager, adapter, stopflag);
             runn.setZoo(zoo);
-            runn.setFs(fs);
             fileChannelPool.execute(runn);
         }
         while (true) {
@@ -144,7 +147,7 @@ public class FileChannelManager {
         // 不合适的方法
         // 请通过 ProtocolAdapter.listHead() 方法获取所有 Head 而不要直接操作 ProtocolAdapter 的内容
         Map<String, ArrayList<String>> fstMap = new HashMap<String, ArrayList<String>>();
-        Path targetPath = new Path(conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS),
+        Path targetPath = new Path(conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS_ROOT) +
                                    conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS_TARGETPATH));
         FileStatus[] fstList = fs.listStatus(targetPath);
         if (fstList == null || fstList.length < 1) {

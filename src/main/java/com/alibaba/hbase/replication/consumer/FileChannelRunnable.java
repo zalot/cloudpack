@@ -24,17 +24,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import com.alibaba.hbase.replication.protocol.ProtocolBodyV1;
 import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
-import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.MetaData;
+import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
+import com.alibaba.hbase.replication.protocol.ProtocolBodyV1;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.protocol.protobuf.SerBody.Edit;
@@ -67,25 +67,16 @@ public class FileChannelRunnable implements Runnable {
         this.zoo = zoo;
     }
 
-    public FileSystem getFs() {
-        return fs;
-    }
-
-    public void setFs(FileSystem fs) {
-        this.fs = fs;
-    }
-
     protected Configuration          conf;
-    protected FileSystem             fs;
     protected String                 name          = ConsumerConstants.CHANNEL_NAME
                                                      + UUID.randomUUID().toString().substring(0, 8);
     protected DataLoadingManager     dataLoadingManager;
-    protected HDFSFileAdapter fileAdapter;
+    protected ProtocolAdapter fileAdapter;
     protected List<ConsumerZNode>    errorNodeList = new ArrayList<ConsumerZNode>();
     protected AtomicBoolean          stopflag;
 
     public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager,
-                               HDFSFileAdapter fileAdapter, AtomicBoolean stopflag) throws IOException{
+                               ProtocolAdapter fileAdapter, AtomicBoolean stopflag) throws IOException{
         this.fileAdapter = fileAdapter;
         this.conf = conf;
         this.stopflag = stopflag;
@@ -106,7 +97,7 @@ public class FileChannelRunnable implements Runnable {
                     MetaData metaData = null;
                     try {
                         // TODO: ERROR 操作失败 资源容易出问题
-                        metaData = fileAdapter.read(fileHead, fs);
+                        metaData = fileAdapter.read(fileHead);
                     } catch (FileReadingException e) {
                         // 文件不存在、文件读取失败 => 跳过
                         // if (LOG.isWarnEnabled()) {
@@ -119,7 +110,7 @@ public class FileChannelRunnable implements Runnable {
                             LOG.error("error while parsing file: " + currentNode.getFileName(), e);
                         }
                         try {
-                            fileAdapter.reject(fileHead, fs);
+                            fileAdapter.reject(fileHead);
                             errorNodeList.add(currentNode);
                         } catch (Exception e1) {
                             // 文件退回出错，只能重做了
@@ -140,6 +131,10 @@ public class FileChannelRunnable implements Runnable {
                         }
                         // 跳出此次循环，尝试获取下一个consumerNode
                         continue;
+                    } catch (Exception e){
+                        LOG.error("file", e);
+                     // 跳出此次循环，尝试获取下一个consumerNode
+                        continue;
                     }
                     if (metaData != null && metaData.getBody() != null) {
                         if (metaData.getBody() instanceof ProtocolBodyV1) {
@@ -153,8 +148,8 @@ public class FileChannelRunnable implements Runnable {
                                 }
                                 // 执行完成后清除相关文件
                                 try {
-                                    fileAdapter.clean(fileHead, fs);
-                                } catch (IOException e) {
+                                    fileAdapter.clean(fileHead);
+                                } catch (Exception e) {
                                     if (LOG.isWarnEnabled()) {
                                         LOG.warn("clean failed.", e);
                                     }
