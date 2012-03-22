@@ -77,8 +77,7 @@ public class FileChannelManager {
                                                  conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
                                                  conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
                                                  TimeUnit.SECONDS,
-                                                 new ArrayBlockingQueue<Runnable>(
-                                                                                  conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                 new ArrayBlockingQueue<Runnable>(conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                               100)));
         fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
         zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());
@@ -94,8 +93,11 @@ public class FileChannelManager {
 
     public void start() throws IOException {
         scanProducerFilesAndAddToZK();
+        FileChannelRunnable runn;
         for (int i = 1; i < conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10); i++) {
-            fileChannelPool.execute(new FileChannelRunnable(conf, dataLoadingManager, fileAdapter, stopflag));
+            runn = new FileChannelRunnable(conf, dataLoadingManager, fileAdapter, stopflag);
+            runn.setZooKeeper(zoo);
+            fileChannelPool.execute(runn);
         }
         while (true) {
             try {

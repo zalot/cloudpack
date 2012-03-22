@@ -38,6 +38,8 @@ import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
+import com.alibaba.hbase.replication.zookeeper.ZookeeperLock;
 import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
 
 /**
@@ -66,6 +68,13 @@ public class FileChannelRunnable extends ZookeeperSingleLockThread {
         this.dataLoadingManager = dataLoadingManager;
         // 注意：fs上的操作非线程安全，需要每线程一个
         fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
+        
+        ZookeeperLock lock = new ZookeeperLock();
+        lock.setBasePath(conf.get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT, ProducerConstants.ZOO_LOCK_ROOT));
+        lock.setLockPath("/consumer");
+        lock.setSleepTime(100);
+        lock.setTryLockTime(10000);
+        this.setLock(lock);
     }
 
     /**
