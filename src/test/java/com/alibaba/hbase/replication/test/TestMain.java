@@ -12,7 +12,7 @@ import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
-import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
+import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
@@ -37,7 +37,7 @@ public class TestMain extends BaseReplicationTest {
         RecoverableZooKeeper zk = ZKUtil.connect(conf1, new NothingZookeeperWatch());
 
         HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(conf1, zk);
-        DefaultHDFSFileAdapter ad = new DefaultHDFSFileAdapter();
+        HDFSFileAdapter ad = new HDFSFileAdapter();
         ad.init(conf1);
 
         HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(conf1);
@@ -71,7 +71,7 @@ public class TestMain extends BaseReplicationTest {
         HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(conf1, zookeeper);
         dao.setZookeeper(zookeeper);
         
-        DefaultHDFSFileAdapter adapter = new DefaultHDFSFileAdapter();
+        HDFSFileAdapter adapter = new HDFSFileAdapter();
         adapter.init(conf1);
 
         HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(conf1);

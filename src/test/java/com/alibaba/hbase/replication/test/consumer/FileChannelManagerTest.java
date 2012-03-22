@@ -37,7 +37,7 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import com.alibaba.hbase.replication.consumer.FileChannelManager;
-import com.alibaba.hbase.replication.protocol.DefaultHDFSFileAdapter;
+import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
@@ -64,7 +64,7 @@ public class FileChannelManagerTest {
     // careful with your asm version!
     @Mock
     @InjectInto(target = "fileChannelManager", property = "fileAdapter")
-    private DefaultHDFSFileAdapter fileAdapter;
+    private HDFSFileAdapter fileAdapter;
 
     ProtocolHead                           mockHead          = new ProtocolHead();
 
@@ -98,7 +98,7 @@ public class FileChannelManagerTest {
         fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), oldPath));
         fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), rejectPath));
         fs.create(new Path(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath),
-                           DefaultHDFSFileAdapter.head2FileName(mockHead)), true);
+                           HDFSFileAdapter.head2FileName(mockHead)), true);
         // 清理zk的偏移量
         RecoverableZooKeeper zoo = ZKUtil.connect(consumerConf, new NothingZookeeperWatch());
         Stat statZkRoot = zoo.exists(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
