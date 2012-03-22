@@ -88,17 +88,17 @@ public class FileChannelManagerTest {
         // 清理待处理文件
         FileSystem fs = FileSystem.get(URI.create(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)),
                                        consumerConf);
-        String filePath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH);
-        String oldPath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH);
-        String rejectPath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH);
-        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath), true);
-        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), oldPath), true);
-        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), rejectPath), true);
-        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath));
-        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), oldPath));
-        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), rejectPath));
-        fs.create(new Path(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath),
-                           HDFSFileAdapter.head2FileName(mockHead)), true);
+//        String filePath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_TARGETPATH);
+//        String oldPath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_OLDPATH);
+//        String rejectPath = consumerConf.get(ConsumerConstants.CONFKEY_TMPFILE_REJECTPATH);
+//        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath), true);
+//        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), oldPath), true);
+//        fs.delete(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), rejectPath), true);
+//        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath));
+//        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), oldPath));
+//        fs.mkdirs(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), rejectPath));
+//        fs.create(new Path(new Path(consumerConf.get(ConsumerConstants.CONFKEY_PRODUCER_FS), filePath),
+//                           HDFSFileAdapter.head2FileName(mockHead)), true);
         // 清理zk的偏移量
         RecoverableZooKeeper zoo = ZKUtil.connect(consumerConf, new NothingZookeeperWatch());
         Stat statZkRoot = zoo.exists(consumerConf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);

@@ -39,13 +39,13 @@
 		<property name="replication.protocol.adapter.hdfs.fs"
 			defaultValue="hdfs://localhost/" description="dfs adapter conf" />
 		<property name="replication.protocol.adapter.hdfs.dir.root"
-			defaultValue="replication/" description="同步生产端的filesystem位置" />
+			defaultValue="/replication/" description="同步生产端的filesystem位置" />
 		<property name="replication.protocol.adapter.hdfs.dir.targetpath"
-			defaultValue="target/" description="待处理的中间文件存放位置" />
+			defaultValue="/target/" description="待处理的中间文件存放位置" />
 		<property name="replication.protocol.adapter.hdfs.dir.oldpath"
-			defaultValue="old/" description="已处理的中间文件存放位置" />
+			defaultValue="/old/" description="已处理的中间文件存放位置" />
 		<property name="replication.protocol.adapter.hdfs.dir.rejectpath"
-			defaultValue="reject/" description="退回的中间文件存放位置（需要producer端重做）" />
+			defaultValue="/reject/" description="退回的中间文件存放位置（需要producer端重做）" />
 		<!-- ************************* end dfs adapter ************************* -->
 	</group>
 

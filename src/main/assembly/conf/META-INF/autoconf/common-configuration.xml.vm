@@ -15,26 +15,26 @@
 	</property>
 
 	<property>
-		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.root</name>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.root</name>
 		<value>${replication_protocol_adapter_hdfs_dir_root}</value>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.targetpath</name>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.targetpath</name>
 		<value>${replication_protocol_adapter_hdfs_dir_targetpath}</value>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.oldpath</name>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.oldpath</name>
 		<value>${replication_protocol_adapter_hdfs_dir_oldpath}</value>
 	</property>
 	<property>
-		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.fs.rejectpath</name>
+		<name>com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.rejectpath</name>
 		<value>${replication_protocol_adapter_hdfs_dir_rejectpath}</value>
 	</property>
 	<!-- protocol end -->
 	
 	<property>
 		<name>com.alibaba.hbase.replication.zoo.lock.root</name>
-		<value>${replication_producer_zoo_lock_root}</value>
+		<value>${replication_zookeeper_lock_root}</value>
 	</property>
 	
 	<property>
