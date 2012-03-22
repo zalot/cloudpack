@@ -20,7 +20,6 @@ import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
-import com.alibaba.hbase.replication.utility.ConsumerConstants;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
@@ -41,6 +40,10 @@ public class ReplicationSinkManger {
         return conf;
     }
 
+    protected ThreadPoolExecutor replicationPool;
+    protected ThreadPoolExecutor recoverPool;
+    protected ThreadPoolExecutor scannerPool;
+
     public void start() throws Exception {
         conf.addResource(ProducerConstants.COMMON_CONFIG_FILE);
         conf.addResource(ProducerConstants.PRODUCER_CONFIG_FILE);
@@ -48,58 +51,41 @@ public class ReplicationSinkManger {
 
         HLogService hlogService = new HLogService(conf);
         ProtocolAdapter adapter = ProtocolAdapter.getAdapter(conf);
-        
-        
+
         HLogEntryPoolZookeeperPersistence hLogEntryPersistence = new HLogEntryPoolZookeeperPersistence(conf, zookeeper);
 
-        ThreadPoolExecutor replicationPool = new ThreadPoolExecutor(
-                                                                    conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
-                                                                                ProducerConstants.REP_SINK_POOL_SIZE),
-                                                                    conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
-                                                                                ProducerConstants.REP_SINK_POOL_SIZE),
-                                                                    conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
-                                                                                100),
-                                                                    TimeUnit.SECONDS,
-                                                                    new ArrayBlockingQueue<Runnable>(
-                                                                                                     conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
-                                                                                                                 100)));
-        ThreadPoolExecutor scannerPool = new ThreadPoolExecutor(
-                                                                conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
-                                                                            ProducerConstants.REP_SCANNER_POOL_SIZE),
-                                                                conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
-                                                                            ProducerConstants.REP_SCANNER_POOL_SIZE),
-                                                                conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
-                                                                            100),
-                                                                TimeUnit.SECONDS,
-                                                                new ArrayBlockingQueue<Runnable>(
-                                                                                                 conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
-                                                                                                             100)));
+        replicationPool = new ThreadPoolExecutor(
+                                                 conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
+                                                             ProducerConstants.REP_SINK_POOL_SIZE),
+                                                 conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
+                                                             ProducerConstants.REP_SINK_POOL_SIZE),
+                                                 conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
+                                                 TimeUnit.SECONDS,
+                                                 new ArrayBlockingQueue<Runnable>(
+                                                                                  conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                                                              100)));
+        scannerPool = new ThreadPoolExecutor(
+                                             conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
+                                                         ProducerConstants.REP_SCANNER_POOL_SIZE),
+                                             conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
+                                                         ProducerConstants.REP_SCANNER_POOL_SIZE),
+                                             conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
+                                             TimeUnit.SECONDS,
+                                             new ArrayBlockingQueue<Runnable>(
+                                                                              conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                                                          100)));
 
-        ThreadPoolExecutor recoverPool = new ThreadPoolExecutor(
-                                                                conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
-                                                                            ProducerConstants.REP_REJECT_POOL_SIZE),
-                                                                conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
-                                                                            ProducerConstants.REP_REJECT_POOL_SIZE),
-                                                                conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
-                                                                            100),
-                                                                TimeUnit.SECONDS,
-                                                                new ArrayBlockingQueue<Runnable>(
-                                                                                                 conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
-                                                                                                             100)));
+        recoverPool = new ThreadPoolExecutor(
+                                             conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                         ProducerConstants.REP_REJECT_POOL_SIZE),
+                                             conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                         ProducerConstants.REP_REJECT_POOL_SIZE),
+                                             conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
+                                             TimeUnit.SECONDS,
+                                             new ArrayBlockingQueue<Runnable>(
+                                                                              conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                                                          100)));
 
-        ThreadPoolExecutor crushPool = new ThreadPoolExecutor(
-                                                                conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
-                                                                            ProducerConstants.REP_REJECT_POOL_SIZE),
-                                                                conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
-                                                                            ProducerConstants.REP_REJECT_POOL_SIZE),
-                                                                conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
-                                                                            100),
-                                                                TimeUnit.SECONDS,
-                                                                new ArrayBlockingQueue<Runnable>(
-                                                                                                 conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
-                                                                                                             100)));
-
-        
         HLogGroupZookeeperScanner scan;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
                                         ProducerConstants.REP_SCANNER_POOL_SIZE); i++) {
@@ -119,15 +105,26 @@ public class ReplicationSinkManger {
             recover.setAdapter(adapter);
             recoverPool.execute(recover);
         }
-        
-//        HReplicationCrushScanner crush;
-//        for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
-//                                        ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
-//            crush = new HReplicationCrushScanner(conf);
-//            crush.setZooKeeper(zookeeper);
-//            crush.setAdapter(adapter);
-//            crushPool.execute(crush);
-//        }
+
+        // ThreadPoolExecutor crushPool = new ThreadPoolExecutor(
+        // conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+        // ProducerConstants.REP_REJECT_POOL_SIZE),
+        // conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+        // ProducerConstants.REP_REJECT_POOL_SIZE),
+        // conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
+        // 100),
+        // TimeUnit.SECONDS,
+        // new ArrayBlockingQueue<Runnable>(
+        // conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+        // 100)));
+        // HReplicationCrushScanner crush;
+        // for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+        // ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
+        // crush = new HReplicationCrushScanner(conf);
+        // crush.setZooKeeper(zookeeper);
+        // crush.setAdapter(adapter);
+        // crushPool.execute(crush);
+        // }
 
         HReplicationProducer producer;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
