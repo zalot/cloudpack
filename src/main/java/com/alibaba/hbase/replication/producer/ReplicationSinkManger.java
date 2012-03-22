@@ -19,7 +19,6 @@ import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationCrushScanner;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
 import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
-import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.server.ReplicationConf;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
@@ -47,8 +46,7 @@ public class ReplicationSinkManger {
         RecoverableZooKeeper zookeeper = ZKUtil.connect(conf, new NothingZookeeperWatch());
 
         HLogService hlogService = new HLogService(conf);
-        ProtocolAdapter adapter = new HDFSFileAdapter();
-        adapter.init(conf);
+        ProtocolAdapter adapter = ProtocolAdapter.getAdapter(conf);
         
         
         HLogEntryPoolZookeeperPersistence hLogEntryPersistence = new HLogEntryPoolZookeeperPersistence(conf, zookeeper);

@@ -46,31 +46,25 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 类Manager.java的实现描述：持有consumer端的中间文件同步线程池
  * 
  * @author dongsh 2012-2-28 上午11:17:17
- * 
- * @author zalot.zhaoh 
- * ------------------------------------------
- * 1.取消了部分注入，采用原始的 set方法, 以及init
- * 2.修改了 MetaData 协议的使用方式，
- * 3.后期将用 v2 代替 
- * ------------------------------------------
+ * @author zalot.zhaoh ------------------------------------------ 1.取消了部分注入，采用原始的 set方法, 以及init 2.修改了 MetaData 协议的使用方式，
+ * 3.后期将用 v2 代替 ------------------------------------------
  */
 @Service("fileChannelManager")
 public class FileChannelManager {
 
-    private static final Logger      LOG      = LoggerFactory.getLogger(FileChannelManager.class);
+    private static final Logger    LOG      = LoggerFactory.getLogger(FileChannelManager.class);
 
-    protected AtomicBoolean          stopflag = new AtomicBoolean(false);
-    protected ThreadPoolExecutor     fileChannelPool;
-    protected FileSystem             fs;
-    protected RecoverableZooKeeper   zoo;
-
-    @Autowired
-    protected ReplicationConf        conf;
+    protected AtomicBoolean        stopflag = new AtomicBoolean(false);
+    protected ThreadPoolExecutor   fileChannelPool;
+    protected FileSystem           fs;
+    protected RecoverableZooKeeper zoo;
 
     @Autowired
-    protected DataLoadingManager     dataLoadingManager;
+    protected ReplicationConf      conf;
+
     @Autowired
-    protected HDFSFileAdapter fileAdapter;
+    protected DataLoadingManager   dataLoadingManager;
+    protected HDFSFileAdapter      fileAdapter;
 
     public void init() throws IOException, KeeperException, InterruptedException {
         if (LOG.isInfoEnabled()) {
@@ -83,7 +77,8 @@ public class FileChannelManager {
                                                  conf.getInt(ConsumerConstants.CONFKEY_REP_FILE_CHANNEL_POOL_SIZE, 10),
                                                  conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
                                                  TimeUnit.SECONDS,
-                                                 new ArrayBlockingQueue<Runnable>(conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                 new ArrayBlockingQueue<Runnable>(
+                                                                                  conf.getInt(ConsumerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                               100)));
         fs = FileSystem.get(URI.create(conf.get(ConsumerConstants.CONFKEY_PRODUCER_FS)), conf);
         zoo = ZKUtil.connect(conf, new NothingZookeeperWatch());

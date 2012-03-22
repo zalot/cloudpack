@@ -1,5 +1,7 @@
 package com.alibaba.hbase.replication.utility;
 
+import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
+
 /**
  * 类ProducerConstants.java的实现描述：TODO 类实现描述
  * 
@@ -64,12 +66,23 @@ public class ProducerConstants {
     public static final int    REP_SINK_POOL_SIZE                     = 10;
     public static final String CONFKEY_REP_REJECT_POOL_SIZE           = "com.alibaba.hbase.replication.producer.scannerPoolSize";
     public static final int    REP_REJECT_POOL_SIZE                   = 1;
+
+    // -----------------------------------------
+    // protocol
+    // -----------------------------------------
+    public static final String CONFKEY_PROTOCOL_VERSION               = "com.alibaba.hbase.replication.protocol.version";
+    public static final int    PROTOCOL_VERSION                       = 1;
+
+    public static final String CONFKEY_PROTOCOL_CLASS                 = "com.alibaba.hbase.replication.protocol.class";
+    public static final String PROTOCOL_CLASS                         = HDFSFileAdapter.class.getCanonicalName();
+
+    public static final String CONFKEY_PROTOCOL_ADAPTER_HDFS_FS       = "com.alibaba.hbase.replication.protocol.adapter.hdfs.fs";
     // -----------------------------------------
     // static field
     // -----------------------------------------
     public static String       ZOO_LOCK_SCAN                          = "/lockscan";
     public static String       ZOO_LOCK_REJECT_SCAN                   = "/lockrejectscan";
-    public static String       ZOO_LOCK_CRUSH_SCAN                   = "/lockcrushscan";
+    public static String       ZOO_LOCK_CRUSH_SCAN                    = "/lockcrushscan";
     public static String       ZOO_PERSISTENCE_HLOG_GROUP             = "/aligroups";
     public static String       ZOO_PERSISTENCE_HLOG_GROUP_LOCK        = "/aliglock";
 

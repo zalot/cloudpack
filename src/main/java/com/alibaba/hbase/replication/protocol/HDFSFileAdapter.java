@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
  * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
@@ -30,7 +31,7 @@ import com.alibaba.hbase.replication.utility.ConsumerConstants;
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
 @Service("fileAdapter")
-public class HDFSFileAdapter implements ProtocolAdapter {
+public class HDFSFileAdapter extends ProtocolAdapter {
 
     protected static final Log LOG          = LogFactory.getLog(HDFSFileAdapter.class);
     public static final String SPLIT_SYMBOL = "|";
@@ -46,7 +47,7 @@ public class HDFSFileAdapter implements ProtocolAdapter {
                + head.retry + SPLIT_SYMBOL // [7]
         ;
     }
-    
+
     public static String head2MD5FileName(ProtocolHead head) {
         return head2FileName(head) + ConsumerConstants.MD5_SUFFIX;
     }
@@ -112,8 +113,7 @@ public class HDFSFileAdapter implements ProtocolAdapter {
      */
     public void clean(ProtocolHead head, FileSystem fs) throws IOException {
         fs.rename(new Path(targetPath, head2FileName(head)), new Path(oldPath, head2FileName(head)));
-        fs.rename(new Path(digestPath, head2MD5FileName(head)),
-                  new Path(oldPath, head2MD5FileName(head)));
+        fs.rename(new Path(digestPath, head2MD5FileName(head)), new Path(oldPath, head2MD5FileName(head)));
         if (LOG.isInfoEnabled()) LOG.info("doAdapter Over - > " + head);
     }
 
@@ -298,16 +298,15 @@ public class HDFSFileAdapter implements ProtocolAdapter {
         fs.deleteOnExit(new Path(digestPath, head2MD5FileName(head)));
     }
 
-    public void setFileSystem(FileSystem fs) {
-        this.fs = fs;
-    }
-
     public void setPath() {
         if (fs == null) {
             try {
+                String defaultFs = conf.get(ProducerConstants.CONFKEY_PROTOCOL_ADAPTER_HDFS_FS);
+                if (defaultFs == null) return;
+                conf.set("fs.default.name", defaultFs);
                 fs = FileSystem.get(conf);
             } catch (IOException e) {
-                e.printStackTrace();
+                return;
             }
         }
 
@@ -396,7 +395,6 @@ public class HDFSFileAdapter implements ProtocolAdapter {
         for (FileStatus fst : fs.listStatus(oldPath)) {
             fs.delete(fst.getPath(), true);
         }
-        if(LOG.isInfoEnabled())
-            LOG.info(" -------- crush ----------");
+        if (LOG.isInfoEnabled()) LOG.info(" -------- crush ----------");
     }
 }
