@@ -79,7 +79,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
         head.setRetry(head.getRetry() + 1);
         HLogEntry entry = HLogUtil.getHLogEntryByHead(head);
         Entry ent = null;
-        ProtocolBody body = MetaData.getDefaultBody();
+        ProtocolBody body = MetaData.getDefaultProtocolBody(hlogService.getConf());
         HLogReader reader = null;
         try {
             reader = hlogService.getReader(entry);
@@ -111,7 +111,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
     }
 
     private boolean doAdapter(ProtocolHead head, ProtocolBody body) {
-        MetaData data = MetaData.getMetaData(head, body);
+        MetaData data = new MetaData(head, body);
         try {
             adapter.recover(data);
             LOG.info("recover head " + head);

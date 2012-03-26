@@ -33,15 +33,15 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
  */
 public class HReplicationProducer implements Runnable {
 
-    protected static final Log     LOG                      = LogFactory.getLog(HReplicationProducer.class);
-    private long                   minGroupOperatorInterval = ProducerConstants.HLOG_GROUP_INTERVAL;
-    private long                   maxReaderBuffer          = ProducerConstants.HLOG_READERBUFFER;
-    private long                   replicationSleepTime;
+    protected static final Log         LOG                      = LogFactory.getLog(HReplicationProducer.class);
+    private long                       minGroupOperatorInterval = ProducerConstants.HLOG_GROUP_INTERVAL;
+    private long                       maxReaderBuffer          = ProducerConstants.HLOG_READERBUFFER;
+    private long                       replicationSleepTime;
 
     // 外部对象
-    protected ProtocolAdapter      adapter;
+    protected ProtocolAdapter          adapter;
     protected HLogEntryPoolPersistence hlogEntryPersistence;
-    protected HLogService          hlogService;
+    protected HLogService              hlogService;
 
     public HReplicationProducer(Configuration conf) throws IOException, KeeperException, InterruptedException{
         maxReaderBuffer = conf.getLong(ProducerConstants.CONFKEY_HLOG_READERBUFFER, ProducerConstants.HLOG_READERBUFFER);
@@ -87,7 +87,7 @@ public class HReplicationProducer implements Runnable {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);
         HLogReader reader = null;
-        ProtocolBody body = MetaData.getDefaultBody();
+        ProtocolBody body = MetaData.getDefaultProtocolBody(hlogService.getConf());
         HLogEntry entry;
         for (int idx = 0; idx < entrys.size(); idx++) {
             entry = entrys.get(idx);
@@ -120,7 +120,7 @@ public class HReplicationProducer implements Runnable {
                                    body, count)) {
                         entry.setPos(reader.getPosition());
                         hlogEntryPersistence.updateEntry(entry);
-                        body = MetaData.getDefaultBody();
+                        body = MetaData.getDefaultProtocolBody(hlogService.getConf());
                     } else {
                         reader.seek(entry.getPos());
                     }
@@ -147,13 +147,13 @@ public class HReplicationProducer implements Runnable {
             }
 
             hlogEntryPersistence.updateEntry(entry);
-            body = MetaData.getDefaultBody();
+            body = MetaData.getDefaultProtocolBody(hlogService.getConf());
             reader.close();
         }
     }
 
     private boolean doSinkPart(String groupName, long timeStamp, long start, long end, ProtocolBody body, long count) {
-        ProtocolHead head = MetaData.getDefaultHead();
+        ProtocolHead head = MetaData.getDefaultProtocolHead(hlogService.getConf());
         head.setCount(count);
         head.setGroupName(groupName);
         head.setFileTimestamp(timeStamp);
@@ -166,7 +166,7 @@ public class HReplicationProducer implements Runnable {
     }
 
     private boolean doAdapter(ProtocolHead head, ProtocolBody body) {
-        MetaData data = MetaData.getMetaData(head, body);
+        MetaData data = new MetaData(head, body);
         try {
             adapter.write(data);
             return true;
@@ -201,9 +201,10 @@ public class HReplicationProducer implements Runnable {
     }
 
     public static HReplicationProducer newInstance(Configuration conf, ProtocolAdapter adapter,
-                                                   HLogEntryPoolPersistence dao, HLogService service) throws IOException,
-                                                                                                 KeeperException,
-                                                                                                 InterruptedException {
+                                                   HLogEntryPoolPersistence dao, HLogService service)
+                                                                                                     throws IOException,
+                                                                                                     KeeperException,
+                                                                                                     InterruptedException {
         HReplicationProducer prod = new HReplicationProducer(conf);
         prod.setAdapter(adapter);
         prod.setHlogEntryPersistence(dao);

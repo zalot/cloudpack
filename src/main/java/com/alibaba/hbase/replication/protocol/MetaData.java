@@ -5,6 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+
+import com.alibaba.hbase.replication.utility.ProducerConstants;
 
 /**
  * 协议元数据 类MetaData.java的实现描述：TODO 类实现描述
@@ -34,12 +37,20 @@ public class MetaData {
         this._head = head;
     }
 
+    public MetaData(ProtocolHead head, ProtocolBody body){
+        setHead(head);
+        setBody(body);
+    }
+
+    public MetaData(){
+    }
+
     protected static Map<String, Class<? extends ProtocolBody>> clazzes = new ConcurrentHashMap<String, Class<? extends ProtocolBody>>();
 
-    public static Class<? extends ProtocolBody> getBodyClass(ProtocolHead head) {
+    public static Class<? extends ProtocolBody> getBodyClass(int version) {
         Class<? extends ProtocolBody> clazz = null;
         try {
-            String versionClass = DEFAULT_BODYPROTOCOL_CLASS_SUFIX + head.getVersion();
+            String versionClass = DEFAULT_BODYPROTOCOL_CLASS_SUFIX + version;
             clazz = clazzes.get(versionClass);
             if (clazz == null) {
                 clazz = (Class<? extends ProtocolBody>) Class.forName(versionClass);
@@ -50,28 +61,33 @@ public class MetaData {
         return clazz;
     }
 
-    public static ProtocolHead getDefaultHead() {
+    public static ProtocolHead getDefaultProtocolHead(Configuration conf) {
         ProtocolHead head = new ProtocolHead();
-        head.setVersion(1); // 可以将版本号设在外面
+        head.setVersion(conf.getInt(ProducerConstants.CONFKEY_PROTOCOL_VERSION, 2));
         return head;
     }
 
-    public static ProtocolBody getDefaultBody() {
-        return new ProtocolBodyV1();
+    public static ProtocolBody getDefaultProtocolBody(Configuration conf) {
+        try {
+            ProtocolBody body = getBodyClass(conf.getInt(ProducerConstants.CONFKEY_PROTOCOL_VERSION, 2)).newInstance();
+            return body;
+        } catch (Exception e) {
+            return new ProtocolBodyV2();
+        }
     }
 
-    public static MetaData getMetaData(ProtocolHead head, ProtocolBody body) {
+    public static MetaData getMetaData(Configuration conf) {
         MetaData minData = new MetaData();
-        minData.setHead(head);
-        minData.setBody(body);
+        minData.setHead(getDefaultProtocolHead(conf));
+        minData.setBody(getDefaultProtocolBody(conf));
         return minData;
     }
 
     public static MetaData getMetaData(ProtocolHead head, byte[] bodyData) {
-        MetaData minData = new MetaData();
         ProtocolBody body;
+        MetaData minData = new MetaData();
         try {
-            body = getBodyClass(head).newInstance();
+            body = getBodyClass(head.getVersion()).newInstance();
             body.setBodyData(bodyData);
             minData.setHead(head);
             minData.setBody(body);
