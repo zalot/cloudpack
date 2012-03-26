@@ -78,6 +78,7 @@ public class HLogEntryPoolZookeeperPersistence implements HLogEntryPoolPersisten
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<HLogEntry> listEntry(String groupName) throws Exception {
         String path = getGroupPath(groupName);
         Stat stat = zookeepr.exists(path, false);

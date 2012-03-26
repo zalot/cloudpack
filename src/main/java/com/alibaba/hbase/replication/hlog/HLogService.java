@@ -87,6 +87,7 @@ public class HLogService {
         return logsPath;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Path> getAllHLogs() {
         try {
             return HLogUtil.getHLogsByHDFS(getFileSystem(), getHLogDir());
@@ -96,6 +97,7 @@ public class HLogService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Path> getAllOldHLogs() {
         try {
             return HLogUtil.getHLogsByHDFS(getFileSystem(), getOldHLogDir());
