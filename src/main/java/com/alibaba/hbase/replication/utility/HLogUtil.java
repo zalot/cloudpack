@@ -60,7 +60,6 @@ public class HLogUtil {
     }
 
     public static int put2Body(Entry entry, ProtocolBody body) {
-        Edit edit = null;
         byte[] tableName = entry.getKey().getTablename();
         UUID clusterId = entry.getKey().getClusterId();
 
