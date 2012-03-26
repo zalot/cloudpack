@@ -87,7 +87,7 @@ public class HReplicationProducer implements Runnable {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);
         HLogReader reader = null;
-        ProtocolBody body = MetaData.getDefaultProtocolBody(hlogService.getConf());
+        ProtocolBody body = MetaData.getProtocolBody(hlogService.getConf());
         HLogEntry entry;
         for (int idx = 0; idx < entrys.size(); idx++) {
             entry = entrys.get(idx);
@@ -120,7 +120,7 @@ public class HReplicationProducer implements Runnable {
                                    body, count)) {
                         entry.setPos(reader.getPosition());
                         hlogEntryPersistence.updateEntry(entry);
-                        body = MetaData.getDefaultProtocolBody(hlogService.getConf());
+                        body = MetaData.getProtocolBody(hlogService.getConf());
                     } else {
                         reader.seek(entry.getPos());
                     }
@@ -147,13 +147,13 @@ public class HReplicationProducer implements Runnable {
             }
 
             hlogEntryPersistence.updateEntry(entry);
-            body = MetaData.getDefaultProtocolBody(hlogService.getConf());
+            body = MetaData.getProtocolBody(hlogService.getConf());
             reader.close();
         }
     }
 
     private boolean doSinkPart(String groupName, long timeStamp, long start, long end, ProtocolBody body, long count) {
-        ProtocolHead head = MetaData.getDefaultProtocolHead(hlogService.getConf());
+        ProtocolHead head = MetaData.getProtocolHead(hlogService.getConf());
         head.setCount(count);
         head.setGroupName(groupName);
         head.setFileTimestamp(timeStamp);

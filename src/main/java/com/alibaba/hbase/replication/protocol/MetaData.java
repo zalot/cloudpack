@@ -61,13 +61,13 @@ public class MetaData {
         return clazz;
     }
 
-    public static ProtocolHead getDefaultProtocolHead(Configuration conf) {
+    public static ProtocolHead getProtocolHead(Configuration conf) {
         ProtocolHead head = new ProtocolHead();
         head.setVersion(conf.getInt(ProducerConstants.CONFKEY_PROTOCOL_VERSION, 2));
         return head;
     }
 
-    public static ProtocolBody getDefaultProtocolBody(Configuration conf) {
+    public static ProtocolBody getProtocolBody(Configuration conf) {
         try {
             ProtocolBody body = getBodyClass(conf.getInt(ProducerConstants.CONFKEY_PROTOCOL_VERSION, 2)).newInstance();
             return body;
@@ -78,8 +78,8 @@ public class MetaData {
 
     public static MetaData getMetaData(Configuration conf) {
         MetaData minData = new MetaData();
-        minData.setHead(getDefaultProtocolHead(conf));
-        minData.setBody(getDefaultProtocolBody(conf));
+        minData.setHead(getProtocolHead(conf));
+        minData.setBody(getProtocolBody(conf));
         return minData;
     }
 
