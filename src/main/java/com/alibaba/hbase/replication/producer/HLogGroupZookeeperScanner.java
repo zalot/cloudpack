@@ -11,6 +11,7 @@ import org.apache.zookeeper.KeeperException;
 
 import com.alibaba.hbase.replication.hlog.HLogEntryPoolPersistence;
 import com.alibaba.hbase.replication.hlog.HLogService;
+import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
@@ -26,11 +27,11 @@ import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
  */
 public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
 
-    protected static final Log     LOG            = LogFactory.getLog(HLogGroupZookeeperScanner.class);
-    protected String               name;
-    protected long                 scanOldHlogTimeOut;
-    protected boolean              hasScanOldHLog = false;
-    protected HLogService          hlogService;
+    protected static final Log         LOG            = LogFactory.getLog(HLogGroupZookeeperScanner.class);
+    protected String                   name;
+    protected long                     scanOldHlogTimeOut;
+    protected boolean                  hasScanOldHLog = false;
+    protected HLogService              hlogService;
 
     // 外部对象引用
     protected HLogEntryPoolPersistence hlogEntryPersistence;
@@ -89,17 +90,25 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
         putHLog(groups);
         putOldHLog(groups);
 
+        // 清理 group
         for (String groupStr : hlogEntryPersistence.listGroupName()) {
-            if(groups.get(groupStr) == null){
+            if (groups.get(groupStr) == null) {
                 hlogEntryPersistence.deleteGroup(groupStr);
             }
         }
+
+        // 清理 entry
 
         for (HLogEntryGroup group : groups.getGroups()) {
             HLogEntryGroup tmpGroup = hlogEntryPersistence.getGroupByName(group.getGroupName(), false);
             if (tmpGroup == null) {
                 hlogEntryPersistence.createGroup(group, true);
             } else {
+                for (HLogEntry entry : hlogEntryPersistence.listEntry(group.getGroupName())) {
+                    if(!group.contains(entry)){
+                        hlogEntryPersistence.deleteEntry(entry);
+                    }
+                }
                 hlogEntryPersistence.updateGroup(group, true);
             }
         }

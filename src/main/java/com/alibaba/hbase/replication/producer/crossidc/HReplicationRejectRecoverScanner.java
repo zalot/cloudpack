@@ -98,7 +98,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    LOG.error(e);
+                    LOG.error("reader close error ", e);
                 } finally {
                     reader = null;
                 }
