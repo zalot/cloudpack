@@ -12,6 +12,7 @@ public class HLogEntryGroup {
 
     protected String groupName;
     protected long   lastOperatorTime;
+    protected List<HLogEntry> entrys = new ArrayList<HLogEntry>();
 
     public long getLastOperatorTime() {
         return lastOperatorTime;
@@ -29,7 +30,6 @@ public class HLogEntryGroup {
         this.groupName = groupName;
     }
 
-    protected List<HLogEntry> entrys = new ArrayList<HLogEntry>();
 
     public HLogEntryGroup(String groupName){
         this.groupName = groupName;
@@ -41,5 +41,9 @@ public class HLogEntryGroup {
 
     public List<HLogEntry> getEntrys() {
         return entrys;
+    }
+    
+    public boolean contains(HLogEntry entry){
+        return entrys.contains(entry);
     }
 }
