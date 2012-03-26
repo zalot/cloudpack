@@ -91,7 +91,7 @@ public class HLogService {
         try {
             return HLogUtil.getHLogsByHDFS(getFileSystem(), getHLogDir());
         } catch (IOException e) {
-            LOG.error(e);
+            LOG.error("reader all HLogs error " , e);
             return Collections.EMPTY_LIST;
         }
     }
@@ -100,7 +100,7 @@ public class HLogService {
         try {
             return HLogUtil.getHLogsByHDFS(getFileSystem(), getOldHLogDir());
         } catch (IOException e) {
-            LOG.error(e);
+            LOG.error("reader all OldHLogs error " , e);
             return Collections.EMPTY_LIST;
         }
     }
