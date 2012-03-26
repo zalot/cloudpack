@@ -33,7 +33,7 @@ import org.apache.zookeeper.data.Stat;
 import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
-import com.alibaba.hbase.replication.protocol.ProtocolBodyV1;
+import com.alibaba.hbase.replication.protocol.ProtocolBodyV2;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
 import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
@@ -45,12 +45,8 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类
  * 
  * @author dongsh 2012-2-29 下午03:42:49
- * 
- * @author zalot.zhaoh 
- * ------------------------------------------
- * 1.取消了部分注入，采用原始的 set方法, 以及init
- * 2.去掉了FileNofound的错误判断，因为资源的不正确设置会导致这个错误，但暂未有时间解决 v2 将会替换该类
- * 3.此版本仅支持 Body1 Protocol 的支持
+ * @author zalot.zhaoh ------------------------------------------ 1.取消了部分注入，采用原始的 set方法, 以及init
+ * 2.去掉了FileNofound的错误判断，因为资源的不正确设置会导致这个错误，但暂未有时间解决 v2 将会替换该类 3.此版本仅支持 Body1 Protocol 的支持
  * ------------------------------------------
  */
 public class FileChannelRunnable implements Runnable {
@@ -67,16 +63,16 @@ public class FileChannelRunnable implements Runnable {
         this.zoo = zoo;
     }
 
-    protected Configuration          conf;
-    protected String                 name          = ConsumerConstants.CHANNEL_NAME
-                                                     + UUID.randomUUID().toString().substring(0, 8);
-    protected DataLoadingManager     dataLoadingManager;
-    protected ProtocolAdapter fileAdapter;
-    protected List<ConsumerZNode>    errorNodeList = new ArrayList<ConsumerZNode>();
-    protected AtomicBoolean          stopflag;
+    protected Configuration       conf;
+    protected String              name          = ConsumerConstants.CHANNEL_NAME
+                                                  + UUID.randomUUID().toString().substring(0, 8);
+    protected DataLoadingManager  dataLoadingManager;
+    protected ProtocolAdapter     fileAdapter;
+    protected List<ConsumerZNode> errorNodeList = new ArrayList<ConsumerZNode>();
+    protected AtomicBoolean       stopflag;
 
-    public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager,
-                               ProtocolAdapter fileAdapter, AtomicBoolean stopflag) throws IOException{
+    public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager, ProtocolAdapter fileAdapter,
+                               AtomicBoolean stopflag) throws IOException{
         this.fileAdapter = fileAdapter;
         this.conf = conf;
         this.stopflag = stopflag;
@@ -131,14 +127,14 @@ public class FileChannelRunnable implements Runnable {
                         }
                         // 跳出此次循环，尝试获取下一个consumerNode
                         continue;
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         LOG.error("file", e);
-                     // 跳出此次循环，尝试获取下一个consumerNode
+                        // 跳出此次循环，尝试获取下一个consumerNode
                         continue;
                     }
                     if (metaData != null && metaData.getBody() != null) {
-                        if (metaData.getBody() instanceof ProtocolBodyV1) {
-                            ProtocolBodyV1 body = (ProtocolBodyV1) metaData.getBody();
+                        if (metaData.getBody() instanceof ProtocolBodyV2) {
+                            ProtocolBodyV2 body = (ProtocolBodyV2) metaData.getBody();
                             if (MapUtils.isNotEmpty(body.getEditMap())) {
                                 // 对于能够解析出body数据的进行加载
                                 Map<String, List<Edit>> editMap = body.getEditMap();
