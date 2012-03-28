@@ -28,6 +28,7 @@ import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
 public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
 
     protected static final Log         LOG            = LogFactory.getLog(HLogGroupZookeeperScanner.class);
+    protected static final long        LOCKTIME       = 500;
     protected String                   name;
     protected long                     scanOldHlogTimeOut;
     protected boolean                  hasScanOldHLog = false;
@@ -94,6 +95,9 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
         for (String groupStr : hlogEntryPersistence.listGroupName()) {
             if (groups.get(groupStr) == null) {
                 hlogEntryPersistence.deleteGroup(groupStr);
+                if(LOG.isInfoEnabled()){
+                    LOG.info("scan delete group[" + groupStr + "]");
+                }
             }
         }
 
@@ -102,14 +106,42 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
         for (HLogEntryGroup group : groups.getGroups()) {
             HLogEntryGroup tmpGroup = hlogEntryPersistence.getGroupByName(group.getGroupName(), false);
             if (tmpGroup == null) {
-                hlogEntryPersistence.createGroup(group, true);
+                hlogEntryPersistence.createGroup(group, false);
             } else {
                 for (HLogEntry entry : hlogEntryPersistence.listEntry(group.getGroupName())) {
-                    if(!group.contains(entry)){
+                    if (!group.contains(entry)) {
                         hlogEntryPersistence.deleteEntry(entry);
+                        if(LOG.isInfoEnabled()){
+                            LOG.info("scan delete group-entry[" + entry + "]");
+                        }
                     }
                 }
-                hlogEntryPersistence.updateGroup(group, true);
+                boolean isLock = false;
+                while (!isLock) {
+                    isLock = hlogEntryPersistence.lockGroup(group.getGroupName());
+                    if (isLock) {
+                        if(LOG.isInfoEnabled()){
+                            LOG.info("scan lock group[" + group.getGroupName() + "]");
+                        }
+                        break;
+                    }
+                    Thread.sleep(LOCKTIME);
+                }
+
+                if (isLock) {
+                    try {
+                        hlogEntryPersistence.updateGroup(group, true);
+                        if(LOG.isInfoEnabled()){
+                            LOG.info("scan update group[" + group.getGroupName() + "]");
+                        }
+                    } finally {
+                        hlogEntryPersistence.unlockGroup(group.getGroupName());
+                        if(LOG.isInfoEnabled()){
+                            LOG.info("scan unlock group[" + group.getGroupName() + "]");
+                        }
+                    }
+                }
+
             }
         }
     }

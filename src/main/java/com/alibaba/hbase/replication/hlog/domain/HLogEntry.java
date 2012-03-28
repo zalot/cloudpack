@@ -13,6 +13,12 @@ import com.alibaba.hbase.replication.utility.ProducerConstants;
 public class HLogEntry implements Comparable<HLogEntry> {
 
     @Override
+    public String toString() {
+        return "HLogEntry [groupName=" + groupName + ", timestamp=" + timestamp + ", lastReadtime=" + lastReadtime
+               + ", pos=" + pos + ", lastVerifiedPos=" + lastVerifiedPos + ", type=" + type + "]";
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -32,13 +38,6 @@ public class HLogEntry implements Comparable<HLogEntry> {
         } else if (!groupName.equals(other.groupName)) return false;
         if (timestamp != other.timestamp) return false;
         return true;
-    }
-
-
-    @Override
-    public String toString() {
-        return "HLogEntry [groupName=" + groupName + ", timestamp=" + timestamp + ", type=" + type + ", pos=" + pos
-               + "]";
     }
 
     /**
@@ -85,19 +84,17 @@ public class HLogEntry implements Comparable<HLogEntry> {
     // groupName + timestamp = name
     protected long   timestamp;
 
-    protected long   lastReadtime = 0;
+    protected long   lastReadtime    = 0;
 
     // pos
-    private long     pos          = 0;
+    private long     pos             = 0;
 
-    private long     lastVerifiedPos          = 0;
-    
-    
+    private long     lastVerifiedPos = 0;
+
     public long getLastVerifiedPos() {
         return lastVerifiedPos;
     }
 
-    
     public void setLastVerifiedPos(long lastVerifiedPos) {
         this.lastVerifiedPos = lastVerifiedPos;
     }

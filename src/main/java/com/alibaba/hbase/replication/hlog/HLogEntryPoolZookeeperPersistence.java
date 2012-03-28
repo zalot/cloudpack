@@ -154,6 +154,7 @@ public class HLogEntryPoolZookeeperPersistence implements HLogEntryPoolPersisten
                     if (tmpEntry == null) {
                         createEntry(entry);
                     } else {
+                        // 更新和修复数据
                         if (tmpEntry.getType() != HLogEntry.Type.END) {
                             if (tmpEntry.getType() != entry.getType()) {
                                 tmpEntry.setType(entry.getType());

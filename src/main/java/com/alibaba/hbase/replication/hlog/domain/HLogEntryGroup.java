@@ -1,6 +1,7 @@
 package com.alibaba.hbase.replication.hlog.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,6 +41,7 @@ public class HLogEntryGroup {
     }
 
     public List<HLogEntry> getEntrys() {
+        Collections.sort(entrys);
         return entrys;
     }
     
