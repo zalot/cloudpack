@@ -87,7 +87,7 @@ public class HReplicationProducer implements Runnable {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);
         HLogReader reader = null;
-        ProtocolBody body = MetaData.getProtocolBody(hlogService.getConf());
+        ProtocolBody body = null;
         HLogEntry entry;
         for (int idx = 0; idx < entrys.size(); idx++) {
             entry = entrys.get(idx);
@@ -95,6 +95,7 @@ public class HReplicationProducer implements Runnable {
                 continue;
             }
             reader = hlogService.getReader(entry);
+            body = MetaData.getProtocolBody(hlogService.getConf());
             int count = 0;
             while (true) {
                 Entry ent = null;
@@ -147,7 +148,6 @@ public class HReplicationProducer implements Runnable {
             }
 
             hlogEntryPersistence.updateEntry(entry);
-            body = MetaData.getProtocolBody(hlogService.getConf());
             reader.close();
         }
     }
