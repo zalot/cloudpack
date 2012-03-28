@@ -106,7 +106,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
         }
 
         if (!doAdapter(head, body)) {
-            // LOG.warn("recover error " + head);
+             LOG.warn("recover error " + head);
         }
     }
 
@@ -114,7 +114,6 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
         MetaData data = new MetaData(head, body);
         try {
             adapter.recover(data);
-            LOG.info("recover head " + head);
             return true;
         } catch (Exception e) {
             LOG.error("doAdapter ", e);

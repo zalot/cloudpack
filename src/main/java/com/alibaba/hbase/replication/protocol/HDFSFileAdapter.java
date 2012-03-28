@@ -287,6 +287,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
             Path rejectFile = new Path(rejectPath, fileName);
             fs.deleteOnExit(rejectFile);
         } catch (Exception e) {
+            LOG.error("recover error ", e);
         }
     }
 
@@ -316,7 +317,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
                 return;
             }
         }
-        
+
         targetPath = new Path(conf.get(CONFKEY_HDFS_FS_ROOT) + conf.get(CONFKEY_HDFS_FS_TARGETPATH));
         targetTmpPath = new Path(conf.get(CONFKEY_HDFS_FS_ROOT) + conf.get(CONFKEY_HDFS_FS_TARGETPATH) + "tmp/");
         oldPath = new Path(conf.get(CONFKEY_HDFS_FS_ROOT) + conf.get(CONFKEY_HDFS_FS_OLDPATH));
