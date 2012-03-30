@@ -14,6 +14,7 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
@@ -34,7 +35,7 @@ public class HLogEntryPoolZookeeperPersistence implements HLogEntryPoolPersisten
     protected static final Log     LOG   = LogFactory.getLog(HLogEntryPoolZookeeperPersistence.class);
     protected RecoverableZooKeeper zookeepr;
     protected String               baseDir;
-    protected ThreadLocal<String>  uuid  = new ThreadLocal<String>();                              ;
+    protected ThreadLocal<String>  uuid  = new ThreadLocal<String>();                                  ;
 
     // public ArrayList<ACL> perms;
 
@@ -55,7 +56,11 @@ public class HLogEntryPoolZookeeperPersistence implements HLogEntryPoolPersisten
     }
 
     public void createEntry(HLogEntry entry) throws Exception {
-        zookeepr.create(getEntryPath(entry), getEntryData(entry), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        try {
+            zookeepr.create(getEntryPath(entry), getEntryData(entry), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        } catch (NodeExistsException e) {
+            LOG.warn("entry exist" + entry);
+        }
     }
 
     public void deleteEntry(HLogEntry entry) throws Exception {
@@ -112,8 +117,12 @@ public class HLogEntryPoolZookeeperPersistence implements HLogEntryPoolPersisten
     }
 
     public void createGroup(HLogEntryGroup group, boolean createChild) throws Exception {
-        zookeepr.create(getGroupPath(group.getGroupName()), getGroupData(group), Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
+        try {
+            zookeepr.create(getGroupPath(group.getGroupName()), getGroupData(group), Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.PERSISTENT);
+        } catch (NodeExistsException e) {
+            LOG.warn("group exist" + group);
+        }
         if (createChild) {
             for (HLogEntry entry : group.getEntrys()) {
                 createEntry(entry);
