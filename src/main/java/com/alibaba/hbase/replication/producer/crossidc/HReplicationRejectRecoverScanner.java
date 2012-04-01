@@ -20,7 +20,7 @@ import com.alibaba.hbase.replication.zookeeper.ZookeeperLock;
 import com.alibaba.hbase.replication.zookeeper.ZookeeperSingleLockThread;
 
 /**
- * HLogGroup 扫描器<BR>
+ * Reject<BR>
  * 类HLogGroupZookeeperScanner.java的实现描述：TODO 类实现描述
  * 
  * @author zalot.zhaoh Mar 1, 2012 10:44:45 AM
