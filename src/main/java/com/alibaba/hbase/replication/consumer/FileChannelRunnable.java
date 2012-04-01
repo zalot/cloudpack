@@ -152,6 +152,13 @@ public class FileChannelRunnable implements Runnable {
                                     }
                                 }
                             }
+                        } else {
+                            LOG.error("Error ProtocolBody type! make sure the Consumer version has support! ["
+                                      + metaData.getHead() + "]");
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {
+                            }
                         }
                     }
                     // 清除zk上对此group的加锁
