@@ -39,6 +39,14 @@ public class ReplicationSinkManger {
     public ReplicationConf getConf() {
         return conf;
     }
+    
+    public void setRefConf(ReplicationConf conf) {
+        this.conf = conf;
+    }
+    
+    public void setConf(ReplicationConf conf) {
+        this.conf = new ReplicationConf(conf);
+    }
 
     protected ThreadPoolExecutor replicationPool;
     protected ThreadPoolExecutor recoverPool;
