@@ -16,7 +16,7 @@ import com.alibaba.hbase.replication.protocol.protobuf.SerBody.Edit;
  * 类Body1.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 22, 2012 1:13:39 PM
  */
-public class ProtocolBodyV1 extends ProtocolBody {
+public class ProtocolBodyV1 extends ProtocolBody implements ConsumerV1Support {
 
     protected SerBody serBody = new SerBody();
 
