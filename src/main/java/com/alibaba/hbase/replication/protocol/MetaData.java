@@ -75,6 +75,15 @@ public class MetaData {
             return new ProtocolBodyV2();
         }
     }
+    
+    public static ProtocolBody getProtocolBody(Configuration conf, int version) {
+        try {
+            ProtocolBody body = getBodyClass(version).newInstance();
+            return body;
+        } catch (Exception e) {
+            return getProtocolBody(conf);
+        }
+    }
 
     public static MetaData getMetaData(Configuration conf) {
         MetaData minData = new MetaData();

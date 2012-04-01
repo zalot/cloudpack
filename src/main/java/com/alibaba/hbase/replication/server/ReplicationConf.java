@@ -25,4 +25,8 @@ public class ReplicationConf extends Configuration {
         HBaseConfiguration.addHbaseResources(this);
     }
 
+    public ReplicationConf(Configuration conf){
+        super(conf);
+        HBaseConfiguration.addHbaseResources(this);
+    }
 }
