@@ -12,8 +12,6 @@ import com.alibaba.hbase.replication.utility.HLogUtil;
  */
 public class ProtocolBodyV2 extends ProtocolBodyV1 {
 
-    protected SerBody serBody = new SerBody();
-
     @Override
     public void setBodyData(byte[] data) throws Exception {
         this.serBody = BodySerializingHandler.deserialize(HLogUtil.ungzip(data));

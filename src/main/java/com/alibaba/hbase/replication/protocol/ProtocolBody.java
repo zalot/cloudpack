@@ -8,7 +8,7 @@ import org.apache.hadoop.hbase.KeyValue;
  * 类Body.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 22, 2012 3:11:22 PM
  */
-public abstract class ProtocolBody {
+public interface ProtocolBody {
 
     public abstract void setBodyData(byte[] data) throws Exception;
 

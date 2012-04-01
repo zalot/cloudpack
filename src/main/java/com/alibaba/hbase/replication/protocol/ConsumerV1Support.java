@@ -11,7 +11,7 @@ import com.alibaba.hbase.replication.protocol.protobuf.SerBody.Edit;
  * 
  * @author zalot.zhaoh Apr 1, 2012 11:10:55 AM
  */
-public interface ConsumerV1Support {
+public abstract class ConsumerV1Support implements ProtocolBody{
 
-    public Map<String, List<Edit>> getEditMap();
+    public abstract Map<String, List<Edit>> getEditMap();
 }
