@@ -24,7 +24,7 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 类TestMain.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 19, 2012 11:26:29 AM
  */
-public class TestMain extends BaseReplicationTest {
+public class TestMain extends TestBase {
 
     @BeforeClass
     public static void init() throws Exception {
