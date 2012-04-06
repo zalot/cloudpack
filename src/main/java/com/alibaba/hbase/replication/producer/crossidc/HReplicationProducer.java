@@ -16,10 +16,10 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
-import com.alibaba.hbase.replication.protocol.ProtocolBody;
-import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
+import com.alibaba.hbase.replication.protocol.ProtocolBody;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 import com.alibaba.hbase.replication.utility.ProducerConstants;
 
@@ -87,15 +87,18 @@ public class HReplicationProducer implements Runnable {
         List<HLogEntry> entrys = hlogEntryPersistence.listEntry(group.getGroupName());
         Collections.sort(entrys);
         HLogReader reader = null;
-        ProtocolBody body = null;
         HLogEntry entry;
+
+        ProtocolHead head = MetaData.getProtocolHead(hlogService.getConf());
+        ProtocolBody body = null;
+
         for (int idx = 0; idx < entrys.size(); idx++) {
             entry = entrys.get(idx);
             if (entry.getType() == Type.END || entry.getType() == Type.UNKNOW) {
                 continue;
             }
             reader = hlogService.getReader(entry);
-            body = MetaData.getProtocolBody(hlogService.getConf());
+            body = MetaData.getProtocolBody(head);
             int count = 0;
             while (true) {
                 Entry ent = null;
@@ -117,11 +120,12 @@ public class HReplicationProducer implements Runnable {
                 }
                 count = count + HLogUtil.put2Body(ent, body);
                 if (count > maxReaderBuffer) {
-                    if (doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
-                                   body, count)) {
+                    setHead(head, group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
+                            count);
+                    if (doSinkPart(head, body)) {
                         entry.setPos(reader.getPosition());
                         hlogEntryPersistence.updateEntry(entry);
-                        body = MetaData.getProtocolBody(hlogService.getConf());
+                        body = MetaData.getProtocolBody(head);
                     } else {
                         reader.seek(entry.getPos());
                     }
@@ -130,8 +134,8 @@ public class HReplicationProducer implements Runnable {
             }
 
             if (count > 0) {
-                if (!doSinkPart(group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(), body,
-                                count)) {
+                setHead(head, group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(), count);
+                if (!doSinkPart(head, body)) {
                     // 如果失败则返回,不再继续更新
                     return;
                 }
@@ -152,13 +156,15 @@ public class HReplicationProducer implements Runnable {
         }
     }
 
-    private boolean doSinkPart(String groupName, long timeStamp, long start, long end, ProtocolBody body, long count) {
-        ProtocolHead head = MetaData.getProtocolHead(hlogService.getConf());
+    private void setHead(ProtocolHead head, String groupName, long timeStamp, long start, long end, long count) {
         head.setCount(count);
         head.setGroupName(groupName);
         head.setFileTimestamp(timeStamp);
         head.setStartOffset(start);
         head.setEndOffset(end);
+    }
+
+    private boolean doSinkPart(ProtocolHead head, ProtocolBody body) {
         if (doAdapter(head, body)) {
             return true;
         }

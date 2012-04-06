@@ -47,6 +47,7 @@ public class MetaData {
 
     protected static Map<String, Class<? extends ProtocolBody>> clazzes = new ConcurrentHashMap<String, Class<? extends ProtocolBody>>();
 
+    @SuppressWarnings("unchecked")
     public static Class<? extends ProtocolBody> getBodyClass(int version) {
         Class<? extends ProtocolBody> clazz = null;
         try {
@@ -63,32 +64,29 @@ public class MetaData {
 
     public static ProtocolHead getProtocolHead(Configuration conf) {
         ProtocolHead head = new ProtocolHead();
-        head.setVersion(conf.getInt(ProducerConstants.CONFKEY_PROTOCOL_VERSION, 2));
+        head.setVersion(getDefaultProtocolVersion(conf));
         return head;
     }
 
-    public static ProtocolBody getProtocolBody(Configuration conf) {
+    public static ProtocolBody getProtocolBody(ProtocolHead head) {
         try {
-            ProtocolBody body = getBodyClass(conf.getInt(ProducerConstants.CONFKEY_PROTOCOL_VERSION, 2)).newInstance();
+            ProtocolBody body = getBodyClass(head.getVersion()).newInstance();
             return body;
         } catch (Exception e) {
             return new ProtocolBodyV2();
         }
     }
     
-    public static ProtocolBody getProtocolBody(Configuration conf, int version) {
-        try {
-            ProtocolBody body = getBodyClass(version).newInstance();
-            return body;
-        } catch (Exception e) {
-            return getProtocolBody(conf);
-        }
+    public static int getDefaultProtocolVersion(Configuration conf){
+        return conf.getInt(ProducerConstants.CONFKEY_PROTOCOL_VERSION, 2);
     }
+    
 
     public static MetaData getMetaData(Configuration conf) {
         MetaData minData = new MetaData();
-        minData.setHead(getProtocolHead(conf));
-        minData.setBody(getProtocolBody(conf));
+        ProtocolHead head = getProtocolHead(conf);
+        minData.setHead(head);
+        minData.setBody(getProtocolBody(head));
         return minData;
     }
 
