@@ -141,6 +141,6 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
     public abstract void doRun() throws Exception;
 
     public String getJobName() {
-        return HLogUtil.getBaseInfo();
+        return HLogUtil.getBaseInfo(this);
     }
 }

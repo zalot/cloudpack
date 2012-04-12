@@ -72,7 +72,7 @@ public class HReplicationProducer implements Runnable {
                     // 每个Group不能连续操作，需要间隔 (优化后)
                     if (group.getLastOperatorTime() + minGroupOperatorInterval < System.currentTimeMillis()) {
                         if(LOG.isInfoEnabled()){
-                            LOG.info(HLogUtil.getBaseInfo() + " - doGroup " + group);
+                            LOG.info(HLogUtil.getBaseInfo(null) + " - doGroup " + group);
                         }
                         doSinkGroup(group);
                         group.setLastOperatorTime(System.currentTimeMillis());

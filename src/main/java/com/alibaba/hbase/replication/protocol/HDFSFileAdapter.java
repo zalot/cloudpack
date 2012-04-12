@@ -38,7 +38,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
     public static final String       CONFKEY_HDFS_FS_REJECTPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.rejectpath";
     public static final String       CONFKEY_HDFS_FS_TARGETPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.targetpath";
     public static final String       CONFKEY_HDFS_FS_ROOT       = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.root";
-    public static final FsPermission PERMISSION                 = new FsPermission((short) 0666);
+    public static final FsPermission PERMISSION                 = new FsPermission((short) 0766);
     protected static final Log       LOG                        = LogFactory.getLog(HDFSFileAdapter.class);
     public static final String       SPLIT_SYMBOL               = "|";
 
@@ -128,9 +128,11 @@ public class HDFSFileAdapter extends ProtocolAdapter {
             if (!fs.exists(oldPath)) {
                 fs.mkdirs(oldPath);
             }
+            fs.setPermission(oldPath, PERMISSION);
             if (!fs.exists(rejectPath)) {
                 fs.mkdirs(rejectPath);
             }
+            fs.setPermission(rejectPath, PERMISSION);
         } catch (Exception e) {
             LOG.error("consumer check error", e);
         }
@@ -227,14 +229,18 @@ public class HDFSFileAdapter extends ProtocolAdapter {
         try {
             if (!fs.exists(targetPath)) {
                 fs.mkdirs(targetPath);
-                // fs.mkdirs(targetPath, FsPermission.getDefault())
             }
+            fs.setPermission(targetPath, PERMISSION);
+
             if (!fs.exists(targetTmpPath)) {
                 fs.mkdirs(targetTmpPath);
             }
+            fs.setPermission(targetTmpPath, PERMISSION);
+
             if (!fs.exists(digestPath)) {
                 fs.mkdirs(digestPath);
             }
+            fs.setPermission(digestPath, PERMISSION);
         } catch (Exception e) {
             e.printStackTrace();
         }

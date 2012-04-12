@@ -165,8 +165,10 @@ public class HLogUtil {
         return b;
     }
 
-    public static String getBaseInfo() {
+    public static String getBaseInfo(Object obj) {
         String mName = ManagementFactory.getRuntimeMXBean().getName();
-        return "[host]" + mName + " [thread]" + Thread.currentThread().getName();
+        if (obj != null) return "[host]" + mName + " [thread]" + Thread.currentThread().getName() + " [class]"
+                                + obj.getClass().getName();
+        else return "[host]" + mName + " [thread]" + Thread.currentThread().getName();
     }
 }
