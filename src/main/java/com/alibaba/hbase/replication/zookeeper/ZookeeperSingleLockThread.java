@@ -112,7 +112,7 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
                 if (!init) {
                     init();
                 }
-                if (LOG.isInfoEnabled()) LOG.info(getJobName() + " try lock ....");
+                if (LOG.isDebugEnabled()) LOG.debug(getJobName() + " try lock ....");
                 isLock = lock();
                 if (isLock) {
                     if (LOG.isInfoEnabled()) LOG.info(getJobName() + " lock ....");
@@ -124,7 +124,7 @@ public abstract class ZookeeperSingleLockThread implements Runnable {
             } finally {
                 if (isLock) {
                     if (unlock()) {
-                        if (LOG.isInfoEnabled()) LOG.info(getJobName() + " unlock ....");
+                        if (LOG.isDebugEnabled()) LOG.debug(getJobName() + " unlock ....");
                     }
                 }
             }

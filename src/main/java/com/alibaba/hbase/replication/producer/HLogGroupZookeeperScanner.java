@@ -95,8 +95,8 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
         for (String groupStr : hlogEntryPersistence.listGroupName()) {
             if (groups.get(groupStr) == null) {
                 hlogEntryPersistence.deleteGroup(groupStr);
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("scan delete group[" + groupStr + "]");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("scan delete group[" + groupStr + "]");
                 }
             }
         }
@@ -111,8 +111,8 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
                 for (HLogEntry entry : hlogEntryPersistence.listEntry(group.getGroupName())) {
                     if (!group.contains(entry)) {
                         hlogEntryPersistence.deleteEntry(entry);
-                        if (LOG.isInfoEnabled()) {
-                            LOG.info("scan delete group-entry[" + entry + "]");
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("scan delete group-entry[" + entry + "]");
                         }
                     }
                 }
@@ -121,7 +121,7 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
                     isLock = hlogEntryPersistence.lockGroup(group.getGroupName());
                     if (isLock) {
                         if (LOG.isDebugEnabled()) {
-                            LOG.info("scan lock group[" + group.getGroupName() + "]");
+                            LOG.debug("scan lock group[" + group.getGroupName() + "]");
                         }
                         break;
                     }
@@ -137,7 +137,7 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
                     } finally {
                         hlogEntryPersistence.unlockGroup(group.getGroupName());
                         if (LOG.isDebugEnabled()) {
-                            LOG.info("scan unlock group[" + group.getGroupName() + "]");
+                            LOG.debug("scan unlock group[" + group.getGroupName() + "]");
                         }
                     }
                 }
