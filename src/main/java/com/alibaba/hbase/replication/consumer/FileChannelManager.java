@@ -75,7 +75,7 @@ public class FileChannelManager {
 
     protected ThreadPoolExecutor   crushPool;
 
-    public void init() throws IOException, KeeperException, InterruptedException {
+    public void init() throws Exception {
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager is pendding to start.");
         }

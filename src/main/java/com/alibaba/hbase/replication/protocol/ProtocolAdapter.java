@@ -30,18 +30,18 @@ public abstract class ProtocolAdapter {
 
     public abstract List<ProtocolHead> listHead() throws Exception;
 
-    public abstract void reject(ProtocolHead head) throws Exception ;
+    public abstract void reject(ProtocolHead head) throws Exception;
 
     public abstract void recover(MetaData data) throws Exception;
 
-    public abstract void init(Configuration conf);
+    public abstract void init(Configuration conf) throws Exception;
 
-    public abstract List<ProtocolHead> listRejectHead() throws Exception ;
+    public abstract List<ProtocolHead> listRejectHead() throws Exception;
 
     protected static ProtocolAdapter _adapter;
 
     @SuppressWarnings("unchecked")
-    public static ProtocolAdapter getAdapter(Configuration conf) {
+    public static ProtocolAdapter getAdapter(Configuration conf) throws Exception {
         if (_adapter != null) return _adapter;
         String clazzStr = conf.get(ProducerConstants.CONFKEY_PROTOCOL_CLASS);
         try {
@@ -51,6 +51,7 @@ public abstract class ProtocolAdapter {
             _adapter = adapter;
         } catch (Exception e) {
             LOG.error("getAdapter error", e);
+            throw e;
         }
         return _adapter;
     }
