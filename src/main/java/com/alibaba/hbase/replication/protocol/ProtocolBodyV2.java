@@ -1,7 +1,6 @@
 package com.alibaba.hbase.replication.protocol;
 
 import com.alibaba.hbase.replication.protocol.protobuf.BodySerializingHandler;
-import com.alibaba.hbase.replication.protocol.protobuf.SerBody;
 import com.alibaba.hbase.replication.utility.HLogUtil;
 
 /**
