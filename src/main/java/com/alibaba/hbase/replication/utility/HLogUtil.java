@@ -3,6 +3,7 @@ package com.alibaba.hbase.replication.utility;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,11 +91,10 @@ public class HLogUtil {
             filePath = rootPath.toString() + "/.oldlogs/" + entry.getName();
         }
         Path path = new Path(filePath);
-        if(fs.exists(path))
-            return path;
+        if (fs.exists(path)) return path;
         return null;
     }
-    
+
     public static HLogEntry getHLogEntryByHead(ProtocolHead head) {
         HLogEntry entry = new HLogEntry();
         entry.setGroupName(head.getGroupName());
@@ -103,8 +103,7 @@ public class HLogUtil {
         entry.setType(HLogEntry.Type.OLD);
         return entry;
     }
-    
-    
+
     public static byte[] gzip(byte[] data) throws Exception {
         byte[] rs;
         GZIPOutputStream gzipOut = null;
@@ -164,5 +163,10 @@ public class HLogUtil {
             byteIn = null;
         }
         return b;
+    }
+
+    public static String getBaseInfo(Object obj) {
+        String mName = ManagementFactory.getRuntimeMXBean().getName();
+        return "[host]" + mName + " [thread]" + Thread.currentThread().getName() + " [class]" + obj.getClass().getName();
     }
 }
