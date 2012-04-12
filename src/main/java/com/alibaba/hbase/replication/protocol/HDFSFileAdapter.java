@@ -38,7 +38,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
     public static final String       CONFKEY_HDFS_FS_REJECTPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.rejectpath";
     public static final String       CONFKEY_HDFS_FS_TARGETPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.targetpath";
     public static final String       CONFKEY_HDFS_FS_ROOT       = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.root";
-    public static final FsPermission PERMISSION                 = new FsPermission((short) 0766);
+    public static final FsPermission PERMISSION                 = new FsPermission((short) 0777);
     protected static final Log       LOG                        = LogFactory.getLog(HDFSFileAdapter.class);
     public static final String       SPLIT_SYMBOL               = "|";
 
