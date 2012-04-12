@@ -14,7 +14,6 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
@@ -22,9 +21,8 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
-import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.ProtocolBody;
-import com.alibaba.hbase.replication.protocol.protobuf.SerBody.Edit;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
 
 /**
  * 日志工具
