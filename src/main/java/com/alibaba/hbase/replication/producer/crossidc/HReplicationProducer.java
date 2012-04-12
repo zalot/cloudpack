@@ -3,10 +3,12 @@ package com.alibaba.hbase.replication.producer.crossidc;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.zookeeper.KeeperException;
 
@@ -16,6 +18,7 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry.Type;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
+import com.alibaba.hbase.replication.producer.UuidService;
 import com.alibaba.hbase.replication.protocol.MetaData;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolBody;
@@ -121,7 +124,7 @@ public class HReplicationProducer implements Runnable {
                 } else {
                     entry.setLastVerifiedPos(reader.getPosition());
                 }
-                count = count + HLogUtil.put2Body(ent, body);
+                count = count + HLogUtil.put2Body(ent, body, UuidService.getLocalUUID());
                 if (count > maxReaderBuffer) {
                     setHead(head, group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
                             count);

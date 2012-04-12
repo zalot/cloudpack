@@ -10,6 +10,7 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import com.alibaba.hbase.replication.hlog.HLogService;
 import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
 import com.alibaba.hbase.replication.hlog.reader.HLogReader;
+import com.alibaba.hbase.replication.producer.UuidService;
 import com.alibaba.hbase.replication.protocol.ProtocolBody;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.MetaData;
@@ -85,7 +86,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
             reader = hlogService.getReader(entry);
             if (reader != null) {
                 while ((ent = reader.next()) != null) {
-                    HLogUtil.put2Body(ent, body);
+                    HLogUtil.put2Body(ent, body, UuidService.getLocalUUID());
                     if (reader.getPosition() == head.getEndOffset()) {
                         break;
                     }
