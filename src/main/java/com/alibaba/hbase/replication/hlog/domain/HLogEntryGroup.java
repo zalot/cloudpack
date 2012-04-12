@@ -11,6 +11,11 @@ import java.util.List;
  */
 public class HLogEntryGroup {
 
+    @Override
+    public String toString() {
+        return "HLogEntryGroup [groupName=" + groupName + "]";
+    }
+
     protected String groupName;
     protected long   lastOperatorTime;
     protected List<HLogEntry> entrys = new ArrayList<HLogEntry>();

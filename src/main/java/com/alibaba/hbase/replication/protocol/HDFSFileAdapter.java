@@ -16,6 +16,7 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,14 +33,14 @@ import com.alibaba.hbase.replication.utility.ConsumerConstants;
 @Service("fileAdapter")
 public class HDFSFileAdapter extends ProtocolAdapter {
 
-    public static final String CONFKEY_HDFS_FS            = "com.alibaba.hbase.replication.protocol.adapter.hdfs.fs";
-    public static final String CONFKEY_HDFS_FS_OLDPATH    = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.oldpath";
-    public static final String CONFKEY_HDFS_FS_REJECTPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.rejectpath";
-    public static final String CONFKEY_HDFS_FS_TARGETPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.targetpath";
-    public static final String CONFKEY_HDFS_FS_ROOT       = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.root";
-
-    protected static final Log LOG                        = LogFactory.getLog(HDFSFileAdapter.class);
-    public static final String SPLIT_SYMBOL               = "|";
+    public static final String       CONFKEY_HDFS_FS            = "com.alibaba.hbase.replication.protocol.adapter.hdfs.fs";
+    public static final String       CONFKEY_HDFS_FS_OLDPATH    = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.oldpath";
+    public static final String       CONFKEY_HDFS_FS_REJECTPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.rejectpath";
+    public static final String       CONFKEY_HDFS_FS_TARGETPATH = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.targetpath";
+    public static final String       CONFKEY_HDFS_FS_ROOT       = "com.alibaba.hbase.replication.protocol.adapter.hdfs.dir.root";
+    public static final FsPermission PERMISSION                 = new FsPermission((short) 0666);
+    protected static final Log       LOG                        = LogFactory.getLog(HDFSFileAdapter.class);
+    public static final String       SPLIT_SYMBOL               = "|";
 
     public static String head2FileName(ProtocolHead head) {
         return head.version + SPLIT_SYMBOL // [0]
@@ -226,6 +227,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
         try {
             if (!fs.exists(targetPath)) {
                 fs.mkdirs(targetPath);
+                // fs.mkdirs(targetPath, FsPermission.getDefault())
             }
             if (!fs.exists(targetTmpPath)) {
                 fs.mkdirs(targetTmpPath);
@@ -343,6 +345,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
             targetOutput = fs.create(targetTmpFilePath, true);
             targetOutput.write(bodyBytes);
             targetOutput.close();
+            fs.setPermission(targetTmpFilePath, PERMISSION);
 
             // write MD5
             String md5fileName = head2MD5FileName(data.getHead());
@@ -351,7 +354,7 @@ public class HDFSFileAdapter extends ProtocolAdapter {
             targetMD5Output = fs.create(tmpMD5Path, true);
             targetMD5Output.write(digest.digest(bodyBytes));
             targetMD5Output.close();
-
+            fs.setPermission(tmpMD5Path, PERMISSION);
             // move tmpFile and MD5File to source directory
             Path sourceFilePath = new Path(targetPath, targetTmpFilePath.getName());
             Path sourceMd5FilePath = new Path(digestPath, tmpMD5Path.getName());
