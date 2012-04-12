@@ -144,11 +144,16 @@ public class FileChannelRunnable implements Runnable {
                                     dataLoadingManager.batchLoad(tableName, editMap.get(tableName));
                                 }
                                 // 执行完成后清除相关文件
-                                try {
-                                    fileAdapter.clean(fileHead);
-                                } catch (Exception e) {
-                                    if (LOG.isWarnEnabled()) {
-                                        LOG.warn("clean failed.", e);
+                                while (true) {
+                                    try {
+                                        fileAdapter.clean(fileHead);
+                                        break;
+                                    } catch (Exception e) {
+                                        LOG.error("clean error " + fileHead , e);
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e1) {
+                                        }
                                     }
                                 }
                             }
