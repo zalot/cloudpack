@@ -16,6 +16,7 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,21 +124,6 @@ public class HDFSFileAdapter extends ProtocolAdapter {
         if (LOG.isInfoEnabled()) LOG.info("doAdapter Over - > " + head);
     }
 
-    private void consumer_check() {
-        try {
-            if (!fs.exists(oldPath)) {
-                fs.mkdirs(oldPath);
-            }
-            fs.setPermission(oldPath, PERMISSION);
-            if (!fs.exists(rejectPath)) {
-                fs.mkdirs(rejectPath);
-            }
-            fs.setPermission(rejectPath, PERMISSION);
-        } catch (Exception e) {
-            LOG.error("consumer check error", e);
-        }
-    }
-
     /**
      * 方便测试
      * 
@@ -230,21 +216,40 @@ public class HDFSFileAdapter extends ProtocolAdapter {
             if (!fs.exists(targetPath)) {
                 fs.mkdirs(targetPath);
             }
-            fs.setPermission(targetPath, PERMISSION);
 
             if (!fs.exists(targetTmpPath)) {
                 fs.mkdirs(targetTmpPath);
             }
-            fs.setPermission(targetTmpPath, PERMISSION);
 
             if (!fs.exists(digestPath)) {
                 fs.mkdirs(digestPath);
             }
-            fs.setPermission(digestPath, PERMISSION);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private void consumer_check() {
+        try {
+            if (!fs.exists(oldPath)) {
+                fs.mkdirs(oldPath);
+            }
+            if (!fs.exists(rejectPath)) {
+                fs.mkdirs(rejectPath);
+            }
+        } catch (Exception e) {
+            LOG.error("consumer check error", e);
+        }
+    }
+
+    // protected boolean checkFileOrDirectory(FileStatus fss) {
+    // if (!fss.getPermission().getOtherAction().implies(FsAction)) {
+    //
+    // }
+    // if (!fss.getPermission().getOtherAction().implies(FsAction.READ_WRITE)) {
+    //
+    // }
+    // }
 
     @Override
     public MetaData read(ProtocolHead head) throws Exception {
