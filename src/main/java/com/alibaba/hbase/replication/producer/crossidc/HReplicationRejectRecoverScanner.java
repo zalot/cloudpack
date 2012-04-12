@@ -86,7 +86,7 @@ public class HReplicationRejectRecoverScanner extends ZookeeperSingleLockThread 
             reader = hlogService.getReader(entry);
             if (reader != null) {
                 while ((ent = reader.next()) != null) {
-                    HLogUtil.put2Body(ent, body, UuidService.getLocalUUID());
+                    HLogUtil.put2Body(ent, body, UuidService.getMySelfUUID());
                     if (reader.getPosition() == head.getEndOffset()) {
                         break;
                     }

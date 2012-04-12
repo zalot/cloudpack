@@ -6,7 +6,7 @@ import org.apache.hadoop.hbase.HConstants;
 
 public class UuidService {
 
-    public static UUID getLocalUUID() {
+    public static UUID getMySelfUUID() {
         return HConstants.DEFAULT_CLUSTER_ID;
     }
 }

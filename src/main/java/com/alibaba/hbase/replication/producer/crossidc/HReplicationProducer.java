@@ -124,7 +124,7 @@ public class HReplicationProducer implements Runnable {
                 } else {
                     entry.setLastVerifiedPos(reader.getPosition());
                 }
-                count = count + HLogUtil.put2Body(ent, body, UuidService.getLocalUUID());
+                count = count + HLogUtil.put2Body(ent, body, UuidService.getMySelfUUID());
                 if (count > maxReaderBuffer) {
                     setHead(head, group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
                             count);
