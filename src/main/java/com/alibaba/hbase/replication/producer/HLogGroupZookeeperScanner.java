@@ -95,7 +95,7 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
         for (String groupStr : hlogEntryPersistence.listGroupName()) {
             if (groups.get(groupStr) == null) {
                 hlogEntryPersistence.deleteGroup(groupStr);
-                if(LOG.isInfoEnabled()){
+                if (LOG.isInfoEnabled()) {
                     LOG.info("scan delete group[" + groupStr + "]");
                 }
             }
@@ -111,7 +111,7 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
                 for (HLogEntry entry : hlogEntryPersistence.listEntry(group.getGroupName())) {
                     if (!group.contains(entry)) {
                         hlogEntryPersistence.deleteEntry(entry);
-                        if(LOG.isInfoEnabled()){
+                        if (LOG.isInfoEnabled()) {
                             LOG.info("scan delete group-entry[" + entry + "]");
                         }
                     }
@@ -120,7 +120,7 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
                 while (!isLock) {
                     isLock = hlogEntryPersistence.lockGroup(group.getGroupName());
                     if (isLock) {
-                        if(LOG.isDebugEnabled()){
+                        if (LOG.isDebugEnabled()) {
                             LOG.info("scan lock group[" + group.getGroupName() + "]");
                         }
                         break;
@@ -131,12 +131,12 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
                 if (isLock) {
                     try {
                         hlogEntryPersistence.updateGroup(group, true);
-                        if(LOG.isInfoEnabled()){
+                        if (LOG.isInfoEnabled()) {
                             LOG.info("scan update group[" + group.getGroupName() + "]");
                         }
                     } finally {
                         hlogEntryPersistence.unlockGroup(group.getGroupName());
-                        if(LOG.isDebugEnabled()){
+                        if (LOG.isDebugEnabled()) {
                             LOG.info("scan unlock group[" + group.getGroupName() + "]");
                         }
                     }
@@ -161,10 +161,10 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
          * if (lastScanTst == -1 || lastScanTst + scanOldHlogTimeOut >= System.currentTimeMillis()) {
          * groups.put(HLogUtil.getHLogsByHDFS(fs, oldHlogPath)); }
          */
-        if (!hasScanOldHLog) {
-            groups.put(hlogService.getAllOldHLogs());
-            hasScanOldHLog = true;
-        }
+        // if (!hasScanOldHLog) {
+        groups.put(hlogService.getAllOldHLogs());
+        // hasScanOldHLog = true;
+        // }
     }
 
     public byte[] getLastScanTime() {
