@@ -60,12 +60,12 @@ public class HLogUtil {
         return hlogs;
     }
 
-    public static int put2Body(Entry entry, ProtocolBody body) {
+    public static int put2Body(Entry entry, ProtocolBody body, UUID localUUID) {
         byte[] tableName = entry.getKey().getTablename();
         UUID clusterId = entry.getKey().getClusterId();
 
         // 目前只支持单向同步，所以ClusterId 只要不是默认的就判定该 Entry 为同步的数据
-        if (clusterId != HConstants.DEFAULT_CLUSTER_ID) {
+        if (clusterId != localUUID) {
             return 0;
         }
         int count = 0;
