@@ -6,7 +6,7 @@
     <!--  以下是appender的定义                                                 -->
     <!-- ===================================================================== -->
     <appender name="ROOT" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="${replication_logging_root}/root.log"/>
+        <param name="file" value="${replication_output}/root.log"/>
 	    <param name="append" value="true"/>
         <param name="encoding" value="UTF-8"/>
         <param name="threshold" value="info"/>
@@ -15,7 +15,7 @@
         </layout>
     </appender>
 	<appender name="REP" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="${replication_logging_root}/${replication_logging_file}"/>
+        <param name="file" value="${replication_output}/${replication_logging_file}"/>
 	    <param name="append" value="true"/>
         <param name="encoding" value="UTF-8"/>
         <param name="threshold" value="info"/>
@@ -24,7 +24,7 @@
         </layout>
     </appender>
     <appender name="HADOOP" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="${replication_logging_root}/${replication_hadoop_logging_file}"/>
+        <param name="file" value="${replication_output}/${replication_hadoop_logging_file}"/>
         <param name="append" value="true"/>
         <param name="encoding" value="UTF-8"/>
         <param name="threshold" value="info"/>
