@@ -120,7 +120,7 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
                 while (!isLock) {
                     isLock = hlogEntryPersistence.lockGroup(group.getGroupName());
                     if (isLock) {
-                        if(LOG.isInfoEnabled()){
+                        if(LOG.isDebugEnabled()){
                             LOG.info("scan lock group[" + group.getGroupName() + "]");
                         }
                         break;
@@ -136,7 +136,7 @@ public class HLogGroupZookeeperScanner extends ZookeeperSingleLockThread {
                         }
                     } finally {
                         hlogEntryPersistence.unlockGroup(group.getGroupName());
-                        if(LOG.isInfoEnabled()){
+                        if(LOG.isDebugEnabled()){
                             LOG.info("scan unlock group[" + group.getGroupName() + "]");
                         }
                     }
