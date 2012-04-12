@@ -14,7 +14,7 @@ public interface ConsumerResourcePool {
 
     public List<String> listGroup();
 
-    public List<ProtocolHead> listHead(String groupName);
+    public List<ProtocolHead> listHeadByGroupName(String groupName);
 
     public boolean lockGroup(String groupName);
 }

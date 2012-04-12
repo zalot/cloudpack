@@ -5,18 +5,24 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alibaba.hbase.replication.consumer.v2.domain.Heads;
-import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.protocol.ProtocolAdapter;
+import com.alibaba.hbase.replication.protocol.ProtocolHead;
+import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
 
-/**
- * v2 版 Consumer
- * 
- * 类DefaultConsumerResourcePool.java的实现描述：TODO 类实现描述 
- * @author zalot.zhaoh Mar 22, 2012 11:28:26 AM
- */
-public class DefaultConsumerResourcePool implements ConsumerResourcePool {
+public class ConsumerZookeeperResourcePool implements ConsumerResourcePool{
 
-    ProtocolAdapter    protocolAdapter;
+    protected ProtocolAdapter    protocolAdapter;
+    protected RecoverableZooKeeper zookeeper;
+    
+    public RecoverableZooKeeper getZookeeper() {
+        return zookeeper;
+    }
+
+    
+    public void setZookeeper(RecoverableZooKeeper zookeeper) {
+        this.zookeeper = zookeeper;
+    }
+
     Map<String, Heads> heads = new ConcurrentHashMap<String, Heads>();
 
     public ProtocolAdapter getProtocolAdapter() {
@@ -27,28 +33,19 @@ public class DefaultConsumerResourcePool implements ConsumerResourcePool {
         this.protocolAdapter = protocolAdapter;
     }
 
-    public void flush(){
-        try {
-            protocolAdapter.listHead();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+    
     @Override
     public List<String> listGroup() {
         return null;
     }
 
     @Override
-    public List<ProtocolHead> listHead(String groupName) {
-        // TODO Auto-generated method stub
+    public List<ProtocolHead> listHeadByGroupName(String groupName) {
         return null;
     }
 
     @Override
     public boolean lockGroup(String groupName) {
-        // TODO Auto-generated method stub
         return false;
     }
 
