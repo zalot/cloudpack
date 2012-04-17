@@ -26,7 +26,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -53,7 +52,7 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * ------------------------------------------ <BR>
  * 1.取消了部分注入，采用原始的 set方法, 以及init <BR>
  * 2.修改了 MetaData 协议的使用方式<BR>
- * 3.将用 v2 代替 来获取 Heads ，而非直接操作磁盘，将操作磁盘的过程放在 Protocol中<BR>
+ * 3.将用 v2 代替 来获取 Heads ，而非直接操作HDFS，将操作HDFS的过程放在 Protocol中<BR>
  * ------------------------------------------
  */
 @Service("fileChannelManager")

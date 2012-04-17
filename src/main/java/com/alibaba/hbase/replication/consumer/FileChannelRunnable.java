@@ -46,8 +46,11 @@ import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类
  * 
  * @author dongsh 2012-2-29 下午03:42:49
- * @author zalot.zhaoh ------------------------------------------ 1.取消了部分注入，采用原始的 set方法, 以及init
- * 2.去掉了FileNofound的错误判断，因为资源的不正确设置会导致这个错误，但暂未有时间解决 v2 将会替换该类 3.此版本仅支持 Body1 Protocol 的支持
+ * @author zalot.zhaoh ------------------------------------------<BR>
+ * 1.取消了部分注入，采用原始的 set方法, 以及init <BR>
+ * 2.去掉了FileNofound的错误判断，因为资源的不正确设置会导致这个错误，但暂未有时间解决 v2 将会替换该类 <BR>
+ * 3.此版本仅支持 ConsumerV1Support 的支持<BR>
+ * 4.清理文件不允许失败，循环清理<BR>
  * ------------------------------------------
  */
 public class FileChannelRunnable implements Runnable {
@@ -149,7 +152,7 @@ public class FileChannelRunnable implements Runnable {
                                         fileAdapter.clean(fileHead);
                                         break;
                                     } catch (Exception e) {
-                                        LOG.error("clean error " + fileHead , e);
+                                        LOG.error("clean error " + fileHead, e);
                                         try {
                                             Thread.sleep(1000);
                                         } catch (InterruptedException e1) {

@@ -16,6 +16,10 @@ import org.apache.hadoop.hbase.util.Bytes;
  * 类ConsumerZNode.java的实现描述：一个中间文件被处理的状态节点
  * 
  * @author dongsh 2012-2-29 下午01:58:10
+ * @author zalot.zhaoh<BR>
+ * ------------------------------------------<BR>
+ * toByteArray 替换成了普通的String byts<BR>
+ * ------------------------------------------
  */
 public class ConsumerZNode implements Serializable {
 
@@ -85,11 +89,11 @@ public class ConsumerZNode implements Serializable {
     public byte[] toByteArray() {
         // len = 6
         final String data = groupName // 0
-        + SPLIT + fileName // 1
-        + SPLIT + processorName // 2
-        + SPLIT + fileLastModified //3
-        + SPLIT + statusLastModified //4
-        + SPLIT + version; //5
+                            + SPLIT + fileName // 1
+                            + SPLIT + processorName // 2
+                            + SPLIT + fileLastModified // 3
+                            + SPLIT + statusLastModified // 4
+                            + SPLIT + version; // 5
 
         // len = 7
         // final String data = "";
