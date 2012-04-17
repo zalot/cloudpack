@@ -7,12 +7,10 @@
  */
 package com.alibaba.hbase.replication.consumer;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import org.apache.hadoop.hbase.util.Bytes;
 
 /**
  * 类ConsumerZNode.java的实现描述：一个中间文件被处理的状态节点
@@ -21,13 +19,14 @@ import java.io.Serializable;
  */
 public class ConsumerZNode implements Serializable {
 
-    private static final long serialVersionUID = -8921421815693312454L;
-    private String            groupName;
-    private String            fileName;
-    private long              fileLastModified;
-    private long              statusLastModified;
-    private String            processorName;
-    private int               version;
+    public static final String SPLIT            = "|";
+    private static final long  serialVersionUID = -8921421815693312454L;
+    private String             groupName;
+    private String             fileName;
+    private long               fileLastModified;
+    private long               statusLastModified;
+    private String             processorName;
+    private int                version;
 
     /**
      * @return the groupName
@@ -83,18 +82,36 @@ public class ConsumerZNode implements Serializable {
         this.version = version;
     }
 
-    public byte[] toByteArray() throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(this);
-        oos.flush();
-        return baos.toByteArray();
+    public byte[] toByteArray() {
+        // len = 6
+        final String data = groupName // 0
+        + SPLIT + fileName // 1
+        + SPLIT + processorName // 2
+        + SPLIT + fileLastModified //3
+        + SPLIT + statusLastModified //4
+        + SPLIT + version; //5
+
+        // len = 7
+        // final String data = "";
+
+        // len = 8
+        // final String data = "";
+        return Bytes.toBytes(data);
     }
 
     public static ConsumerZNode getFromByteArray(byte[] bytes) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bi = new ByteArrayInputStream(bytes);
-        ObjectInputStream oi = new ObjectInputStream(bi);
-        return (ConsumerZNode) oi.readObject();
+        String data = Bytes.toString(bytes);
+        String[] datas = data.split("|");
+        ConsumerZNode cz = new ConsumerZNode();
+        if (datas.length == 6) {
+            cz.setGroupName(datas[0]);
+            cz.setFileName(datas[1]);
+            cz.setProcessorName(datas[2]);
+            cz.setFileLastModified(Long.parseLong(datas[3]));
+            cz.setStatusLastModified(Long.parseLong(datas[4]));
+            cz.setVersion(Integer.parseInt(datas[5]));
+        }
+        return cz;
     }
 
     public static enum Status {
