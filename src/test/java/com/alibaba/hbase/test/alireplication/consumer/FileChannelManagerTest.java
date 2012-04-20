@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableNotFoundException;
@@ -39,8 +38,6 @@ import org.unitils.spring.annotation.SpringBeanByType;
 import com.alibaba.hbase.replication.consumer.FileChannelManager;
 import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
-import com.alibaba.hbase.replication.protocol.exception.FileParsingException;
-import com.alibaba.hbase.replication.protocol.exception.FileReadingException;
 import com.alibaba.hbase.replication.protocol.protobuf.SerBody;
 import com.alibaba.hbase.replication.utility.ConsumerConstants;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
