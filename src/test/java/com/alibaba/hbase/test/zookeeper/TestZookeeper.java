@@ -15,8 +15,8 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.alibaba.hbase.replication.test.util.TestConfigurationUtil;
 import com.alibaba.hbase.test.HBaseTestBase;
+import com.alibaba.hbase.test.alireplication.util.TestConfigurationUtil;
 
 /**
  * 类TestMZookeeper.java的实现描述：TODO 类实现描述

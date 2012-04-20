@@ -1,4 +1,4 @@
-package com.alibaba.hbase.hlog.test;
+package com.alibaba.hbase.test.regionserver;
 
 import java.io.File;
 import java.io.IOException;

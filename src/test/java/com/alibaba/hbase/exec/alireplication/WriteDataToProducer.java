@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.test.exec;
+package com.alibaba.hbase.exec.alireplication;
 
 import java.io.IOException;
 import java.util.ArrayList;

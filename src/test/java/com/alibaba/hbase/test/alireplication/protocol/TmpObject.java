@@ -1,7 +1,8 @@
-package com.alibaba.hbase.replication.test.protocol;
+package com.alibaba.hbase.test.alireplication.protocol;
 
 import java.io.Serializable;
 import java.util.UUID;
+
 
 public class TmpObject implements Serializable {
 

@@ -5,7 +5,7 @@
  * use it only in accordance with the terms of the license agreement you entered
  * into with Alibaba.com.
  */
-package com.alibaba.hbase.replication.test.consumer;
+package com.alibaba.hbase.test.alireplication.consumer;
 
 import java.io.IOException;
 import java.net.URI;

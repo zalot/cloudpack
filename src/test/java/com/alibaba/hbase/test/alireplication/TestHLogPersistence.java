@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.test;
+package com.alibaba.hbase.test.alireplication;
 
 import junit.framework.Assert;
 
@@ -11,12 +11,13 @@ import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
 import com.alibaba.hbase.replication.utility.ZKUtil;
 import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
 import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
+import com.alibaba.hbase.test.HBaseTestBase;
 
 /**
  * 类TestHLogPersistence.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 22, 2012 1:50:48 PM
  */
-public class TestHLogPersistence extends TestBase {
+public class TestHLogPersistence extends HBaseTestBase {
 
     @BeforeClass
     public static void init() throws Exception {

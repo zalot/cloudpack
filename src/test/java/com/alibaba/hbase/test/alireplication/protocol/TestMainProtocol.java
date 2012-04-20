@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.test.protocol;
+package com.alibaba.hbase.test.alireplication.protocol;
 
 import java.util.UUID;
 
@@ -12,10 +12,10 @@ import com.alibaba.hbase.replication.protocol.ProtocolBody;
 import com.alibaba.hbase.replication.protocol.ProtocolBodyV2;
 import com.alibaba.hbase.replication.protocol.ProtocolHead;
 import com.alibaba.hbase.replication.server.ReplicationConf;
-import com.alibaba.hbase.replication.test.TestBase;
-import com.alibaba.hbase.replication.test.util.TestConfigurationUtil;
+import com.alibaba.hbase.test.HBaseTestBase;
+import com.alibaba.hbase.test.alireplication.util.TestConfigurationUtil;
 
-public class TestMainProtocol extends TestBase {
+public class TestMainProtocol extends HBaseTestBase {
 
     protected static ReplicationConf confProducer = new ReplicationConf();
 

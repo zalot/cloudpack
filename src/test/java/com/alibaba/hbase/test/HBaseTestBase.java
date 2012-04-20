@@ -79,6 +79,10 @@ public class HBaseTestBase {
         return table + UUID.randomUUID().toString().substring(0, 10);
     }
 
+    public static void createDefTable(Configuration conf) throws IOException {
+        createTable(conf, new String[] { "testA", "testB" }, new String[] { "colA", "colB" });
+    }
+
     public static void createTable(Configuration conf, String[] tables, String[] familys) throws IOException {
         HBaseAdmin admin = new HBaseAdmin(conf);
         for (String tableInfo : tables) {

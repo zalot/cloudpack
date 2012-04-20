@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.test.protocol;
+package com.alibaba.hbase.test.alireplication.protocol;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;

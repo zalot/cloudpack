@@ -1,4 +1,4 @@
-package com.alibaba.hbase.replication.test.util;
+package com.alibaba.hbase.test.alireplication.util;
 
 import org.apache.hadoop.conf.Configuration;
 
