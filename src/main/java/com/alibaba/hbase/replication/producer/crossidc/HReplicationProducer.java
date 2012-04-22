@@ -124,6 +124,7 @@ public class HReplicationProducer implements Runnable {
                 } else {
                     entry.setLastVerifiedPos(reader.getPosition());
                 }
+                //FIXME by dsh 是否完成多记录的去重与合并
                 count = count + HLogUtil.put2Body(ent, body, UuidService.getMySelfUUID());
                 if (count > maxReaderBuffer) {
                     setHead(head, group.getGroupName(), entry.getTimestamp(), entry.getPos(), reader.getPosition(),
