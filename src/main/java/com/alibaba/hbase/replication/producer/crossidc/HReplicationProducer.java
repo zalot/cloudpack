@@ -81,6 +81,8 @@ public class HReplicationProducer implements Runnable {
                     }
                 }
             }
+            //FIXME by dsh 此处存在这线程中断然后无人释放锁的风险
+            //FIXME 锁的内容容器唯一（相同hlogEntryPersistence的锁内容相同），isMeLockGroup可以避免多进程问题，但是无法避免多线程问题
             if (hlogEntryPersistence.isMeLockGroup(groupName)) {
                 hlogEntryPersistence.unlockGroup(groupName);
             }
