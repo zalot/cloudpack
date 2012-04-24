@@ -138,7 +138,7 @@ public class FileChannelRunnable implements Runnable {
                     }
                     if (metaData != null && metaData.getBody() != null) {
                         if (metaData.getBody() instanceof ConsumerV1Support) {
-                            ProtocolBodyV2 body = (ProtocolBodyV2) metaData.getBody();
+                        	ConsumerV1Support body = (ConsumerV1Support) metaData.getBody();
                             if (MapUtils.isNotEmpty(body.getEditMap())) {
                                 // 对于能够解析出body数据的进行加载
                                 Map<String, List<Edit>> editMap = body.getEditMap();
