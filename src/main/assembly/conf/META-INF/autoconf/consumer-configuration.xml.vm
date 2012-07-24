@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<configuration>
+	<!--  -->
+	<property>
+		<name>fs.default.name</name>
+		<value>${replication_protocol_adapter_hdfs_fs}</value>
+		<description>pls delete, use protocol</description>
+	</property>
+	<property>
+		<name>hbase.zookeeper.quorum</name>
+		<value>${replication_consumer_zookeeper_quorum}</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.property.clientPort</name>
+		<value>${replication_consumer_zookeeper_quorum_port}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.consumer.zookeeper.znoderoot</name>
+		<value>${replication_consumer_zookeeper_znoderoot}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.consumer.fileChannelPoolSize</name>
+		<value>${replication_consumer_fileChannelPoolSize}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.consumer.dataLoadingPoolSize</name>
+		<value>${replication_consumer_dataLoadingPoolSize}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.consumer.dataLoadingBatchSize</name>
+		<value>${replication_consumer_dataLoadingBatchSize}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.consumer.threadpool.queuesize</name>
+		<value>${replication_consumer_threadpool_queuesize}</value>
+	</property>
+	<property>
+		<name>com.alibaba.hbase.replication.consumer.threadpool.keepAliveTime</name>
+		<value>${replication_consumer_threadpool_keepAliveTime}</value>
+	</property>
+</configuration>
