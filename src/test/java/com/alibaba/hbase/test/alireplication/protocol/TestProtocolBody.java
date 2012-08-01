@@ -9,8 +9,8 @@ import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Test;
 
-import com.alibaba.hbase.replication.protocol.ProtocolBodyV1;
-import com.alibaba.hbase.replication.protocol.ProtocolBodyV2;
+import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolBodyV1;
+import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolBodyV2;
 
 public class TestProtocolBody {
 

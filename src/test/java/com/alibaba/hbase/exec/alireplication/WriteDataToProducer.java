@@ -12,7 +12,7 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.alibaba.hbase.replication.utility.ProducerConstants;
+import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
 
 /**
  * 用于压力测试

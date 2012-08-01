@@ -7,41 +7,41 @@ import org.apache.hadoop.fs.Path;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.alibaba.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
-import com.alibaba.hbase.replication.hlog.HLogService;
-import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
-import com.alibaba.hbase.replication.producer.crossidc.HReplicationProducer;
-import com.alibaba.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
-import com.alibaba.hbase.replication.protocol.HDFSFileAdapter;
-import com.alibaba.hbase.replication.protocol.ProtocolHead;
-import com.alibaba.hbase.replication.utility.ZKUtil;
-import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
-import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
-import com.alibaba.hbase.test.HBaseTestBase;
+import org.sourceopen.TestBase;
+import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
+import org.sourceopen.hadoop.hbase.replication.hlog.HLogService;
+import org.sourceopen.hadoop.hbase.replication.producer.HLogGroupZookeeperScanner;
+import org.sourceopen.hadoop.hbase.replication.producer.crossidc.HReplicationProducer;
+import org.sourceopen.hadoop.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
+import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
+import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
+import org.sourceopen.hadoop.hbase.replication.utility.ZKUtil;
+import org.sourceopen.hadoop.hbase.replication.zookeeper.NothingZookeeperWatch;
+import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
  * 主流成测试 类TestMain.java的实现描述：TODO 类实现描述
  * 
  * @author zalot.zhaoh Mar 19, 2012 11:26:29 AM
  */
-public class TestMain extends HBaseTestBase {
+public class TestMain extends TestBase {
 
     @BeforeClass
     public static void init() throws Exception {
         init();
-        start1(3, 3);
-        createDefTable(conf1);
+        startHBaseClusterA(3, 3);
+        createDefTable(_confA);
     }
 
     public void testReplicationRunInfomation() throws Exception {
-        HLogService service = new HLogService(conf1);
-        RecoverableZooKeeper zk = ZKUtil.connect(conf1, new NothingZookeeperWatch());
+        HLogService service = new HLogService(_confA);
+        RecoverableZooKeeper zk = ZKUtil.connect(_confA, new NothingZookeeperWatch());
 
-        HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(conf1, zk);
+        HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(_confA, zk);
         HDFSFileAdapter ad = new HDFSFileAdapter();
-        ad.init(conf1);
+        ad.init(_confA);
 
-        HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(conf1);
+        HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(_confA);
         scan.setHlogEntryPersistence(dao);
         scan.setHlogService(service);
         scan.setZooKeeper(zk);
@@ -49,7 +49,7 @@ public class TestMain extends HBaseTestBase {
         Thread threadscan = new Thread(scan);
         threadscan.start();
 
-        HReplicationProducer pro = new HReplicationProducer(conf1);
+        HReplicationProducer pro = new HReplicationProducer(_confA);
         pro.setAdapter(ad);
         pro.setHlogEntryPersistence(dao);
         pro.setHlogService(service);
@@ -58,7 +58,7 @@ public class TestMain extends HBaseTestBase {
         threadpro.start();
 
         while (true) {
-            insertRndData(pool1, "testA", "colA", "test", 1000);
+            insertRndData(_poolA, "testA", "colA", "test", 1000);
             printDFS(service.getFileSystem(), service.getHBaseRootDir().getParent());
             Thread.sleep(10000);
         }
@@ -66,32 +66,32 @@ public class TestMain extends HBaseTestBase {
 
     @Test
     public void testReplicationAndDFSFileAdapter() throws Exception {
-        HLogService service = new HLogService(conf1);
-        RecoverableZooKeeper zookeeper = ZKUtil.connect(conf1, new NothingZookeeperWatch());
+        HLogService service = new HLogService(_confA);
+        RecoverableZooKeeper zookeeper = ZKUtil.connect(_confA, new NothingZookeeperWatch());
 
-        HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(conf1, zookeeper);
+        HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(_confA, zookeeper);
         dao.setZookeeper(zookeeper);
 
         HDFSFileAdapter adapter = new HDFSFileAdapter();
-        adapter.init(conf1);
+        adapter.init(_confA);
 
-        HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(conf1);
+        HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(_confA);
         scan.setHlogEntryPersistence(dao);
         scan.setHlogService(service);
         scan.setZooKeeper(zookeeper);
 
-        HReplicationProducer producer = new HReplicationProducer(conf1);
+        HReplicationProducer producer = new HReplicationProducer(_confA);
         producer.setAdapter(adapter);
         producer.setHlogEntryPersistence(dao);
         producer.setHlogService(service);
 
-        HReplicationRejectRecoverScanner recover = new HReplicationRejectRecoverScanner(conf1);
+        HReplicationRejectRecoverScanner recover = new HReplicationRejectRecoverScanner(_confA);
         recover.setHlogService(service);
         recover.setZooKeeper(zookeeper);
         recover.setAdapter(adapter);
 
         // insert and run
-        insertRndData(pool1, "testA", "colA", "test", 1000);
+        insertRndData(_poolA, "testA", "colA", "test", 1000);
         scan.doScan();
         producer.doProducer();
 

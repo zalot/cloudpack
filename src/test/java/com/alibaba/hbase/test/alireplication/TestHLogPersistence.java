@@ -5,37 +5,37 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.alibaba.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
-import com.alibaba.hbase.replication.hlog.domain.HLogEntry;
-import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
-import com.alibaba.hbase.replication.utility.ZKUtil;
-import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
-import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
-import com.alibaba.hbase.test.HBaseTestBase;
+import org.sourceopen.TestBase;
+import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
+import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntry;
+import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntryGroup;
+import org.sourceopen.hadoop.hbase.replication.utility.ZKUtil;
+import org.sourceopen.hadoop.hbase.replication.zookeeper.NothingZookeeperWatch;
+import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
  * 类TestHLogPersistence.java的实现描述：TODO 类实现描述 
  * @author zalot.zhaoh Mar 22, 2012 1:50:48 PM
  */
-public class TestHLogPersistence extends HBaseTestBase {
+public class TestHLogPersistence extends TestBase {
 
     @BeforeClass
     public static void init() throws Exception {
-        init1();
+        initClusterA();
         // init2();
     }
 
     @Test
     public void testZookeeperHLogPersistenceSimple() throws Exception {
-        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(conf1, zk1);
+        RecoverableZooKeeper zk1 = ZKUtil.connect(_confA, new NothingZookeeperWatch());
+        final HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(_confA, zk1);
         dao1.setZookeeper(zk1);
-        dao1.init(conf1);
+        dao1.init(_confA);
 
-        RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryPoolZookeeperPersistence dao2 = new HLogEntryPoolZookeeperPersistence(conf1, zk2);
+        RecoverableZooKeeper zk2 = ZKUtil.connect(_confA, new NothingZookeeperWatch());
+        final HLogEntryPoolZookeeperPersistence dao2 = new HLogEntryPoolZookeeperPersistence(_confA, zk2);
         dao2.setZookeeper(zk2);
-        dao2.init(conf1);
+        dao2.init(_confA);
 
         HLogEntryGroup group = new HLogEntryGroup("test");
         dao1.createGroup(group, false);
@@ -69,15 +69,15 @@ public class TestHLogPersistence extends HBaseTestBase {
     public void testMuThreadPer() throws Exception {
         final HLogEntryGroup group = new HLogEntryGroup("testB");
 
-        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(conf1,zk1);
+        RecoverableZooKeeper zk1 = ZKUtil.connect(_confA, new NothingZookeeperWatch());
+        final HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(_confA,zk1);
         dao1.setZookeeper(zk1);
-        dao1.init(conf1);
+        dao1.init(_confA);
 
-        RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryPoolZookeeperPersistence dao2 = new HLogEntryPoolZookeeperPersistence(conf1,zk2);
+        RecoverableZooKeeper zk2 = ZKUtil.connect(_confA, new NothingZookeeperWatch());
+        final HLogEntryPoolZookeeperPersistence dao2 = new HLogEntryPoolZookeeperPersistence(_confA,zk2);
         dao2.setZookeeper(zk2);
-        dao2.init(conf1);
+        dao2.init(_confA);
 
         dao1.createGroup(group, false);
 

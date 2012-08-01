@@ -13,53 +13,53 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
-import com.alibaba.hbase.replication.hlog.HLogService;
-import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroup;
-import com.alibaba.hbase.replication.hlog.domain.HLogEntryGroups;
-import com.alibaba.hbase.replication.producer.HLogGroupZookeeperScanner;
-import com.alibaba.hbase.replication.utility.HLogUtil;
-import com.alibaba.hbase.replication.utility.ProducerConstants;
-import com.alibaba.hbase.replication.utility.ZKUtil;
-import com.alibaba.hbase.replication.zookeeper.NothingZookeeperWatch;
-import com.alibaba.hbase.replication.zookeeper.RecoverableZooKeeper;
-import com.alibaba.hbase.test.HBaseTestBase;
+import org.sourceopen.TestBase;
+import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
+import org.sourceopen.hadoop.hbase.replication.hlog.HLogService;
+import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntryGroup;
+import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntryGroups;
+import org.sourceopen.hadoop.hbase.replication.producer.HLogGroupZookeeperScanner;
+import org.sourceopen.hadoop.hbase.replication.utility.HLogUtil;
+import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
+import org.sourceopen.hadoop.hbase.replication.utility.ZKUtil;
+import org.sourceopen.hadoop.hbase.replication.zookeeper.NothingZookeeperWatch;
+import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
 
 /**
  * 类TestHLogScanner.java的实现描述：TODO 类实现描述
  * 
  * @author zalot.zhaoh Mar 22, 2012 1:50:42 PM
  */
-public class TestHLogScanner extends HBaseTestBase {
+public class TestHLogScanner extends TestBase {
 
     public final static int regionServerNum = 3;
 
     @BeforeClass
     public static void init() throws Exception {
-        init1();
-        start1(regionServerNum, 3);
-        createTable(conf1, new String[] {}, new String[] {});
+        initClusterA();
+        startHBaseClusterA(regionServerNum, 3);
+        createTable(_confA, new String[] {}, new String[] {});
     }
 
     @Test
     public void testHLogGroupScan() throws Exception {
-        HLogService service = new HLogService(conf1);
+        HLogService service = new HLogService(_confA);
 
         HLogGroupZookeeperScanner scan;
-        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(conf1, zk1);
+        RecoverableZooKeeper zk1 = ZKUtil.connect(_confA, new NothingZookeeperWatch());
+        HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(_confA, zk1);
         dao1.setZookeeper(zk1);
-        dao1.init(conf1);
+        dao1.init(_confA);
 
-        FileSystem fs = util1.getTestFileSystem();
-        scan = new HLogGroupZookeeperScanner(conf1);
+        FileSystem fs = _util1.getTestFileSystem();
+        scan = new HLogGroupZookeeperScanner(_confA);
         scan.setHlogEntryPersistence(dao1);
         scan.setHlogService(service);
         scan.setZooKeeper(zk1);
 
         int count = 0;
         while (true) {
-            insertRndData(pool1, "testA", "colA", "test", rnd.nextInt(1000));
+            insertRndData(_poolA, "testA", "colA", "test", rnd.nextInt(1000));
             Thread.sleep(10000 * 2);
             HLogEntryGroups groups = new HLogEntryGroups();
             groups.put(HLogUtil.getHLogsByHDFS(fs, service.getHLogDir()));
@@ -76,29 +76,29 @@ public class TestHLogScanner extends HBaseTestBase {
 
     @Test
     public void testMThreadScan() throws Exception {
-        HLogService service = new HLogService(conf1);
+        HLogService service = new HLogService(_confA);
         final HLogGroupZookeeperScanner scan1;
         final HLogGroupZookeeperScanner scan2;
 
-        RecoverableZooKeeper zk1 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(conf1, zk1);
+        RecoverableZooKeeper zk1 = ZKUtil.connect(_confA, new NothingZookeeperWatch());
+        final HLogEntryPoolZookeeperPersistence dao1 = new HLogEntryPoolZookeeperPersistence(_confA, zk1);
         dao1.setZookeeper(zk1);
-        dao1.init(conf1);
+        dao1.init(_confA);
 
-        RecoverableZooKeeper zk2 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        final HLogEntryPoolZookeeperPersistence dao2 = new HLogEntryPoolZookeeperPersistence(conf2, zk2);
+        RecoverableZooKeeper zk2 = ZKUtil.connect(_confA, new NothingZookeeperWatch());
+        final HLogEntryPoolZookeeperPersistence dao2 = new HLogEntryPoolZookeeperPersistence(_conf2, zk2);
         dao2.setZookeeper(zk2);
-        dao2.init(conf1);
+        dao2.init(_confA);
 
-        RecoverableZooKeeper zk3 = ZKUtil.connect(conf1, new NothingZookeeperWatch());
-        HLogEntryPoolZookeeperPersistence dao3 = new HLogEntryPoolZookeeperPersistence(conf1, zk3);
+        RecoverableZooKeeper zk3 = ZKUtil.connect(_confA, new NothingZookeeperWatch());
+        HLogEntryPoolZookeeperPersistence dao3 = new HLogEntryPoolZookeeperPersistence(_confA, zk3);
         dao3.setZookeeper(zk3);
-        dao3.init(conf1);
+        dao3.init(_confA);
 
-        FileSystem fs = util1.getTestFileSystem();
+        FileSystem fs = _util1.getTestFileSystem();
 
-        scan1 = new HLogGroupZookeeperScanner(conf1);
-        scan2 = new HLogGroupZookeeperScanner(conf1);
+        scan1 = new HLogGroupZookeeperScanner(_confA);
+        scan2 = new HLogGroupZookeeperScanner(_confA);
 
         Path hlogPath = service.getHLogDir();
         Path oldPath = service.getOldHLogDir();
@@ -147,7 +147,7 @@ public class TestHLogScanner extends HBaseTestBase {
         rndShutDownDao.start();
 
         while (true) {
-            insertRndData(pool1, "testA", "colA", "test", 1000);
+            insertRndData(_poolA, "testA", "colA", "test", 1000);
             Thread.sleep(10000 * 2);
             HLogEntryGroups groups = new HLogEntryGroups();
             groups.put(HLogUtil.getHLogsByHDFS(fs, hlogPath));
