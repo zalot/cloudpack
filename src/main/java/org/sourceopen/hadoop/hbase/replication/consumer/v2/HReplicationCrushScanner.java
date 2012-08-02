@@ -30,13 +30,13 @@ public class HReplicationCrushScanner extends ZThread {
     public HReplicationCrushScanner(){
     }
 
-    public HReplicationCrushScanner(ZLock lock){
+    public HReplicationCrushScanner(ZLockSupport lock){
         this.setLock(lock);
     }
 
     public HReplicationCrushScanner(Configuration conf){
         if (conf == null) return;
-        ZLock lock = new ZLock();
+        ZLockSupport lock = new ZLockSupport();
         lock.setBasePath(conf.get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT, ProducerConstants.ZOO_LOCK_ROOT));
         lock.setLockPath(ProducerConstants.ZOO_LOCK_CRUSH_SCAN);
         lock.setSleepTime(conf.getLong(ProducerConstants.CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME,

@@ -49,13 +49,13 @@ public class HReplicationRejectRecoverScanner extends ZThread {
     public HReplicationRejectRecoverScanner(){
     }
 
-    public HReplicationRejectRecoverScanner(ZLock lock){
+    public HReplicationRejectRecoverScanner(ZLockSupport lock){
         this.setLock(lock);
     }
 
     public HReplicationRejectRecoverScanner(Configuration conf){
         if (conf == null) return;
-        ZLock lock = new ZLock();
+        ZLockSupport lock = new ZLockSupport();
         lock.setBasePath(conf.get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT, ProducerConstants.ZOO_LOCK_ROOT));
         lock.setLockPath(ProducerConstants.ZOO_LOCK_REJECT_SCAN);
         lock.setSleepTime(conf.getLong(ProducerConstants.CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME,

@@ -16,8 +16,8 @@ import org.sourceopen.hadoop.hbase.replication.producer.crossidc.HReplicationRej
 import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
 import org.sourceopen.hadoop.hbase.replication.utility.ZKUtil;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.NothingZookeeperWatch;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
+import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
 
 /**
  * 主流成测试 类TestMain.java的实现描述：TODO 类实现描述

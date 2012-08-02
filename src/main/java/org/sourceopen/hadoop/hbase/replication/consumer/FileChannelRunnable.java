@@ -40,7 +40,7 @@ import org.sourceopen.hadoop.hbase.replication.protocol.exception.FileParsingExc
 import org.sourceopen.hadoop.hbase.replication.protocol.exception.FileReadingException;
 import org.sourceopen.hadoop.hbase.replication.protocol.protobuf.SerBody.Edit;
 import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
 
 /**
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类

@@ -40,8 +40,8 @@ import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
 import org.sourceopen.hadoop.hbase.replication.server.ReplicationConf;
 import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.NothingZookeeperWatch;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
+import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
 
 /**
  * 类Manager.java的实现描述：持有consumer端的中间文件同步线程池

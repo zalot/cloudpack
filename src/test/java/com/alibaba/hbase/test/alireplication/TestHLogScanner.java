@@ -22,8 +22,8 @@ import org.sourceopen.hadoop.hbase.replication.producer.HLogGroupZookeeperScanne
 import org.sourceopen.hadoop.hbase.replication.utility.HLogUtil;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
 import org.sourceopen.hadoop.hbase.replication.utility.ZKUtil;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.NothingZookeeperWatch;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
+import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
 
 /**
  * 类TestHLogScanner.java的实现描述：TODO 类实现描述

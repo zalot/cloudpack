@@ -25,8 +25,9 @@ import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolZookeeperPersis
 import org.sourceopen.hadoop.hbase.replication.producer.ReplicationSinkManger;
 import org.sourceopen.hadoop.hbase.replication.server.ReplicationConf;
 import org.sourceopen.hadoop.hbase.replication.utility.ZKUtil;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.NothingZookeeperWatch;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
+import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
+
 import com.alibaba.hbase.test.alireplication.util.TestConfigurationUtil;
 
 /**

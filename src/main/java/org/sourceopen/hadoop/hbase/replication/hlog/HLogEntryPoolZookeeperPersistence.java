@@ -22,7 +22,7 @@ import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntry;
 import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntry.Type;
 import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntryGroup;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
 
 /**
  * HLogPersistence 持久化操作

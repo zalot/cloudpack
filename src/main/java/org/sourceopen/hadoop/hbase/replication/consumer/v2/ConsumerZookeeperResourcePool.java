@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.sourceopen.hadoop.hbase.replication.consumer.v2.domain.Heads;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
 
 public class ConsumerZookeeperResourcePool implements ConsumerResourcePool{
 

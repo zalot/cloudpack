@@ -1,119 +1,120 @@
 package org.sourceopen.hadoop.zookeeper.core;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.CtNewMethod;
-import javassist.NotFoundException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
-import org.sourceopen.javaassist.core.util.JavassistUtil;
+import org.apache.zookeeper.data.Stat;
 
-/**
- * 类ZNodeProxy.java的实现描述：TODO 类实现描述
- * 
- * @author zalot.zhaoh Aug 1, 2012 10:36:46 AM
- */
-public class ZNodeProxy {
+public class ZNodeProxy extends ZNode {
 
-    protected final static Log    LOG         = LogFactory.getLog(ZNodeProxy.class);
-    protected final static String CLASS_ZNODE = "org.sourceopen.zookeeper.core.ZNode";
-    protected static ZooKeeper    zookeeper   = null;
+    static ZooKeeper           ZK          = null;
+    public static final String LOCK_SUFFIX = "l-o-c-k";
 
-    public static void setProxyZooKeeper(ZooKeeper zk) {
-        zookeeper = zk;
-    }
-
-    public static ZooKeeper getProxyZooKeeper() {
-        return zookeeper;
-    }
-
-    public static ZNode createZNode(ZNode parent, String name) {
-        ZNode znode = createProxyZNode(parent, name);
-        if (znode == null) {
-            znode = new ZNode(parent, name) {
-            };
+    public ZNodeProxy(ZNode parent, String name, boolean igno, Watcher watch) throws KeeperException,
+                                                                             InterruptedException{
+        super(parent, name);
+        if (ZK == null) {
+            throw new NullPointerException("can not create ZNodeProxy, please invoke ZNodeFactory.setZooKeeperProxy!");
         }
-        return znode;
+        Stat stat = ZK.exists(parent.getPath(), false);
+        if (igno && stat == null) {
+            
+        }
     }
 
-    public static ZNode createProxyZNode(ZNode parent, String name) {
-        if (zookeeper != null) {
-            try {
-                ZNodeChangeProxyClass();
-                ClassPool cp = ClassPool.getDefault();
+    public ZNodeProxy(ZNode parent, String name){
+        this(parent, name, false);
+    }
 
-            } catch (Exception e) {
-                if (LOG.isErrorEnabled()) {
-                    LOG.error("can not create AUTOZNode", e);
+    public ZNodeProxy(String name){
+        this(null, name, true);
+    }
+
+    @Override
+    public byte[] getData() {
+        // TODO Auto-generated method stub
+        return super.getData();
+    }
+
+    @Override
+    public void setData(byte[] data) {
+        // TODO Auto-generated method stub
+        super.setData(data);
+    }
+
+    @Override
+    public List<ZNode> getChilds() {
+        // TODO Auto-generated method stub
+        return super.getChilds();
+    }
+
+    @Override
+    public void addChild(ZNode znode) {
+        System.out.println();
+        super.addChild(znode);
+    }
+
+    // ===========================================================
+    //
+    // Thread Lock sg!
+    //
+    // ===========================================================
+    protected String              lockPath   = null;
+    protected ThreadLocal<String> threadUUID = new ThreadLocal<String>();
+
+    private String getLockPath() {
+        if (lockPath == null) {
+            lockPath = getPath() + ZNode.SPLIT + LOCK_SUFFIX;
+        }
+        return lockPath;
+    }
+
+    private byte[] getLockData() {
+        return Bytes.toBytes(getUuid());
+    }
+
+    private String setLockData(byte[] data) {
+        return Bytes.toString(data);
+    }
+
+    public boolean lock() {
+        try {
+            Stat stat = ZK.exists(getPath(), false);
+            if (stat != null) {
+                return false;
+            }
+            ZK.create(getPath(), getLockData(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            return true;
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    public boolean unlock() {
+        try {
+            Stat stat = ZK.exists(getLockPath(), false);
+            if (stat != null) {
+                String uuid = setLockData(ZK.getData(getLockPath(), false, stat));
+                if (getUuid().equals(uuid)) {
+                    ZK.delete(getLockPath(), stat.getVersion());
                 }
+                return true;
             }
-        } else {
-            if (LOG.isWarnEnabled()) {
-                LOG.warn("can not create AUTOZNode, please use ZNodeProxy.setProxyZooKeeper(Zookeeper)");
-            }
+        } catch (Exception e) {
         }
-        return null;
+        return false;
     }
 
-    protected static void ZNodeChangeProxyClass() throws NotFoundException, CannotCompileException {
-        addZooKeeperProxy();
-        addAutoPathGenerator();
-        changePathMethod();
-    }
-
-    private static void changePathMethod() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("{");
-        sb.append("   if (parent != null) {");
-        sb.append("      return parent.getPath() + SPLIT + getName();");
-        sb.append("   }");
-        sb.append("   String rName = SPLIT + getName();");
-        sb.append("   proxyPath(rName);");
-        sb.append("   return ");
-        sb.append("}");
-    }
-
-    private static void getAutoPathGenerator() throws NotFoundException, CannotCompileException, IOException {
-        String methodString = "proxyPath";
-        String[] imports = new String[] { "import org.apache.zookeeper.*" };
-        StringBuffer sb = new StringBuffer();
-        sb.append("public void proxyPath(String path){");
-        sb.append("   zookeeper.exist();");
-        sb.append("   ;");
-        sb.append("   }");
-        sb.append("   String rName = SPLIT + getName();");
-        sb.append("   proxyPath(rName);");
-        sb.append("   return ");
-        sb.append("}");
-        JavassistUtil.addMethod(CLASS_ZNODE, methodString, null, imports);
-    }
-
-    private static void addZooKeeperProxy() throws NotFoundException, CannotCompileException {
-        String methodName = "proxyPath";
-        String[] imports = new String[] { "import org.apache.zookeeper.*" };
-        StringBuffer sb = new StringBuffer();
-        sb.append("{");
-        sb.append("   String path = obj.toString();");
-        sb.append("   zookeeper.exist();");
-        sb.append("   }");
-        sb.append("   String rName = SPLIT + getName();");
-        sb.append("   proxyPath(rName);");
-        sb.append("   return ");
-        sb.append("}");
-        JavassistUtil.addMethod(CLASS_ZNODE, methodName, null, null, sb.toString(), null, imports);
-    }
-
-    public static void main(String[] args) {
-        ZNode a = ZNodeProxy.createZNode(null, "a");
-        ZNode b = ZNodeProxy.createZNode(a, "b");
-        ZNode c = ZNodeProxy.createZNode(b, "c");
-
-        System.out.println(c.getPath());
+    protected String getUuid() {
+        if (threadUUID.get() == null) {
+            threadUUID.set(UUID.randomUUID().toString());
+        }
+        return threadUUID.get();
     }
 }

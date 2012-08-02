@@ -15,8 +15,8 @@ import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntry;
 import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntryGroup;
 import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntryGroups;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
-import org.sourceopen.hadoop.zookeeper.concurrent.ZLock;
 import org.sourceopen.hadoop.zookeeper.concurrent.ZThread;
+import org.sourceopen.hadoop.zookeeper.core.ZLockSupport;
 
 /**
  * HLogGroup 扫描器<BR>
@@ -70,7 +70,7 @@ public class HLogGroupZookeeperScanner extends ZThread {
     }
 
     public void init(Configuration conf) throws KeeperException, InterruptedException {
-        ZLock lock = new ZLock();
+        ZLockSupport lock = new ZLockSupport();
         lock.setBasePath(conf.get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT, ProducerConstants.ZOO_LOCK_ROOT));
         lock.setLockPath(ProducerConstants.ZOO_LOCK_SCAN);
         lock.setSleepTime(conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,

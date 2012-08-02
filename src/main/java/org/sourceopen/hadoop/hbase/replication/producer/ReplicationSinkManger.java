@@ -21,8 +21,8 @@ import org.sourceopen.hadoop.hbase.replication.producer.crossidc.HReplicationRej
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
 import org.sourceopen.hadoop.hbase.replication.server.ReplicationConf;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.NothingZookeeperWatch;
-import org.sourceopen.hadoop.hbase.replication.zookeeper.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
+import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
 
 /**
  * 类ReplicationSinkManger.java的实现描述：producer端的任务线程管理
