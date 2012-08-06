@@ -1,4 +1,4 @@
-package org.sourceopen.analyze.zookeeper;
+package org.sourceopen.analyze.hadoop.zookeeper;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,11 +12,10 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
-import org.sourceopen.TestBase;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.alibaba.hbase.test.alireplication.util.TestConfigurationUtil;
+import org.sourceopen.analyze.hadoop.TestBase;
+import org.sourceopen.hadoop.hbase.rutils.HBaseConfigurationUtil;
 
 /**
  * 类TestMZookeeper.java的实现描述：TODO 类实现描述
@@ -27,15 +26,12 @@ public class AnalyzeZookeeperWatch extends TestBase {
 
     @BeforeClass
     public static void init() throws Exception {
-        initClusterA();
-        initClusterB();
-        // start zookeeper only
         startHBaseClusterA(-1, 3);
     }
 
     @Test
     public void testMZkWatcher() throws IOException, KeeperException, InterruptedException {
-        String zkStr = TestConfigurationUtil.getZkString(_util1.getConfiguration());
+        String zkStr = HBaseConfigurationUtil.getZooKeeperURL(_confA);
         class CheckBoolean {
 
             public boolean[] checks;

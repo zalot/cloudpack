@@ -1,4 +1,4 @@
-package org.sourceopen;
+package org.sourceopen.analyze.hadoop.hbase;
 
 import java.io.IOException;
 
@@ -7,6 +7,7 @@ import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.regionserver.HRegionServer;
 import org.apache.hadoop.hbase.util.JVMClusterUtil;
 import org.apache.hadoop.hbase.util.JVMClusterUtil.RegionServerThread;
+import org.sourceopen.analyze.hadoop.TestBase;
 
 public class TestHBase extends TestBase {
 

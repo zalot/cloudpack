@@ -1,4 +1,4 @@
-package org.sourceopen;
+package org.sourceopen.analyze.hadoop;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,26 +29,27 @@ import org.junit.AfterClass;
  */
 public class TestBase {
 
-    protected static Random              rnd    = new Random();
-    protected static HBaseTestingUtility _util1;
+    protected static Random              rnd     = new Random();
+    protected static HBaseTestingUtility _utilA;
     protected static Configuration       _confA;
     protected static HTablePool          _poolA;
-    protected static boolean             _init1 = false;
+    private static boolean               _initA  = false;
+    private static boolean               _startA = false;
 
-    protected static HBaseTestingUtility _util2;
-    protected static Configuration       _conf2;
-    protected static HTablePool          _pool2;
-    protected static boolean             _init2 = false;
+    protected static HBaseTestingUtility _utilB;
+    protected static Configuration       _confB;
+    protected static HTablePool          _poolB;
+    protected static boolean             _initB  = false;
 
     @AfterClass
     public static void closed() throws Exception {
-        if (_init1) {
-            _util1.shutdownMiniCluster();
-            _util1.shutdownMiniZKCluster();
+        if (_initA) {
+            _utilA.shutdownMiniCluster();
+            _utilA.shutdownMiniZKCluster();
         }
-        if (_init2) {
-            _util2.shutdownMiniCluster();
-            _util2.shutdownMiniZKCluster();
+        if (_initB) {
+            _utilB.shutdownMiniCluster();
+            _utilB.shutdownMiniZKCluster();
         }
     }
 
@@ -65,31 +66,33 @@ public class TestBase {
         _confA.set(HConstants.ZOOKEEPER_ZNODE_PARENT, "/1");
         _confA.setBoolean("dfs.support.append", true);
         _confA.setInt("hbase.master.info.port", 60010);
+        _initA = true;
     }
 
     public static void startHBaseClusterA(int hbaseNum, int zkNum) throws Exception {
-        _util1 = new HBaseTestingUtility(_confA);
-        _util1.startMiniZKCluster(zkNum);
-        if (hbaseNum > 0) _util1.startMiniCluster(1, hbaseNum);
+        if(!_initA) initClusterA();
+        _utilA = new HBaseTestingUtility(_confA);
+        _utilA.startMiniZKCluster(zkNum);
+        if (hbaseNum > 0) _utilA.startMiniCluster(1, hbaseNum);
         _poolA = new HTablePool(_confA, 20);
-        _init1 = true;
+        _startA = true;
     }
 
     public static void initClusterB() {
-        _conf2 = HBaseConfiguration.create();
-        _conf2.set(HConstants.ZOOKEEPER_ZNODE_PARENT, "/2");
-        _conf2.setBoolean("dfs.support.append", true);
-        _conf2.setBoolean("hbase.regionserver.info.port.auto", true);
-        _conf2.setLong("hbase.regionserver.hlog.blocksize", 1024);
-        _conf2.setInt("hbase.master.info.port", 60011);
+        _confB = HBaseConfiguration.create();
+        _confB.set(HConstants.ZOOKEEPER_ZNODE_PARENT, "/2");
+        _confB.setBoolean("dfs.support.append", true);
+        _confB.setBoolean("hbase.regionserver.info.port.auto", true);
+        _confB.setLong("hbase.regionserver.hlog.blocksize", 1024);
+        _confB.setInt("hbase.master.info.port", 60011);
     }
 
     public static void startHBaseClusterB(int hbaseNum, int zkNum) throws Exception {
-        _util2 = new HBaseTestingUtility(_conf2);
-        _util2.startMiniZKCluster(zkNum);
-        if (hbaseNum > 0) _util2.startMiniCluster(1, hbaseNum);
-        _pool2 = new HTablePool(_conf2, 20);
-        _init2 = true;
+        _utilB = new HBaseTestingUtility(_confB);
+        _utilB.startMiniZKCluster(zkNum);
+        if (hbaseNum > 0) _utilB.startMiniCluster(1, hbaseNum);
+        _poolB = new HTablePool(_confB, 20);
+        _initB = true;
     }
 
     public static String getRndString(String base) {

@@ -1,4 +1,4 @@
-package org.sourceopen.analyze.hbase.hlog;
+package org.sourceopen.analyze.hadoop.hbase.hlog;
 
 import java.io.IOException;
 

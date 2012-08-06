@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.ZooKeeper;
 import org.sourceopen.hadoop.hbase.replication.utility.HLogUtil;
+import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
+import org.sourceopen.hadoop.zookeeper.core.ZNode;
 
 /**
  * 提供 Zookeeper Thread <BR>
@@ -21,14 +23,18 @@ public abstract class ZThread extends Thread {
     // reject scanner 争抢重试时间
     protected boolean          isLock     = false;
     protected boolean          init       = false;
-    protected ZooKeeper        zk;
-    protected ZThreadLock      lock;
+    protected AdvZooKeeper     zk;
+    protected ZNode            baseNode;
 
-    public ZooKeeper getZooKeeper() {
+    public ZThread(ZNode baseNode, long retryTime, long sleepTime, boolean isDemaon){
+        this.baseNode = baseNode;
+    }
+
+    public AdvZooKeeper getZooKeeper() {
         return zk;
     }
 
-    public void setZooKeeper(ZooKeeper zooKeeper) {
+    public void setAdvZooKeeper(AdvZooKeeper zooKeeper) {
         this.zk = zooKeeper;
     }
 

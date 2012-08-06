@@ -1,32 +1,20 @@
 package org.sourceopen.test.hbase.replication;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
-
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs.Ids;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.Stat;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import org.sourceopen.TestBase;
+import org.sourceopen.analyze.hadoop.TestBase;
 import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolPersistence;
 import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
 import org.sourceopen.hadoop.hbase.replication.producer.ReplicationSinkManger;
 import org.sourceopen.hadoop.hbase.replication.server.ReplicationConf;
-import org.sourceopen.hadoop.hbase.replication.utility.ZKUtil;
 import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
 import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.ZookeeperFactory;
 
 import com.alibaba.hbase.test.alireplication.util.TestConfigurationUtil;
 
@@ -44,7 +32,7 @@ public class TestMZookeeper extends TestBase {
     public static void init() throws Exception {
         initClusterA();
         initClusterB();
-        TestConfigurationUtil.setProducer(_util1.getConfiguration(), _util2.getConfiguration(), confProducer);
+        TestConfigurationUtil.setProducer(_utilA.getConfiguration(), _utilB.getConfiguration(), confProducer);
     }
 
     @Test
@@ -58,7 +46,8 @@ public class TestMZookeeper extends TestBase {
                                                                new ArrayBlockingQueue<Runnable>(count));
 
         for (int x = 0; x < count; x++) {
-            zks[x] = ZKUtil.connect(confProducer, new NothingZookeeperWatch());
+            zks[x] = ZookeeperFactory.createRecoverableZooKeeper(url, timeout, rt, watcher).connect(confProducer,
+                                                                                                    new NothingZookeeperWatch());
             ps[x] = new HLogEntryPoolZookeeperPersistence(confProducer, zks[x]);
             // pool.execute(new Runnable() {
             // @Override
@@ -68,6 +57,7 @@ public class TestMZookeeper extends TestBase {
             // }
             // }
             // });
+            ps[x] = null;
         }
         int c = rnd.nextInt(count);
     }
@@ -75,7 +65,7 @@ public class TestMZookeeper extends TestBase {
     // @Test
     public void test() throws Exception {
         ReplicationConf confProducer = new ReplicationConf();
-        TestConfigurationUtil.setProducer(_util1.getConfiguration(), _util2.getConfiguration(), confProducer);
+        TestConfigurationUtil.setProducer(_utilA.getConfiguration(), _utilB.getConfiguration(), confProducer);
 
         for (int x = 0; x < 3; x++) {
             ReplicationSinkManger manager = new ReplicationSinkManger();

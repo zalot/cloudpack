@@ -1,13 +1,13 @@
-package org.sourceopen.analyze.hbase.hregionserver;
+package org.sourceopen.analyze.hadoop.hbase.hregionserver;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import org.apache.hadoop.hbase.util.JVMClusterUtil;
 import org.apache.hadoop.hbase.util.JVMClusterUtil.RegionServerThread;
-import org.sourceopen.TestHBase;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sourceopen.analyze.hadoop.hbase.TestHBase;
 
 /**
  * HRegionServer High Availability Analyze <BR>
@@ -22,7 +22,6 @@ public class AnalyzeHRegionServerHighAvailability extends TestHBase {
 
     @BeforeClass
     public static void init() throws Exception {
-        initClusterA();
         startHBaseClusterA(3, 3);
         createTable(_confA, Tables, Familys);
         insertRndData(_poolA, Tables, Familys, null, 1000);
@@ -42,8 +41,8 @@ public class AnalyzeHRegionServerHighAvailability extends TestHBase {
 
     @Test
     public void testHregion() throws IOException, InterruptedException {
-        printHRegionServer(_util1);
-        RegionServerThread td = getHRegionByTable(_util1, Tables[0]);
+        printHRegionServer(_utilA);
+        RegionServerThread td = getHRegionByTable(_utilA, Tables[0]);
         System.out.println(td.getRegionServer().getServerName().getServerName() + " stop!");
         try {
             td.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -60,9 +59,9 @@ public class AnalyzeHRegionServerHighAvailability extends TestHBase {
             Thread.sleep(5000);
         }
 
-        td = getHRegionByTable(_util1, Tables[0]);
+        td = getHRegionByTable(_utilA, Tables[0]);
         System.out.println(td.getRegionServer().getServerName().getServerName());
-        printHRegionServer(_util1);
+        printHRegionServer(_utilA);
         // hbaseCluster.getMaster(0).getAssignmentManager().assignMeta();
     }
 }

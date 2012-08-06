@@ -1,120 +1,81 @@
 package org.sourceopen.hadoop.zookeeper.core;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs.Ids;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.Stat;
-
 public class ZNodeProxy extends ZNode {
 
-    static ZooKeeper           ZK          = null;
-    public static final String LOCK_SUFFIX = "l-o-c-k";
-
-    public ZNodeProxy(ZNode parent, String name, boolean igno, Watcher watch) throws KeeperException,
-                                                                             InterruptedException{
-        super(parent, name);
-        if (ZK == null) {
-            throw new NullPointerException("can not create ZNodeProxy, please invoke ZNodeFactory.setZooKeeperProxy!");
-        }
-        Stat stat = ZK.exists(parent.getPath(), false);
-        if (igno && stat == null) {
-            
-        }
-    }
-
-    public ZNodeProxy(ZNode parent, String name){
-        this(parent, name, false);
-    }
-
     public ZNodeProxy(String name){
-        this(null, name, true);
+        super(name);
     }
 
-    @Override
-    public byte[] getData() {
-        // TODO Auto-generated method stub
-        return super.getData();
-    }
-
-    @Override
-    public void setData(byte[] data) {
-        // TODO Auto-generated method stub
-        super.setData(data);
-    }
-
-    @Override
-    public List<ZNode> getChilds() {
-        // TODO Auto-generated method stub
-        return super.getChilds();
-    }
-
-    @Override
-    public void addChild(ZNode znode) {
-        System.out.println();
-        super.addChild(znode);
-    }
-
-    // ===========================================================
+    // protected static ZooKeeper ZK = null;
     //
-    // Thread Lock sg!
+    // ZNodeProxy(String name){
+    // super(null, name);
+    // if (ZK == null) {
+    // throw new NullPointerException("can not create ZNodeProxy, please invoke ZNodeFactory.setZooKeeperProxy!");
+    // }
+    // }
     //
-    // ===========================================================
-    protected String              lockPath   = null;
-    protected ThreadLocal<String> threadUUID = new ThreadLocal<String>();
+    // ZNodeProxy(ZNode parent, String name, List<ACL> ids, CreateMode createMode, Watcher watcher){
+    // super(parent, name, ids, createMode, watcher);
+    // if (ZK == null) {
+    // throw new NullPointerException("can not create ZNodeProxy, please invoke ZNodeFactory.setZooKeeperProxy!");
+    // }
+    // }
+    //
+    // public byte[] getData() {
+    // if (this.data == null) {
+    // Stat stat;
+    // try {
+    // stat = ZK.exists(getPath(), false);
+    // if (stat != null) {
+    // this.data = ZK.getData(getPath(), watcher, stat);
+    // }
+    // } catch (Exception e) {
+    // throw new ZNodeProxyException(e);
+    // }
+    // }
+    // return data;
+    // }
+    //
+    // @Override
+    // public void setData(byte[] bt) {
+    // if (this.data != null) {
+    // Stat stat;
+    // try {
+    // stat = ZK.exists(getPath(), false);
+    // if (stat != null) {
+    // ZK.setData(getPath(), data, stat.getVersion());
+    // }
+    // } catch (Exception e) {
+    // throw new ZNodeProxyException(e);
+    // }
+    // }
+    // }
+    //
+    // @Override
+    // public List<ZNode> getChilds() {
+    // List<ZNode> nodes = new ArrayList<ZNode>();
+    // try {
+    // List<String> childs = ZK.getChildren(getPath(), false);
+    // for (String c : childs) {
+    // nodes.add(ZNodeProxyFactory.createZNode(parent, name, ids, createMode, watcher, false));
+    // }
+    // } catch (Exception e) {
+    // throw new ZNodeProxyException(e);
+    // }
+    // return nodes;
+    // }
+    //
+    // @Override
+    // public void addChild(ZNode znode) {
+    // if (znode.getParent() == null) znode.setParent(this);
+    // if (this.getParent().equals(znode)) {
+    // try {
+    // ZK.exists(znode.getPath(), watcher == null ? false : true);
+    // } catch (Exception e) {
+    // throw new ZNodeProxyException(e);
+    // }
+    // }
+    // }
 
-    private String getLockPath() {
-        if (lockPath == null) {
-            lockPath = getPath() + ZNode.SPLIT + LOCK_SUFFIX;
-        }
-        return lockPath;
-    }
-
-    private byte[] getLockData() {
-        return Bytes.toBytes(getUuid());
-    }
-
-    private String setLockData(byte[] data) {
-        return Bytes.toString(data);
-    }
-
-    public boolean lock() {
-        try {
-            Stat stat = ZK.exists(getPath(), false);
-            if (stat != null) {
-                return false;
-            }
-            ZK.create(getPath(), getLockData(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-            return true;
-        } catch (Exception e) {
-        }
-        return false;
-    }
-
-    public boolean unlock() {
-        try {
-            Stat stat = ZK.exists(getLockPath(), false);
-            if (stat != null) {
-                String uuid = setLockData(ZK.getData(getLockPath(), false, stat));
-                if (getUuid().equals(uuid)) {
-                    ZK.delete(getLockPath(), stat.getVersion());
-                }
-                return true;
-            }
-        } catch (Exception e) {
-        }
-        return false;
-    }
-
-    protected String getUuid() {
-        if (threadUUID.get() == null) {
-            threadUUID.set(UUID.randomUUID().toString());
-        }
-        return threadUUID.get();
-    }
 }

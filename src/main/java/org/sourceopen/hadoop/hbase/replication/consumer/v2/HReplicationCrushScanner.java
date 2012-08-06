@@ -3,11 +3,10 @@ package org.sourceopen.hadoop.hbase.replication.consumer.v2;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
-import org.sourceopen.zookeeper.concurrent.ZLock;
-import org.sourceopen.zookeeper.concurrent.ZThread;
+import org.sourceopen.hadoop.zookeeper.concurrent.ZThread;
+import org.sourceopen.hadoop.zookeeper.core.ZNodeLock;
 
 /**
  * 
@@ -30,13 +29,13 @@ public class HReplicationCrushScanner extends ZThread {
     public HReplicationCrushScanner(){
     }
 
-    public HReplicationCrushScanner(ZLockSupport lock){
+    public HReplicationCrushScanner(ZNodeLock lock){
         this.setLock(lock);
     }
 
     public HReplicationCrushScanner(Configuration conf){
         if (conf == null) return;
-        ZLockSupport lock = new ZLockSupport();
+        ZNodeLock lock = new ZNodeLock();
         lock.setBasePath(conf.get(ProducerConstants.CONFKEY_ZOO_LOCK_ROOT, ProducerConstants.ZOO_LOCK_ROOT));
         lock.setLockPath(ProducerConstants.ZOO_LOCK_CRUSH_SCAN);
         lock.setSleepTime(conf.getLong(ProducerConstants.CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME,
