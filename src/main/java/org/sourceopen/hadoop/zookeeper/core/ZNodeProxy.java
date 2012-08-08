@@ -1,81 +1,105 @@
 package org.sourceopen.hadoop.zookeeper.core;
 
+import java.util.List;
+
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Stat;
+import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
+
 public class ZNodeProxy extends ZNode {
 
-    public ZNodeProxy(String name){
-        super(name);
+    protected AdvZooKeeper zk;
+
+    ZNodeProxy(AdvZooKeeper zk, ZNode parent, String name, List<ACL> ids, CreateMode createMode, Watcher watcher){
+        super(parent, name, ids, createMode, watcher);
+        this.zk = zk;
     }
 
-    // protected static ZooKeeper ZK = null;
-    //
-    // ZNodeProxy(String name){
-    // super(null, name);
-    // if (ZK == null) {
-    // throw new NullPointerException("can not create ZNodeProxy, please invoke ZNodeFactory.setZooKeeperProxy!");
-    // }
-    // }
-    //
-    // ZNodeProxy(ZNode parent, String name, List<ACL> ids, CreateMode createMode, Watcher watcher){
-    // super(parent, name, ids, createMode, watcher);
-    // if (ZK == null) {
-    // throw new NullPointerException("can not create ZNodeProxy, please invoke ZNodeFactory.setZooKeeperProxy!");
-    // }
-    // }
-    //
-    // public byte[] getData() {
-    // if (this.data == null) {
-    // Stat stat;
-    // try {
-    // stat = ZK.exists(getPath(), false);
-    // if (stat != null) {
-    // this.data = ZK.getData(getPath(), watcher, stat);
-    // }
-    // } catch (Exception e) {
-    // throw new ZNodeProxyException(e);
-    // }
-    // }
-    // return data;
-    // }
-    //
-    // @Override
-    // public void setData(byte[] bt) {
-    // if (this.data != null) {
-    // Stat stat;
-    // try {
-    // stat = ZK.exists(getPath(), false);
-    // if (stat != null) {
-    // ZK.setData(getPath(), data, stat.getVersion());
-    // }
-    // } catch (Exception e) {
-    // throw new ZNodeProxyException(e);
-    // }
-    // }
-    // }
-    //
-    // @Override
-    // public List<ZNode> getChilds() {
-    // List<ZNode> nodes = new ArrayList<ZNode>();
-    // try {
-    // List<String> childs = ZK.getChildren(getPath(), false);
-    // for (String c : childs) {
-    // nodes.add(ZNodeProxyFactory.createZNode(parent, name, ids, createMode, watcher, false));
-    // }
-    // } catch (Exception e) {
-    // throw new ZNodeProxyException(e);
-    // }
-    // return nodes;
-    // }
-    //
-    // @Override
-    // public void addChild(ZNode znode) {
-    // if (znode.getParent() == null) znode.setParent(this);
-    // if (this.getParent().equals(znode)) {
-    // try {
-    // ZK.exists(znode.getPath(), watcher == null ? false : true);
-    // } catch (Exception e) {
-    // throw new ZNodeProxyException(e);
-    // }
-    // }
-    // }
+    ZNodeProxy(AdvZooKeeper zk, ZNode parent, String name){
+        super(parent, name);
+        this.zk = zk;
+    }
 
+    public byte[] getData() {
+        Stat stat;
+        try {
+            stat = zk.exists(getPath(), false);
+            if (stat != null) {
+                zk.getData(getPath(), false, stat);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    @Override
+    public void setData(byte[] data) {
+        try {
+            Stat stat = zk.exists(getPath(), watcher);
+            if (stat != null) {
+                zk.setData(getPath(), data, stat.getVersion());
+            }
+        } catch (Exception e) {
+            throw new ZNodeProxyRuntimeException(e);
+        }
+    }
+
+    public List<ZNode> getChilds() {
+        try {
+            childs.clear();
+            for (String childName : zk.getChildren(getPath(), watcher)) {
+                childs.add(new ZNodeProxy(zk, this, childName));
+            }
+        } catch (Exception e) {
+            throw new ZNodeProxyRuntimeException(e);
+        }
+        return childs;
+    }
+
+    @Override
+    public ZNode addChild(ZNode znode) {
+        znode.setParent(this);
+        try {
+            ZNodeHelper.createZNode(zk, znode, false, false);
+        } catch (Exception e) {
+            throw new ZNodeProxyRuntimeException(e);
+        }
+        return znode;
+    }
+
+    @Override
+    public ZNode addChild(String name) {
+        ZNodeProxy znode = new ZNodeProxy(zk, this, name);
+        try {
+            ZNodeHelper.createZNode(zk, znode, false, false);
+        } catch (Exception e) {
+            throw new ZNodeProxyRuntimeException(e);
+        }
+        return znode;
+    }
+
+    @Override
+    public ZNode getChild(String name) {
+        ZNodeProxy znode = new ZNodeProxy(zk, this, name);
+        try {
+            Stat stat = zk.exists(znode.getPath(), false);
+            if (stat == null) return null;
+        } catch (Exception e) {
+            throw new ZNodeProxyRuntimeException(e);
+        }
+        return znode;
+    }
+
+    public void delChild(String name) {
+        ZNodeProxy znode = new ZNodeProxy(zk, this, name);
+        try {
+            Stat stat = zk.exists(znode.getPath(), false);
+            if (stat != null) zk.delete(znode.getPath(), stat.getVersion());
+        } catch (Exception e) {
+            throw new ZNodeProxyRuntimeException(e);
+        }
+    }
 }

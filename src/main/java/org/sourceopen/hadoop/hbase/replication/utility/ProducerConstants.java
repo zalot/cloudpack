@@ -9,86 +9,101 @@ import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
  */
 public class ProducerConstants {
 
-    public static final String CONF_SUFFIX                            = "org.sourceopen.";
+    public static final String CONF_PREFIX                            = "";
+
+    public static final String PRODUCER_CONFIG_FILE                   = "META-INF/producer-configuration.xml";
+    public static final String COMMON_CONFIG_FILE                     = "META-INF/common-configuration.xml";
 
     // -----------------------------------------
     // Base
     // -----------------------------------------
-    public static final String CONFKEY_HDFS_HBASE_ROOT                = CONF_SUFFIX
-                                                                        + "hbase.replication.producer.hbase.rootdir";
-    public static final String HDFS_HBASE_ROOT                        = "/hbase";
-    public static final String PRODUCER_CONFIG_FILE                   = "META-INF/producer-configuration.xml";
-    public static final String COMMON_CONFIG_FILE                     = "META-INF/common-configuration.xml";
-    public static String       CONFKEY_ZOO_ROOT                       = CONF_SUFFIX
+    public static final String CONFKEY_ROOT_HBASE_HDFS                = CONF_PREFIX
+                                                                        + "hbase.rep.producer.hbase.rootdir";
+    public static String       CONFKEY_ROOT_ZOO                       = CONF_PREFIX
                                                                         + "hbase.replication.producer.zoo.root";
-    public static String       ZOO_ROOT                               = "/alirep";
+    public static final String ROOT_HBASE_HDFS                        = "/hbase";
+    public static String       ROOT_ZOO                               = "hbaserep";
 
     // -----------------------------------------
     // Base Zoo Path
     // -----------------------------------------
-    public static String       CONFKEY_ZOO_LOCK_ROOT                  = "org.sourceopen.hadoop.hbase.replication.producer.zoo.lock.root";
-    public static String       ZOO_LOCK_ROOT                          = "/alireplock";
+    public static String       CONFKEY_ZOO_LOCK_ROOT                  = CONF_PREFIX
+                                                                        + "hbase.rep.producer.zoo.lock.root";
+    // public static String ZOO_LOCK_ROOT = "/alireplock";
 
     // -----------------------------------------
     // Scan Thread
     // -----------------------------------------
-    public static String       CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME   = "org.sourceopen.hadoop.hbase.replication.producer.zoo.lock.scan.sleeptime";
+    public static String       CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME   = CONF_PREFIX
+                                                                        + "hbase.rep.producer.zoo.lock.scan.sleeptime";
     public static long         ZOO_SCAN_LOCK_FLUSHSLEEPTIME           = 20000;
 
-    public static String       CONFKEY_ZOO_SCAN_LOCK_RETRYTIME        = "org.sourceopen.hadoop.hbase.replication.producer.zoo.lock.scan.retrytime";
+    public static String       CONFKEY_ZOO_SCAN_LOCK_RETRYTIME        = CONF_PREFIX
+                                                                        + "hbase.rep.producer.zoo.lock.scan.retrytime";
     public static long         ZOO_SCAN_LOCK_RETRYTIME                = 10000;
 
     // -----------------------------------------
     // Replication Thread
     // -----------------------------------------
-    public static String       CONFKEY_HLOG_READERBUFFER              = "org.sourceopen.hadoop.hbase.replication.producer.hlog.readerbuffer";
+    public static String       CONFKEY_HLOG_READERBUFFER              = CONF_PREFIX
+                                                                        + "hbase.rep.producer.hlog.readerbuffer";
     public static long         HLOG_READERBUFFER                      = 50000;
 
-    public static String       CONFKEY_HLOG_GROUP_INTERVAL            = "org.sourceopen.hadoop.hbase.replication.producer.hlog.group.interval";
+    public static String       CONFKEY_HLOG_GROUP_INTERVAL            = CONF_PREFIX
+                                                                        + "hbase.rep.producer.hlog.group.interval";
     public static long         HLOG_GROUP_INTERVAL                    = 3000;
 
-    public static final String CONFKEY_LOGREADER_CLASS                = "org.sourceopen.hadoop.hbase.replication.producer.hlog.logreader.class";
-    public static final String CONFKEY_CROSSIDC_REPLICATION_SLEEPTIME = "org.sourceopen.hadoop.hbase.replication.producer.hlog.sleeptime";
+    public static final String CONFKEY_LOGREADER_CLASS                = CONF_PREFIX
+                                                                        + "hbase.rep.producer.hlog.logreader.class";
+    public static final String CONFKEY_CROSSIDC_REPLICATION_SLEEPTIME = CONF_PREFIX
+                                                                        + "hbase.rep.producer.hlog.sleeptime";
     public static final int    CROSSIDC_REPLICATION_SLEEPTIME         = 2000;
 
     // -----------------------------------------
     // Reject Thread
     // -----------------------------------------
-    public static String       CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME = "org.sourceopen.hadoop.hbase.replication.producer.zoo.lock.reject.sleeptime";
+    public static String       CONFKEY_ZOO_REJECT_LOCK_FLUSHSLEEPTIME = CONF_PREFIX
+                                                                        + "hbase.rep.producer.zoo.lock.reject.sleeptime";
     public static long         ZOO_REJECT_LOCK_FLUSHSLEEPTIME         = 20000;
 
-    public static String       CONFKEY_ZOO_REJECT_LOCK_RETRYTIME      = "org.sourceopen.hadoop.hbase.replication.producer.zoo.lock.reject.retrytime";
+    public static String       CONFKEY_ZOO_REJECT_LOCK_RETRYTIME      = CONF_PREFIX
+                                                                        + "hbase.rep.producer.zoo.lock.reject.retrytime";
     public static long         ZOO_REJECT_LOCK_RETRYTIME              = 10000;
 
     // -----------------------------------------
     // Start Manager
     // -----------------------------------------
-    public static final String CONFKEY_REP_SCANNER_POOL_SIZE          = "org.sourceopen.hadoop.hbase.replication.producer.scannerPoolSize";
+    public static final String CONFKEY_REP_SCANNER_POOL_SIZE          = CONF_PREFIX
+                                                                        + "hbase.rep.producer.scannerPoolSize";
     public static final int    REP_SCANNER_POOL_SIZE                  = 1;
-    public static final String CONFKEY_THREADPOOL_SIZE                = "org.sourceopen.hadoop.hbase.replication.producer.threadpool.queuesize";
-    public static final String CONFKEY_THREADPOOL_KEEPALIVE_TIME      = "org.sourceopen.hadoop.hbase.replication.producer.threadpool.keepAliveTime";
-    public static final String CONFKEY_REP_SINK_POOL_SIZE             = "org.sourceopen.hadoop.hbase.replication.producer.hlog.replicationPoolSize";
+    public static final String CONFKEY_THREADPOOL_SIZE                = CONF_PREFIX
+                                                                        + "hbase.rep.producer.threadpool.queuesize";
+    public static final String CONFKEY_THREADPOOL_KEEPALIVE_TIME      = CONF_PREFIX
+                                                                        + "hbase.rep.producer.threadpool.keepAliveTime";
+    public static final String CONFKEY_REP_SINK_POOL_SIZE             = CONF_PREFIX
+                                                                        + "hbase.rep.producer.hlog.replicationPoolSize";
     public static final int    REP_SINK_POOL_SIZE                     = 10;
-    public static final String CONFKEY_REP_REJECT_POOL_SIZE           = "org.sourceopen.hadoop.hbase.replication.producer.scannerPoolSize";
+    public static final String CONFKEY_REP_REJECT_POOL_SIZE           = CONF_PREFIX
+                                                                        + "hbase.rep.producer.scannerPoolSize";
     public static final int    REP_REJECT_POOL_SIZE                   = 1;
 
     // -----------------------------------------
     // protocol
     // -----------------------------------------
-    public static final String CONFKEY_PROTOCOL_VERSION               = "org.sourceopen.hadoop.hbase.replication.protocol.version";
+    public static final String CONFKEY_PROTOCOL_VERSION               = CONF_PREFIX + "hbase.rep.protocol.version";
     public static final int    PROTOCOL_VERSION                       = 1;
 
-    public static final String CONFKEY_PROTOCOL_CLASS                 = "org.sourceopen.hadoop.hbase.replication.protocol.class";
+    public static final String CONFKEY_PROTOCOL_CLASS                 = CONF_PREFIX + "hbase.rep.protocol.class";
     public static final String PROTOCOL_CLASS                         = HDFSFileAdapter.class.getCanonicalName();
 
     // -----------------------------------------
     // static field
     // -----------------------------------------
-    public static String       ZOO_LOCK_SCAN                          = "/lockscan";
-    public static String       ZOO_LOCK_REJECT_SCAN                   = "/lockrejectscan";
-    public static String       ZOO_LOCK_CRUSH_SCAN                    = "/lockcrushscan";
-    public static String       ZOO_PERSISTENCE_HLOG_GROUP             = "/aligroups";
-    public static String       ZOO_PERSISTENCE_HLOG_GROUP_LOCK        = "/aliglock";
+    // public static String ZOO_LOCK_SCAN = "/lockscan";
+    // public static String ZOO_LOCK_REJECT_SCAN = "/lockrejectscan";
+    // public static String ZOO_LOCK_CRUSH_SCAN = "/lockcrushscan";
+    public static String       ZOO_PERSISTENCE_HLOG_GROUP             = "hlogroups";
+    public static String       ZOO_PERSISTENCE_HLOG_GROUP_LOCK        = "glock";
 
     public static String       PATH_BASE_HLOG                         = ".logs";
     public static String       PATH_BASE_OLDHLOG                      = ".oldlogs";

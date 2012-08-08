@@ -5,18 +5,16 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sourceopen.analyze.hadoop.TestBase;
-import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolPersistence;
-import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
-import org.sourceopen.hadoop.hbase.replication.producer.ReplicationSinkManger;
-import org.sourceopen.hadoop.hbase.replication.server.ReplicationConf;
-import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
-import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
+import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogPersistence;
+import org.sourceopen.hadoop.hbase.replication.producer.ZkHLogPersistence;
+import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
+import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 import org.sourceopen.hadoop.zookeeper.connect.ZookeeperFactory;
-
-import com.alibaba.hbase.test.alireplication.util.TestConfigurationUtil;
 
 /**
  * 类TestMZookeeper.java的实现描述：TODO 类实现描述
@@ -25,30 +23,28 @@ import com.alibaba.hbase.test.alireplication.util.TestConfigurationUtil;
  */
 public class TestMZookeeper extends TestBase {
 
-    protected static final int             tableSize    = 10;
-    protected static final ReplicationConf confProducer = new ReplicationConf();
+    protected static final int     tableSize = 10;
+    protected static Configuration CONF      = HBaseConfiguration.create();
 
     @BeforeClass
     public static void init() throws Exception {
-        initClusterA();
-        initClusterB();
-        TestConfigurationUtil.setProducer(_utilA.getConfiguration(), _utilB.getConfiguration(), confProducer);
+        startHBaseClusterA(-1, 3);
+        HRepConfigUtil.setProducerConfig(_utilA.getConfiguration(), _utilB.getConfiguration(), CONF);
     }
 
     @Test
     public void testMZkHLogP() throws Exception {
-        final int count = 0;
-
-        final RecoverableZooKeeper[] zks = new RecoverableZooKeeper[count];
-        final HLogEntryPoolPersistence[] ps = new HLogEntryPoolPersistence[count];
+        final int count = 3;
+        final AdvZooKeeper[] zks = new AdvZooKeeper[count];
+        final HLogPersistence[] ps = new HLogPersistence[count];
         final Random rnd = new Random();
         final ThreadPoolExecutor pool = new ThreadPoolExecutor(count, count, 100, TimeUnit.SECONDS,
                                                                new ArrayBlockingQueue<Runnable>(count));
 
         for (int x = 0; x < count; x++) {
-            zks[x] = ZookeeperFactory.createRecoverableZooKeeper(url, timeout, rt, watcher).connect(confProducer,
-                                                                                                    new NothingZookeeperWatch());
-            ps[x] = new HLogEntryPoolZookeeperPersistence(confProducer, zks[x]);
+            zks[x] = ZookeeperFactory.createRecoverableZooKeeper(HRepConfigUtil.getZKStringV1(_confA), 100,
+                                                                 null, 5, 1000);
+            ps[x] = new ZkHLogPersistence(CONF, zks[x]);
             // pool.execute(new Runnable() {
             // @Override
             // public void run() {
@@ -62,20 +58,4 @@ public class TestMZookeeper extends TestBase {
         int c = rnd.nextInt(count);
     }
 
-    // @Test
-    public void test() throws Exception {
-        ReplicationConf confProducer = new ReplicationConf();
-        TestConfigurationUtil.setProducer(_utilA.getConfiguration(), _utilB.getConfiguration(), confProducer);
-
-        for (int x = 0; x < 3; x++) {
-            ReplicationSinkManger manager = new ReplicationSinkManger();
-            manager.setRefConf(confProducer);
-            manager.start();
-        }
-        Thread.sleep(1200000);
-    }
-
-    public void rndWrite() {
-        // createTable(conf);
-    }
 }

@@ -20,7 +20,7 @@ import org.apache.hadoop.hbase.regionserver.wal.HLog;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import org.sourceopen.hadoop.hbase.replication.hlog.domain.HLogEntry;
+import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogEntry;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolBody;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
 

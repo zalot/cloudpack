@@ -22,7 +22,7 @@ public class TestMainProtocol extends TestBase {
     @BeforeClass
     public static void init() throws Exception {
         initClusterA();
-        TestConfigurationUtil.setProducer(_util1.getConfiguration(), _util2.getConfiguration(), confProducer);
+        TestConfigurationUtil.setProducerConfig(_util1.getConfiguration(), _util2.getConfiguration(), confProducer);
     }
 
     @Test

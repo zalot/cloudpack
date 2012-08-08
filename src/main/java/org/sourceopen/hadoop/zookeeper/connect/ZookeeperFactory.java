@@ -14,7 +14,6 @@ import javassist.CtPrimitiveType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 
 public class ZookeeperFactory {
 
@@ -37,8 +36,12 @@ public class ZookeeperFactory {
             "setData" });
     }
 
-    public static ZooKeeper createRecoverableZooKeeper(String url, int timeout, int rt, Watcher watcher)
-                                                                                                        throws Exception {
+    public static AdvZooKeeper createRecoverableZooKeeper(String quorumServers, int seesionTimeout, Watcher watcher,
+                                                          int maxRetries, int retryIntervalMillis) throws Exception {
+        return new RecoverableZooKeeper(quorumServers, seesionTimeout, watcher, maxRetries, retryIntervalMillis);
+    }
+
+    public static AdvZooKeeper createZooKeeperProxy(String url, int timeout, int rt, Watcher watcher) throws Exception {
         if (FINAL_CLASS == null) {
             ClassPool cp = ClassPool.getDefault();
             // ****************************************************************************
@@ -90,20 +93,11 @@ public class ZookeeperFactory {
             // ****************************************************************************
             FINAL_CLASS = ctClass.toClass();
         }
-        ZooKeeper cc = (ZooKeeper) FINAL_CLASS.newInstance();
+        AdvZooKeeper cc = (AdvZooKeeper) FINAL_CLASS.newInstance();
         if (watcher != null) {
             cc.register(watcher);
         }
         return cc;
     }
 
-    public static void main(String[] args) throws Exception {
-        ZooKeeper zk = ZookeeperFactory.createRecoverableZooKeeper("h7:2181", 1000, 11, new NothingZookeeperWatch());
-        long st = System.currentTimeMillis();
-        for (int x = 0; x < 10; x++)
-            zk.getChildren("/", false);
-        long en = System.currentTimeMillis();
-        System.out.println(en - st);
-        // zk.create("/", "no".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-    }
 }

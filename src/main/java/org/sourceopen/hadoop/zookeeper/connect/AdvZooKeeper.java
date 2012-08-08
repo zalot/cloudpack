@@ -1,10 +1,7 @@
 package org.sourceopen.hadoop.zookeeper.connect;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.RetryCounter;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -32,9 +29,8 @@ public interface AdvZooKeeper {
 
     public Stat setData(String path, byte[] data, int version) throws KeeperException, InterruptedException;
 
-    public String create(String path, byte[] data, List<ACL> acl, CreateMode createMode) throws KeeperException, InterruptedException;
-
-    public byte[] removeMetaData(byte[] data);
+    public String create(String path, byte[] data, List<ACL> acl, CreateMode createMode) throws KeeperException,
+                                                                                        InterruptedException;
 
     public long getSessionId();
 
@@ -47,4 +43,6 @@ public interface AdvZooKeeper {
     public byte[] getSessionPasswd();
 
     public void sync(String path, AsyncCallback.VoidCallback cb, Object ctx);
+
+    public void register(Watcher watcher);
 }

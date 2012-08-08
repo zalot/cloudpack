@@ -15,7 +15,7 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sourceopen.analyze.hadoop.TestBase;
-import org.sourceopen.hadoop.hbase.rutils.HBaseConfigurationUtil;
+import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
 
 /**
  * 类TestMZookeeper.java的实现描述：TODO 类实现描述
@@ -31,7 +31,7 @@ public class AnalyzeZookeeperWatch extends TestBase {
 
     @Test
     public void testMZkWatcher() throws IOException, KeeperException, InterruptedException {
-        String zkStr = HBaseConfigurationUtil.getZooKeeperURL(_confA);
+        String zkStr = HRepConfigUtil.getZKStringV1(_confA);
         class CheckBoolean {
 
             public boolean[] checks;

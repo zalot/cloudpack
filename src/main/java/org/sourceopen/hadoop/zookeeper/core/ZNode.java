@@ -7,17 +7,20 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.ACL;
+import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
 
-public abstract class ZNode {
+public class ZNode {
 
-    protected List<ZNode> childs     = new ArrayList<ZNode>();
-    protected byte[]      data       = null;
-    protected List<ACL>   ids        = Ids.READ_ACL_UNSAFE;
-    protected CreateMode  createMode = CreateMode.EPHEMERAL;
-    protected Watcher     watcher    = null;
+    protected final static Watcher DEFAULT_WATCHER = new NothingZookeeperWatch();
 
-    protected ZNode       parent     = null;
-    protected String      name       = null;
+    protected List<ZNode>          childs          = new ArrayList<ZNode>();
+    protected byte[]               data            = null;
+    protected List<ACL>            ids             = Ids.OPEN_ACL_UNSAFE;
+    protected CreateMode           createMode      = CreateMode.PERSISTENT;
+    protected Watcher              watcher         = DEFAULT_WATCHER;
+
+    protected ZNode                parent          = null;
+    protected String               name            = null;
 
     public ZNode(ZNode parent, String name){
         this(parent, name, null, null, null);
@@ -29,7 +32,7 @@ public abstract class ZNode {
 
     public ZNode(ZNode parent, String name, List<ACL> ids, CreateMode createMode, Watcher watcher){
         this.parent = parent;
-        this.name = name;
+        this.name = name.toLowerCase();
         validate(this.parent, this);
         if (ids != null) this.ids = ids;
         if (createMode != null) this.createMode = createMode;
@@ -66,14 +69,41 @@ public abstract class ZNode {
         }
     }
 
-    public List<ZNode> getChilds() {
-        return childs;
-    }
-
-    public void addChild(ZNode znode) {
+    public ZNode addChild(ZNode znode) {
         if (znode != null) {
+            znode.setParent(this);
             childs.add(znode);
         }
+        return znode;
+    }
+
+    public ZNode addChild(String name) {
+        ZNode zn = null;
+        if (name != null) {
+            zn = getChild(name);
+            if (zn == null) {
+                zn = new ZNode(this, name);
+                childs.add(zn);
+            }
+        }
+        return zn;
+    }
+    
+    public void delChild(String name){
+        
+    }
+
+    public ZNode getChild(String name) {
+        for (ZNode child : childs) {
+            if (child.getName().equals(name)) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+    public List<ZNode> getChilds() {
+        return this.childs;
     }
 
     public String getName() {

@@ -61,8 +61,8 @@ public class RecoverableZooKeeper implements AdvZooKeeper {
     private static final byte         MAGIC        = (byte) 0XFF;
     private static final int          MAGIC_OFFSET = Bytes.SIZEOF_BYTE;
 
-    public RecoverableZooKeeper(String quorumServers, int seesionTimeout, Watcher watcher, int maxRetries,
-                                int retryIntervalMillis) throws IOException{
+    RecoverableZooKeeper(String quorumServers, int seesionTimeout, Watcher watcher, int maxRetries,
+                         int retryIntervalMillis) throws IOException{
         this.zk = new ZooKeeper(quorumServers, seesionTimeout, watcher);
         this.retryCounterFactory = new RetryCounterFactory(maxRetries, retryIntervalMillis);
         this.retryIntervalMillis = retryIntervalMillis;
@@ -594,5 +594,10 @@ public class RecoverableZooKeeper implements AdvZooKeeper {
             }
         }
         return lockChildren;
+    }
+
+    @Override
+    public void register(Watcher watcher) {
+        this.zk.register(watcher);
     }
 }

@@ -8,11 +8,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.sourceopen.TestBase;
-import org.sourceopen.hadoop.hbase.replication.hlog.HLogEntryPoolZookeeperPersistence;
-import org.sourceopen.hadoop.hbase.replication.hlog.HLogService;
-import org.sourceopen.hadoop.hbase.replication.producer.HLogGroupZookeeperScanner;
-import org.sourceopen.hadoop.hbase.replication.producer.crossidc.HReplicationProducer;
-import org.sourceopen.hadoop.hbase.replication.producer.crossidc.HReplicationRejectRecoverScanner;
+import org.sourceopen.hadoop.hbase.replication.core.HBaseService;
+import org.sourceopen.hadoop.hbase.replication.producer.HLogScanner;
+import org.sourceopen.hadoop.hbase.replication.producer.crossidc.HReplicationTransfer;
+import org.sourceopen.hadoop.hbase.replication.producer.crossidc.RejectRecoverScanner;
+import org.sourceopen.hadoop.hbase.replication.producer.v2.ZNodeHLogPersistence;
 import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
 import org.sourceopen.hadoop.hbase.replication.utility.ZKUtil;
@@ -34,25 +34,25 @@ public class TestMain extends TestBase {
     }
 
     public void testReplicationRunInfomation() throws Exception {
-        HLogService service = new HLogService(_confA);
+        HBaseService service = new HBaseService(_confA);
         RecoverableZooKeeper zk = ZKUtil.connect(_confA, new NothingZookeeperWatch());
 
-        HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(_confA, zk);
+        ZNodeHLogPersistence dao = new ZNodeHLogPersistence(_confA, zk);
         HDFSFileAdapter ad = new HDFSFileAdapter();
         ad.init(_confA);
 
-        HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(_confA);
-        scan.setHlogEntryPersistence(dao);
-        scan.setHlogService(service);
+        HLogScanner scan = new HLogScanner(_confA);
+        scan.setHLogPersistence(dao);
+        scan.setHBaseService(service);
         scan.setZooKeeper(zk);
 
         Thread threadscan = new Thread(scan);
         threadscan.start();
 
-        HReplicationProducer pro = new HReplicationProducer(_confA);
+        HReplicationTransfer pro = new HReplicationTransfer(_confA);
         pro.setAdapter(ad);
-        pro.setHlogEntryPersistence(dao);
-        pro.setHlogService(service);
+        pro.setHLogPersistence(dao);
+        pro.setHBaseService(service);
 
         Thread threadpro = new Thread(pro);
         threadpro.start();
@@ -66,27 +66,27 @@ public class TestMain extends TestBase {
 
     @Test
     public void testReplicationAndDFSFileAdapter() throws Exception {
-        HLogService service = new HLogService(_confA);
+        HBaseService service = new HBaseService(_confA);
         RecoverableZooKeeper zookeeper = ZKUtil.connect(_confA, new NothingZookeeperWatch());
 
-        HLogEntryPoolZookeeperPersistence dao = new HLogEntryPoolZookeeperPersistence(_confA, zookeeper);
+        ZNodeHLogPersistence dao = new ZNodeHLogPersistence(_confA, zookeeper);
         dao.setZookeeper(zookeeper);
 
         HDFSFileAdapter adapter = new HDFSFileAdapter();
         adapter.init(_confA);
 
-        HLogGroupZookeeperScanner scan = new HLogGroupZookeeperScanner(_confA);
-        scan.setHlogEntryPersistence(dao);
-        scan.setHlogService(service);
+        HLogScanner scan = new HLogScanner(_confA);
+        scan.setHLogPersistence(dao);
+        scan.setHBaseService(service);
         scan.setZooKeeper(zookeeper);
 
-        HReplicationProducer producer = new HReplicationProducer(_confA);
+        HReplicationTransfer producer = new HReplicationTransfer(_confA);
         producer.setAdapter(adapter);
-        producer.setHlogEntryPersistence(dao);
-        producer.setHlogService(service);
+        producer.setHLogPersistence(dao);
+        producer.setHBaseService(service);
 
-        HReplicationRejectRecoverScanner recover = new HReplicationRejectRecoverScanner(_confA);
-        recover.setHlogService(service);
+        RejectRecoverScanner recover = new RejectRecoverScanner(_confA);
+        recover.setHBaseService(service);
         recover.setZooKeeper(zookeeper);
         recover.setAdapter(adapter);
 
