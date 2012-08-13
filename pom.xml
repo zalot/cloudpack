@@ -31,9 +31,6 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			<!-- <plugin> <groupId>com.alibaba.maven.plugins</groupId> <artifactId>maven-intl-plugin</artifactId> 
-				<executions> <execution> <id>generate-mainfest</id> <goals> <goal>manifest-gen</goal> 
-				</goals> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -95,6 +92,16 @@
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.16.1-GA</version>
+		</dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-exec</artifactId>
+			<version>0.9.0</version>
 		</dependency>
 		<!-- <dependency> <groupId>com.alibaba.external</groupId> <artifactId>apache.hadoop</artifactId> 
 			<version>${hadoop.version}</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
