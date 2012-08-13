@@ -29,18 +29,16 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
-
 import org.sourceopen.hadoop.hbase.replication.protocol.ConsumerV1Support;
 import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.MetaData;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
-import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolBodyV2;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
 import org.sourceopen.hadoop.hbase.replication.protocol.exception.FileParsingException;
 import org.sourceopen.hadoop.hbase.replication.protocol.exception.FileReadingException;
 import org.sourceopen.hadoop.hbase.replication.protocol.protobuf.SerBody.Edit;
 import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
-import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
+import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 
 /**
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类
@@ -55,15 +53,15 @@ import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
  */
 public class FileChannelRunnable implements Runnable {
 
-    protected static final Log     LOG = LogFactory.getLog(FileChannelRunnable.class);
+    protected static final Log LOG = LogFactory.getLog(FileChannelRunnable.class);
 
-    protected RecoverableZooKeeper zoo;
+    protected AdvZooKeeper     zoo;
 
-    public RecoverableZooKeeper getZoo() {
+    public AdvZooKeeper getZoo() {
         return zoo;
     }
 
-    public void setZoo(RecoverableZooKeeper zoo) {
+    public void setZoo(AdvZooKeeper zoo) {
         this.zoo = zoo;
     }
 
@@ -138,7 +136,7 @@ public class FileChannelRunnable implements Runnable {
                     }
                     if (metaData != null && metaData.getBody() != null) {
                         if (metaData.getBody() instanceof ConsumerV1Support) {
-                        	ConsumerV1Support body = (ConsumerV1Support) metaData.getBody();
+                            ConsumerV1Support body = (ConsumerV1Support) metaData.getBody();
                             if (MapUtils.isNotEmpty(body.getEditMap())) {
                                 // 对于能够解析出body数据的进行加载
                                 Map<String, List<Edit>> editMap = body.getEditMap();

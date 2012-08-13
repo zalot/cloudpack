@@ -15,8 +15,11 @@ import org.sourceopen.hadoop.zookeeper.core.ZNodeHelper;
  */
 public abstract class ZDaemonThread extends ZThread {
 
-    protected static final Log LOG = LogFactory.getLog(ZDaemonThread.class);
-
+    protected static final Log LOG       = LogFactory.getLog(ZDaemonThread.class);
+    protected boolean          isRunning = false;
+    protected boolean          run       = true;
+    protected boolean          yield     = false;
+    protected CallBack         stopped   = null;
     protected long             tryLockTime;
     protected long             onceSleepTime;
 
@@ -36,14 +39,17 @@ public abstract class ZDaemonThread extends ZThread {
 
     @Override
     public void run() {
-        while (true) {
+        while (run) {
             try {
                 Thread.sleep(this.tryLockTime);
                 if (LOG.isDebugEnabled()) LOG.debug(getThreadName() + " try lock ....");
                 isLock = ZNodeHelper.lock(zoo, znode, lockName);
                 if (isLock) {
                     if (LOG.isInfoEnabled()) LOG.info(getThreadName() + " lock ....");
+                    isRunning = true;
                     thread();
+                } else {
+                    yield = false;
                 }
             } catch (Exception e) {
                 isLock = false;
@@ -51,17 +57,25 @@ public abstract class ZDaemonThread extends ZThread {
             } finally {
                 if (isLock) {
                     if (ZNodeHelper.unlock(zoo, znode, lockName)) {
-                        if (LOG.isDebugEnabled()) LOG.debug(getThreadName() + " unlock ....");
+                        if (LOG.isInfoEnabled()) LOG.info(getThreadName() + " unlock ....");
                     }
                 }
+                isRunning = false;
             }
         }
+        if (stopped != null) stopped.stopped();
+    }
+
+    public static interface CallBack {
+
+        public void stopped();
     }
 
     public void thread() throws Exception {
-        while (true) {
+        while (run) {
             Thread.sleep(this.onceSleepTime);
-            deamon();
+            if (!yield) deamon();
+            else break;
         }
     }
 
@@ -69,5 +83,24 @@ public abstract class ZDaemonThread extends ZThread {
 
     public String getThreadName() {
         return HLogUtil.getBaseInfo(this);
+    }
+
+    public void yieldzt() {
+        yield = true;
+    }
+
+    public void shutdownzt() {
+        shutdownzt(null);
+    }
+
+    public void shutdownzt(CallBack cb) {
+        if (this.isRunning) {
+            run = false;
+            this.stopped = cb;
+        }
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 }

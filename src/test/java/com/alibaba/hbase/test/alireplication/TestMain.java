@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.sourceopen.TestBase;
 import org.sourceopen.hadoop.hbase.replication.core.HBaseService;
 import org.sourceopen.hadoop.hbase.replication.producer.HLogScanner;
-import org.sourceopen.hadoop.hbase.replication.producer.crossidc.HReplicationTransfer;
-import org.sourceopen.hadoop.hbase.replication.producer.crossidc.RejectRecoverScanner;
+import org.sourceopen.hadoop.hbase.replication.producer.ReplicationTransfer;
+import org.sourceopen.hadoop.hbase.replication.producer.RejectRecoverScanner;
 import org.sourceopen.hadoop.hbase.replication.producer.v2.ZNodeHLogPersistence;
 import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
@@ -49,7 +49,7 @@ public class TestMain extends TestBase {
         Thread threadscan = new Thread(scan);
         threadscan.start();
 
-        HReplicationTransfer pro = new HReplicationTransfer(_confA);
+        ReplicationTransfer pro = new ReplicationTransfer(_confA);
         pro.setAdapter(ad);
         pro.setHLogPersistence(dao);
         pro.setHBaseService(service);
@@ -80,7 +80,7 @@ public class TestMain extends TestBase {
         scan.setHBaseService(service);
         scan.setZooKeeper(zookeeper);
 
-        HReplicationTransfer producer = new HReplicationTransfer(_confA);
+        ReplicationTransfer producer = new ReplicationTransfer(_confA);
         producer.setAdapter(adapter);
         producer.setHLogPersistence(dao);
         producer.setHBaseService(service);

@@ -61,4 +61,9 @@ public abstract class ZThread extends Thread {
     }
 
     public abstract void thread() throws Exception;
+
+    public void shutdown() {
+        if (this.isAlive()) {
+        }
+    }
 }

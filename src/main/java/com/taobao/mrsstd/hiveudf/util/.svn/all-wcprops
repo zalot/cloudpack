@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/DW/!svn/ver/131502/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/mrsstd/hiveudf/util
+END
+FormatTool.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/DW/!svn/ver/64281/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/mrsstd/hiveudf/util/FormatTool.java
+END
+CodeUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/DW/!svn/ver/131502/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/mrsstd/hiveudf/util/CodeUtil.java
+END
+Constants.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/DW/!svn/ver/10144/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/mrsstd/hiveudf/util/Constants.java
+END
+UDFUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/DW/!svn/ver/10144/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/mrsstd/hiveudf/util/UDFUtil.java
+END

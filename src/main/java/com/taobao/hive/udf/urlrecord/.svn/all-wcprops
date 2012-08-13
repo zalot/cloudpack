@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/DW/!svn/ver/161040/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord
+END
+RuleURLProperty.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/DW/!svn/ver/66301/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/RuleURLProperty.java
+END
+UDFGetURLRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/DW/!svn/ver/161040/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/UDFGetURLRecord.java
+END
+URLRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/DW/!svn/ver/66301/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/URLRecord.java
+END
+RuleBusiness.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/DW/!svn/ver/66301/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/RuleBusiness.java
+END
+UDFGetUrlRel.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/DW/!svn/ver/66301/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/UDFGetUrlRel.java
+END
+RuleRelation.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/DW/!svn/ver/59610/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/RuleRelation.java
+END
+UDFGetUrlBiz.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/DW/!svn/ver/66301/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/UDFGetUrlBiz.java
+END
+UrlRuleHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/DW/!svn/ver/159000/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/UrlRuleHandler.java
+END
+RuleURL.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/DW/!svn/ver/64019/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/RuleURL.java
+END
+Constants.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/DW/!svn/ver/59610/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udf/urlrecord/Constants.java
+END

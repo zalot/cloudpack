@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/DW/!svn/ver/61874/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf
+END
+Gbk2GbkSimplified.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/DW/!svn/ver/10144/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/Gbk2GbkSimplified.java
+END
+UDFrow_rank.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/DW/!svn/ver/61874/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/UDFrow_rank.java
+END
+gbk.txt
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/DW/!svn/ver/10144/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/gbk.txt
+END
+GetParams.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/DW/!svn/ver/10144/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/GetParams.java
+END
+CoalesceStrEx.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/DW/!svn/ver/22264/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/CoalesceStrEx.java
+END
+ConcatEx.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/DW/!svn/ver/16344/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/ConcatEx.java
+END
+GBKConvertor.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/DW/!svn/ver/10144/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/GBKConvertor.java
+END
+UDFcsum.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/DW/!svn/ver/54820/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/UDFcsum.java
+END
+GenericUDAFWm_concat.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/DW/!svn/ver/59132/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/GenericUDAFWm_concat.java
+END
+UDFrow_number.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/DW/!svn/ver/54820/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/ad/data/search/udf/UDFrow_number.java
+END

@@ -6,10 +6,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
 import org.sourceopen.hadoop.zookeeper.concurrent.ZThread;
-import org.sourceopen.hadoop.zookeeper.core.ZNodeLock;
 
 /**
- * 
  * Protocol 粉碎旧文件 <BR>
  * 类HReplicationCrushScanner的实现描述：TODO 类实现描述
  * 

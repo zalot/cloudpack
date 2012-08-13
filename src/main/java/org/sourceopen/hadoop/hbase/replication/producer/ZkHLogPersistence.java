@@ -221,13 +221,15 @@ public class ZkHLogPersistence implements HLogPersistence {
     }
 
     public void unlockGroup(String groupName) throws Exception {
-        Stat stat = getLockGroupStat(groupName);
-        if (stat == null) return;
-        try {
-            String path = getGroupLockPath(groupName);
-            zoo.delete(path, stat.getVersion());
-        } catch (Exception e) {
-            return;
+        if (isMeLockGroup(groupName)) {
+            Stat stat = getLockGroupStat(groupName);
+            if (stat == null) return;
+            try {
+                String path = getGroupLockPath(groupName);
+                zoo.delete(path, stat.getVersion());
+            } catch (Exception e) {
+                return;
+            }
         }
     }
 

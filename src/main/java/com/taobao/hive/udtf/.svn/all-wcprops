@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/DW/!svn/ver/129584/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf
+END
+UDTFExplodeParallelArray.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/DW/!svn/ver/91156/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf/UDTFExplodeParallelArray.java
+END
+UDTFExplodeEX.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/DW/!svn/ver/111321/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf/UDTFExplodeEX.java
+END
+UDTFExplodeArray.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/DW/!svn/ver/108112/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf/UDTFExplodeArray.java
+END
+UDTFSerial.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/DW/!svn/ver/129584/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf/UDTFSerial.java
+END
+GenericUDTFJSONTuple.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/DW/!svn/ver/81951/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf/GenericUDTFJSONTuple.java
+END
+UDTFExplodeKeyValue.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/DW/!svn/ver/60973/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf/UDTFExplodeKeyValue.java
+END
+UDTFExplodeIP.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/DW/!svn/ver/64019/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf/UDTFExplodeIP.java
+END
+UDTFExplodeDSPeriod.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/DW/!svn/ver/113299/bi/trunk/dw_hive/tools/taobao_udf/src/com/taobao/hive/udtf/UDTFExplodeDSPeriod.java
+END

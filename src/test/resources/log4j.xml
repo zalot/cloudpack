@@ -32,9 +32,9 @@
 	<!-- ===================================================================== -->
 	<!-- 以下是logger的定义 -->
 	<!-- ===================================================================== -->
-	<logger name="org.sourceopen.hadoop.hbase.replication"
+	<logger name="org.sourceopen"
 		additivity="false">
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="console" />
 	</logger>
 

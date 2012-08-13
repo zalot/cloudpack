@@ -1,6 +1,7 @@
 package org.sourceopen.hadoop.zookeeper.core;
 
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -59,7 +60,7 @@ public class ZNodeHelper {
             Stat stat = zk.exists(lockPath, false);
             if (stat != null) {
                 byte[] data = zk.getData(lockPath, false, stat);
-                if (getLockData().equals(data)) {
+                if (Arrays.equals(getLockData(), data)) {
                     zk.delete(lockPath, stat.getVersion());
                     return true;
                 }

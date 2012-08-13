@@ -83,14 +83,12 @@ public class HLogScanner extends ZDaemonThread {
         }
     }
 
-    protected HBaseService hbaseService;
+    protected HBaseService    hbaseService;
+    protected HLogPersistence hlogPersistence;
 
     public HLogScanner(AdvZooKeeper zk, ZNode root, long tryLockTime, long onceSleepTime){
         super(zk, root, THREADLOCKKEY, tryLockTime, onceSleepTime);
     }
-
-    // 外部对象引用
-    protected HLogPersistence hlogPersistence;
 
     public HLogPersistence getHLogPersistence() {
         return hlogPersistence;
@@ -118,7 +116,7 @@ public class HLogScanner extends ZDaemonThread {
             if (groups.get(groupStr) == null) {
                 hlogPersistence.deleteGroup(groupStr);
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("scan delete group[" + groupStr + "]");
+                    LOG.debug(getThreadName() + " scan delete group[" + groupStr + "]");
                 }
             }
         }
@@ -133,7 +131,7 @@ public class HLogScanner extends ZDaemonThread {
                     if (!group.contains(entry)) {
                         hlogPersistence.deleteEntry(entry);
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("scan delete group-entry[" + entry + "]");
+                            LOG.debug(getThreadName() + " scan delete group-entry[" + entry + "]");
                         }
                     }
                 }
@@ -142,7 +140,7 @@ public class HLogScanner extends ZDaemonThread {
                     isLock = hlogPersistence.lockGroup(group.getGroupName());
                     if (isLock) {
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("scan lock group[" + group.getGroupName() + "]");
+                            LOG.debug(getThreadName() + " scan lock group[" + group.getGroupName() + "]");
                         }
                         break;
                     }
@@ -153,12 +151,12 @@ public class HLogScanner extends ZDaemonThread {
                     try {
                         hlogPersistence.updateGroup(group, true);
                         if (LOG.isInfoEnabled()) {
-                            LOG.info("scan update group[" + group.getGroupName() + "]");
+                            LOG.info(getThreadName() + " scan update group[" + group.getGroupName() + "]");
                         }
                     } finally {
                         hlogPersistence.unlockGroup(group.getGroupName());
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("scan unlock group[" + group.getGroupName() + "]");
+                            LOG.debug(getThreadName() + " scan unlock group[" + group.getGroupName() + "]");
                         }
                     }
                 }

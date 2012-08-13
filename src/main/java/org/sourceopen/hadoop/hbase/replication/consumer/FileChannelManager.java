@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -30,18 +31,16 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.sourceopen.hadoop.hbase.replication.consumer.v2.HReplicationCrushScanner;
 import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
-import org.sourceopen.hadoop.hbase.replication.server.ReplicationConf;
 import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
+import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
+import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
-import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 类Manager.java的实现描述：持有consumer端的中间文件同步线程池
@@ -54,7 +53,6 @@ import org.sourceopen.hadoop.zookeeper.connect.RecoverableZooKeeper;
  * 3.将用 v2 代替 来获取 Heads ，而非直接操作HDFS，将操作HDFS的过程放在 Protocol中<BR>
  * ------------------------------------------
  */
-@Service("fileChannelManager")
 public class FileChannelManager {
 
     private static final Logger    LOG      = LoggerFactory.getLogger(FileChannelManager.class);
@@ -62,10 +60,9 @@ public class FileChannelManager {
     protected AtomicBoolean        stopflag = new AtomicBoolean(false);
     protected ThreadPoolExecutor   fileChannelPool;
     protected FileSystem           fs;
-    protected RecoverableZooKeeper zoo;
+    protected AdvZooKeeper zoo;
 
-    @Autowired
-    protected ReplicationConf      conf;
+    protected Configuration        conf;
 
     @Autowired
     protected DataLoadingManager   dataLoadingManager;
@@ -92,7 +89,7 @@ public class FileChannelManager {
         // 不合适的方法
         // 请通过 ProtocolAdapter.listHead() 方法获取所有 Head 而不要直接操作 ProtocolAdapter 的内容
         fs = FileSystem.get(URI.create(conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS)), conf);
-        zoo = ZKp
+        zoo = HRepConfigUtil.createAdvZooKeeperByHBaseConfig(conf, new NothingZookeeperWatch());
         Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
         if (statZkRoot == null) {
             zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
@@ -116,21 +113,20 @@ public class FileChannelManager {
         }
 
         crushPool = new ThreadPoolExecutor(
-                                                              conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
-                                                                          ProducerConstants.REP_REJECT_POOL_SIZE),
-                                                              conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
-                                                                          ProducerConstants.REP_REJECT_POOL_SIZE),
-                                                              conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME,
-                                                                          100),
-                                                              TimeUnit.SECONDS,
-                                                              new ArrayBlockingQueue<Runnable>(
-                                                                                               conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
-                                                                                                           100)));
+                                           conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                       ProducerConstants.REP_REJECT_POOL_SIZE),
+                                           conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
+                                                       ProducerConstants.REP_REJECT_POOL_SIZE),
+                                           conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
+                                           TimeUnit.SECONDS,
+                                           new ArrayBlockingQueue<Runnable>(
+                                                                            conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                                                        100)));
         HReplicationCrushScanner crush;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
                                         ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
             crush = new HReplicationCrushScanner(conf);
-            crush.setZooKeeper(zoo);
+            crush.setAdvZooKeeper(zoo);
             crush.setAdapter(adapter);
             crushPool.execute(crush);
         }

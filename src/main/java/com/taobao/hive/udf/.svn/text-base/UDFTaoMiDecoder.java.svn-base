@@ -1,0 +1,60 @@
+package com.taobao.hive.udf;
+
+import java.net.URLDecoder;
+
+import org.apache.hadoop.hive.ql.exec.UDF;
+import org.apache.hadoop.io.Text;
+
+import com.alimama.loganalyzer.jobs.daily.taoke.TaomiDecoder;
+/**
+ * 从taomi串解码
+ * 用法:
+ * CREATE TEMPORARY FUNCTION taoMiDecoder  AS 'com.taobao.hive.udf.UDFTaoMiDecoder';
+ * taoMiDecoder(valueOfTaomi)
+ *  
+ * @author youliang
+ *
+ */
+public class UDFTaoMiDecoder extends UDF{
+
+	  Text result = new Text();
+	  public UDFTaoMiDecoder() {
+		  
+	  }
+
+	   
+	  public Text evaluate(String valueOfTaomi) {
+		  String decrypted = "";
+		  try{
+			  
+			    if(valueOfTaomi.indexOf("%")>=0){
+				     if(HASURLDecoder.isUtf8Url(valueOfTaomi)){
+					    	valueOfTaomi =  URLDecoder.decode(valueOfTaomi,"UTF-8").trim();
+						 }
+						 else{
+							 valueOfTaomi = URLDecoder.decode(valueOfTaomi,"GBK").trim();
+						 }
+			    }
+
+			   TaomiDecoder taomiDecoder = new TaomiDecoder();
+			   decrypted = taomiDecoder.decrypt(valueOfTaomi);
+		       if(decrypted==null){
+		    	   decrypted = "";
+		       }
+		  }catch(Exception e){
+		       result.set("");
+		       return result;
+		  }
+
+
+	       result.set(decrypted);
+	       return result;
+	  }
+	  
+	  
+	  public static void main(String[] args){
+		  UDFTaoMiDecoder test = new UDFTaoMiDecoder();
+		  System.out.println(test.evaluate(null));
+	  }
+	  
+}

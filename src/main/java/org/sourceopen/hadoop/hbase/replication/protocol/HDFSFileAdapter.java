@@ -18,28 +18,25 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.sourceopen.hadoop.hbase.replication.protocol.exception.FileParsingException;
 import org.sourceopen.hadoop.hbase.replication.protocol.exception.FileReadingException;
 import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 文件适配器 类FileAdapter.java的实现描述：TODO 类实现描述
  * 
  * @author zalot.zhaoh Feb 28, 2012 2:26:28 PM
  */
-@Service("fileAdapter")
 public class HDFSFileAdapter extends ProtocolAdapter {
 
+    protected static final Log       LOG                        = LogFactory.getLog(HDFSFileAdapter.class);
     public static final String       CONFKEY_HDFS_FS            = "org.sourceopen.hadoop.hbase.replication.protocol.adapter.hdfs.fs";
     public static final String       CONFKEY_HDFS_FS_OLDPATH    = "org.sourceopen.hadoop.hbase.replication.protocol.adapter.hdfs.dir.oldpath";
     public static final String       CONFKEY_HDFS_FS_REJECTPATH = "org.sourceopen.hadoop.hbase.replication.protocol.adapter.hdfs.dir.rejectpath";
     public static final String       CONFKEY_HDFS_FS_TARGETPATH = "org.sourceopen.hadoop.hbase.replication.protocol.adapter.hdfs.dir.targetpath";
     public static final String       CONFKEY_HDFS_FS_ROOT       = "org.sourceopen.hadoop.hbase.replication.protocol.adapter.hdfs.dir.root";
     public static final FsPermission PERMISSION                 = new FsPermission((short) 0777);
-    protected static final Log       LOG                        = LogFactory.getLog(HDFSFileAdapter.class);
     public static final String       SPLIT_SYMBOL               = "|";
 
     public static String head2FileName(ProtocolHead head) {

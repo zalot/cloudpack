@@ -19,15 +19,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourceopen.hadoop.hbase.replication.core.HBaseService;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogPersistence;
+import org.sourceopen.hadoop.hbase.replication.producer.HLogScanner;
+import org.sourceopen.hadoop.hbase.replication.producer.ZkHLogPersistence;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
 import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
-import org.sourceopen.hadoop.hbase.utils.HBaseConfigurationUtil;
+import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
 import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 import org.sourceopen.hadoop.zookeeper.connect.ZookeeperFactory;
+import org.sourceopen.hadoop.zookeeper.core.ZNode;
+import org.sourceopen.hadoop.zookeeper.core.ZNodeFactory;
 
 /**
  * 类Producer.java的实现描述：Producer的main线程
- * 
  */
 public class Producer {
 
@@ -88,16 +91,22 @@ public class Producer {
     protected static ThreadPoolExecutor replicationPool;
     protected static ThreadPoolExecutor recoverPool;
     protected static ThreadPoolExecutor scannerPool;
+    protected static ZNode              root;
 
     public static void start(Configuration conf) throws Exception {
-        AdvZooKeeper zookeeper = ZookeeperFactory.createRecoverableZooKeeper(HBaseConfigurationUtil.getZkStringV2(conf),
-                                                                             500, null, 10, 1000);
+        AdvZooKeeper zookeeper = ZookeeperFactory.createRecoverableZooKeeper(HRepConfigUtil.getZkStringV2(conf), 500,
+                                                                             null, 10, 1000);
 
-        HBaseService hlogService = new HBaseService(conf);
+        HBaseService hbService = new HBaseService(conf);
         ProtocolAdapter adapter = ProtocolAdapter.getAdapter(conf);
+        HLogPersistence hp = new ZkHLogPersistence(conf, zookeeper);
 
-        HLogPersistence hp = new HLogZookeeperPersistence(conf, zookeeper);
+        root = ZNodeFactory.createZNode(zookeeper,
+                                        conf.get(ProducerConstants.CONFKEY_ROOT_ZOO, ProducerConstants.ROOT_ZOO), true);
 
+        startHLogScanner(conf, hbService, hp);
+        startRejectScanner(conf, hbService, adapter);
+        startReplicationTransfer(conf, hbService, adapter, hp);
         // replicationPool = new ThreadPoolExecutor(
         // conf.getInt(ProducerConstants.CONFKEY_REP_SINK_POOL_SIZE,
         // ProducerConstants.REP_SINK_POOL_SIZE),
@@ -108,31 +117,7 @@ public class Producer {
         // new ArrayBlockingQueue<Runnable>(
         // conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
         // 100)));
-        
-        scannerPool = new ThreadPoolExecutor(
-                                             conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
-                                                         ProducerConstants.REP_SCANNER_POOL_SIZE),
-                                             conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
-                                                         ProducerConstants.REP_SCANNER_POOL_SIZE),
-                                             conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
-                                             TimeUnit.SECONDS,
-                                             new ArrayBlockingQueue<Runnable>(
-                                                                              conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
-                                                                                          100)));
-        
-        long lockTime  = ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
-                                       ProducerConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME));
-        lock.setTryLockTime(conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
-                                         ProducerConstants.ZOO_SCAN_LOCK_RETRYTIME));
-        HLogScannerThread scan;
-        for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
-                                        ProducerConstants.REP_SCANNER_POOL_SIZE); i++) {
-            scan = new HLogScannerThread(conf);
-            scan.setZooKeeper(zookeeper);
-            scan.setHlogService(hlogService);
-            scan.setHLogPersistence(hLogEntryPersistence);
-            scannerPool.execute(scan);
-        }
+
         // recoverPool = new ThreadPoolExecutor(
         // conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
         // ProducerConstants.REP_REJECT_POOL_SIZE),
@@ -183,5 +168,43 @@ public class Producer {
         // producer.setHlogEntryPersistence(hLogEntryPersistence);
         // replicationPool.execute(producer);
         // }
+    }
+
+    private static void startRejectScanner(Configuration conf, HBaseService hbService, ProtocolAdapter adapter) {
+        // TODO Auto-generated method stub
+
+    }
+
+    private static void startReplicationTransfer(Configuration conf, HBaseService hbService, ProtocolAdapter adapter,
+                                                 HLogPersistence hp) {
+        // TODO Auto-generated method stub
+
+    }
+
+    private static void startHLogScanner(Configuration conf, HBaseService hbService, HLogPersistence hp) {
+        scannerPool = new ThreadPoolExecutor(
+                                             conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
+                                                         ProducerConstants.REP_SCANNER_POOL_SIZE),
+                                             conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
+                                                         ProducerConstants.REP_SCANNER_POOL_SIZE),
+                                             conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_KEEPALIVE_TIME, 100),
+                                             TimeUnit.SECONDS,
+                                             new ArrayBlockingQueue<Runnable>(
+                                                                              conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
+                                                                                          100)));
+        
+        long lockTime  = ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_FLUSHSLEEPTIME,
+                                       ProducerConstants.ZOO_SCAN_LOCK_FLUSHSLEEPTIME));
+        lock.setTryLockTime(conf.getLong(ProducerConstants.CONFKEY_ZOO_SCAN_LOCK_RETRYTIME,
+                                         ProducerConstants.ZOO_SCAN_LOCK_RETRYTIME));
+        HLogScanner.newInstance(zk, root, hlog, hb, tryLockTime, onceSleepTime)
+        for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_SCANNER_POOL_SIZE,
+                                        ProducerConstants.REP_SCANNER_POOL_SIZE); i++) {
+            scan = new HLogScanner(conf);
+            scan.setZooKeeper(zookeeper);
+            scan.setHlogService(hlogService);
+            scan.setHLogPersistence(hLogEntryPersistence);
+            scannerPool.execute(scan);
+        }
     }
 }

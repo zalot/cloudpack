@@ -13,44 +13,38 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import org.sourceopen.hadoop.hbase.replication.protocol.protobuf.SerBody.Edit;
-import org.sourceopen.hadoop.hbase.replication.server.ReplicationConf;
 import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
 
 /**
  * 类DataLoadingManager.java的实现描述：持有consumer端的HbaseClient加载数据线程池
  * 
  * @author dongsh 2012-2-28 下午04:09:01
- * 
- * @author zalot.zhaoh 
- * ------------------------------------------
- * 1.取消了部分注入，采用原始的 set方法, 以及init
+ * @author zalot.zhaoh ------------------------------------------ 1.取消了部分注入，采用原始的 set方法, 以及init
  * ------------------------------------------
  */
-@Service("dataLoadingManager")
 public class DataLoadingManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataLoadingManager.class);
-    protected ReplicationConf   conf;
 
-    public ReplicationConf getConf() {
+    protected HTablePool        pool;
+    protected int               batchSize;
+    protected Configuration     conf;
+
+    public Configuration getConf() {
         return conf;
     }
 
-    public void setConf(ReplicationConf conf) {
+    public void setConf(Configuration conf) {
         this.conf = conf;
     }
-
-    protected HTablePool pool;
-    protected int        batchSize;
 
     public void init() {
         if (LOG.isInfoEnabled()) {
