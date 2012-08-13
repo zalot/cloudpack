@@ -14,7 +14,7 @@ hbase replication version 0.0.1
    
 -------------------------------------------
 Hive resource parser
-  Evaluation off-line with Hive
+  Evaluation off-line for Hive
 -------------------------------------------
 ZooKeeper Concurrent Thread
  .....test
