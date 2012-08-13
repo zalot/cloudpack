@@ -14,8 +14,8 @@ import org.apache.hadoop.hbase.HConstants;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogEntry;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.reader.HLogReader;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.reader.LazyOpenHLogReader;
+import org.sourceopen.hadoop.hbase.replication.producer.ProducerConstants;
 import org.sourceopen.hadoop.hbase.replication.utility.HLogUtil;
-import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
 
 /**
  * HLog资源服务 <BR>

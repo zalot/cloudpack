@@ -31,15 +31,16 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sourceopen.hadoop.hbase.replication.consumer.v2.HReplicationCrushScanner;
+import org.sourceopen.hadoop.hbase.replication.consumer.v2.CrushScanner;
+import org.sourceopen.hadoop.hbase.replication.producer.ProducerConstants;
 import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
-import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
-import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
 import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
 import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
+import org.sourceopen.hadoop.zookeeper.core.ZNode;
+import org.sourceopen.hadoop.zookeeper.core.ZNodeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -55,20 +56,21 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class FileChannelManager {
 
-    private static final Logger    LOG      = LoggerFactory.getLogger(FileChannelManager.class);
+    private static final Logger  LOG      = LoggerFactory.getLogger(FileChannelManager.class);
 
-    protected AtomicBoolean        stopflag = new AtomicBoolean(false);
-    protected ThreadPoolExecutor   fileChannelPool;
-    protected FileSystem           fs;
-    protected AdvZooKeeper zoo;
+    protected AtomicBoolean      stopflag = new AtomicBoolean(false);
+    protected ThreadPoolExecutor fileChannelPool;
+    protected FileSystem         fs;
+    protected AdvZooKeeper       zoo;
 
-    protected Configuration        conf;
+    protected Configuration      conf;
 
     @Autowired
-    protected DataLoadingManager   dataLoadingManager;
-    protected ProtocolAdapter      adapter;
+    protected DataLoadingManager dataLoadingManager;
+    protected ProtocolAdapter    adapter;
 
-    protected ThreadPoolExecutor   crushPool;
+    protected ThreadPoolExecutor crushPool;
+    protected ZNode              root;
 
     public void init() throws Exception {
         if (LOG.isInfoEnabled()) {
@@ -90,11 +92,8 @@ public class FileChannelManager {
         // 请通过 ProtocolAdapter.listHead() 方法获取所有 Head 而不要直接操作 ProtocolAdapter 的内容
         fs = FileSystem.get(URI.create(conf.get(HDFSFileAdapter.CONFKEY_HDFS_FS)), conf);
         zoo = HRepConfigUtil.createAdvZooKeeperByHBaseConfig(conf, new NothingZookeeperWatch());
-        Stat statZkRoot = zoo.exists(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
-        if (statZkRoot == null) {
-            zoo.create(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), null, Ids.OPEN_ACL_UNSAFE,
-                       CreateMode.PERSISTENT);
-        }
+        root = ZNodeFactory.createZNode(zoo, conf.get(ConsumerConstants.CONFKEY_ROOT_ZOO, ConsumerConstants.ROOT_ZOO),
+                                        true);
         if (LOG.isInfoEnabled()) {
             LOG.info("FileChannelManager init.");
         }
@@ -122,12 +121,10 @@ public class FileChannelManager {
                                            new ArrayBlockingQueue<Runnable>(
                                                                             conf.getInt(ProducerConstants.CONFKEY_THREADPOOL_SIZE,
                                                                                         100)));
-        HReplicationCrushScanner crush;
+        CrushScanner crush;
         for (int i = 0; i < conf.getInt(ProducerConstants.CONFKEY_REP_REJECT_POOL_SIZE,
                                         ProducerConstants.REP_REJECT_POOL_SIZE); i++) {
-            crush = new HReplicationCrushScanner(conf);
-            crush.setAdvZooKeeper(zoo);
-            crush.setAdapter(adapter);
+            crush = CrushScanner.newInstance(conf, zoo);
             crushPool.execute(crush);
         }
 
@@ -195,8 +192,8 @@ public class FileChannelManager {
         // s2. update ZK
         if (MapUtils.isNotEmpty(fstMap)) {
             for (String group : fstMap.keySet()) {
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                   + ConsumerConstants.FILE_SEPERATOR + group;
+                String groupRoot = root.getPath() + ConsumerConstants.FILE_SEPERATOR
+                                   + group;
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 int queueVer;
                 try {

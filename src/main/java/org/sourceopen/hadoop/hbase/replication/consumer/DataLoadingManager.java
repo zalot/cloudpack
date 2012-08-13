@@ -21,7 +21,6 @@ import org.apache.hadoop.hbase.client.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sourceopen.hadoop.hbase.replication.protocol.protobuf.SerBody.Edit;
-import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
 
 /**
  * 类DataLoadingManager.java的实现描述：持有consumer端的HbaseClient加载数据线程池

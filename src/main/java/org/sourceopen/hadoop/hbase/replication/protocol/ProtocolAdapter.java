@@ -6,7 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 
-import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
+import org.sourceopen.hadoop.hbase.replication.producer.ProducerConstants;
 
 /**
  * 协议适配器 类ProtocolAdapter.java的实现描述：TODO 类实现描述
@@ -43,7 +43,7 @@ public abstract class ProtocolAdapter {
     @SuppressWarnings("unchecked")
     public static ProtocolAdapter getAdapter(Configuration conf) throws Exception {
         if (_adapter != null) return _adapter;
-        String clazzStr = conf.get(ProducerConstants.CONFKEY_PROTOCOL_CLASS);
+        String clazzStr = conf.get(ProducerConstants.CONFKEY_PROTOCOL_CLASS, ProducerConstants.PROTOCOL_CLASS);
         try {
             Class<ProtocolAdapter> clazz = (Class<ProtocolAdapter>) Class.forName(clazzStr);
             ProtocolAdapter adapter = clazz.newInstance();

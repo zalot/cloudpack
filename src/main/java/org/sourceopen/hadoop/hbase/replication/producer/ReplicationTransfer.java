@@ -20,7 +20,6 @@ import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolAdapter;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolBody;
 import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
 import org.sourceopen.hadoop.hbase.replication.utility.HLogUtil;
-import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
 
 /**
  * HReplicationProducer <BR>

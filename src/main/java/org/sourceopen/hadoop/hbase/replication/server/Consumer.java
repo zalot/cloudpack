@@ -10,11 +10,15 @@ package org.sourceopen.hadoop.hbase.replication.server;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import org.sourceopen.hadoop.hbase.replication.consumer.ConsumerConstants;
 import org.sourceopen.hadoop.hbase.replication.consumer.FileChannelManager;
+import org.sourceopen.hadoop.hbase.replication.producer.ProducerConstants;
 
 /**
  * 类Consumer.java的实现描述：Consumer的main线程
@@ -51,9 +55,10 @@ public class Consumer {
 
                 }
             });
-            // 启动Server
-            context.start();
-            ((FileChannelManager) context.getBean("fileChannelManager")).start();
+            Configuration conf = HBaseConfiguration.create();
+            conf.addResource(ConsumerConstants.COMMON_CONFIG_FILE);
+            conf.addResource(ConsumerConstants.CONSUMER_CONFIG_FILE);
+            Consumer.start(conf);
             LOG.info("Consumer server started");
             System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
                                + " Consumer server started");
@@ -71,6 +76,10 @@ public class Consumer {
                 }
             }
         }
+    }
+
+    private static void start(Configuration conf) {
+        
     }
 
 }

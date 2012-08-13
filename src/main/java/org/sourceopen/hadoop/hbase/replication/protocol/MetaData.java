@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 
-import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
+import org.sourceopen.hadoop.hbase.replication.producer.ProducerConstants;
 
 /**
  * 协议元数据 类MetaData.java的实现描述：TODO 类实现描述

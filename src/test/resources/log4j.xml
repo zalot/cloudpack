@@ -32,7 +32,7 @@
 	<!-- ===================================================================== -->
 	<!-- 以下是logger的定义 -->
 	<!-- ===================================================================== -->
-	<logger name="org.sourceopen"
+	<logger name="org.sourceopen.test"
 		additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="console" />

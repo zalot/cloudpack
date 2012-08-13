@@ -21,7 +21,6 @@ import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogEntry;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogEntry.Type;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogGroup;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogPersistence;
-import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
 import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
 import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 import org.sourceopen.hadoop.zookeeper.core.ZNode;

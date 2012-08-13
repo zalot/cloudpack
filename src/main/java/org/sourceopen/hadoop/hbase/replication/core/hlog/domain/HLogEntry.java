@@ -3,7 +3,7 @@ package org.sourceopen.hadoop.hbase.replication.core.hlog.domain;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.regionserver.wal.HLog;
 
-import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
+import org.sourceopen.hadoop.hbase.replication.producer.ProducerConstants;
 
 /**
  * 支持排序的 HlogEntry 类HLogEntry.java的实现描述：TODO 类实现描述

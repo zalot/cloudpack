@@ -1,4 +1,4 @@
-package org.sourceopen.hadoop.hbase.replication.utility;
+package org.sourceopen.hadoop.hbase.replication.producer;
 
 import org.sourceopen.hadoop.hbase.replication.protocol.HDFSFileAdapter;
 

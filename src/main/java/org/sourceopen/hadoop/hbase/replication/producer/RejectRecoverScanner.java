@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.regionserver.wal.HLog.Entry;
 import org.sourceopen.hadoop.hbase.replication.core.HBaseService;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogEntry;
@@ -16,6 +17,7 @@ import org.sourceopen.hadoop.hbase.replication.utility.HLogUtil;
 import org.sourceopen.hadoop.zookeeper.concurrent.ZDaemonThread;
 import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 import org.sourceopen.hadoop.zookeeper.core.ZNode;
+import org.sourceopen.hadoop.zookeeper.core.ZNodeFactory;
 
 /**
  * Reject<BR>
@@ -28,7 +30,7 @@ public class RejectRecoverScanner extends ZDaemonThread {
     protected static final Log    LOG      = LogFactory.getLog(RejectRecoverScanner.class);
     protected final static String LOCKNAME = "rejectrecoverlock";
 
-    public RejectRecoverScanner(AdvZooKeeper zk, ZNode znode, String lockName, long tryLockTime, long onceSleepTime){
+    public RejectRecoverScanner(AdvZooKeeper zk, ZNode znode, long tryLockTime, long onceSleepTime){
         super(zk, znode, LOCKNAME, tryLockTime, onceSleepTime);
     }
 
@@ -102,5 +104,18 @@ public class RejectRecoverScanner extends ZDaemonThread {
     @Override
     public void deamon() throws Exception {
         doRecover();
+    }
+
+    public static RejectRecoverScanner newInstance(Configuration conf, AdvZooKeeper zk, HBaseService hb,
+                                                   ProtocolAdapter adapter) {
+        ZNode root = ZNodeFactory.createZNode(zk,
+                                              conf.get(ProducerConstants.CONFKEY_ROOT_ZOO, ProducerConstants.ROOT_ZOO),
+                                              true);
+        long tryLockTime = 50000L;
+        long onceSleepTime = 5000L;
+        RejectRecoverScanner recover = new RejectRecoverScanner(zk, root, tryLockTime, onceSleepTime);
+        recover.setAdapter(adapter);
+        recover.setHBaseService(hb);
+        return recover;
     }
 }

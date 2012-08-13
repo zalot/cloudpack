@@ -5,9 +5,11 @@
  * use it only in accordance with the terms of the license agreement you entered
  * into with Alibaba.com.
  */
-package org.sourceopen.hadoop.hbase.replication.utility;
+package org.sourceopen.hadoop.hbase.replication.consumer;
 
 import java.util.UUID;
+
+import org.sourceopen.hadoop.hbase.replication.producer.ProducerConstants;
 
 /**
  * 类Constant.java的实现描述：常量数据
@@ -28,11 +30,12 @@ public class ConsumerConstants {
     public static final String MD5_SUFFIX                          = "_md5";
 
     // conf key
+    public static final String CONFKEY_ROOT_ZOO                    = "org.sourceopen.hadoop.hbase.replication.consumer.zookeeper.znoderoot";
     public static final String CONFKEY_PRODUCER_FS                 = "org.sourceopen.hadoop.hbase.replication.producer.fs";
     public static final String CONFKEY_PRODUCER_FS_TARGET          = "org.sourceopen.hadoop.hbase.replication.producer.fs.target";
     public static final String PRODUCER_EMPTY_FS                   = "";
     public static final String CONFKEY_ZK_QUORUM                   = "org.sourceopen.hadoop.hbase.replication.consumer.zookeeper.quorum";
-    public static final String CONFKEY_REP_ZNODE_ROOT              = "org.sourceopen.hadoop.hbase.replication.consumer.zookeeper.znoderoot";
+
     public static final String CONFKEY_REP_FILE_CHANNEL_POOL_SIZE  = "org.sourceopen.hadoop.hbase.replication.consumer.fileChannelPoolSize";
     public static final String CONFKEY_REP_DATA_LAODING_POOL_SIZE  = "org.sourceopen.hadoop.hbase.replication.consumer.dataLoadingPoolSize";
     public static final String CONFKEY_REP_DATA_LAODING_BATCH_SIZE = "org.sourceopen.hadoop.hbase.replication.consumer.dataLoadingBatchSize";
@@ -42,5 +45,7 @@ public class ConsumerConstants {
     public static final String ZK_CURRENT                          = "cur";
     public static final String ZK_QUEUE                            = "queue";
     public static final int    ZK_ANY_VERSION                      = -1;
+
+    public static final String ROOT_ZOO                            = ProducerConstants.ROOT_ZOO;
 
 }

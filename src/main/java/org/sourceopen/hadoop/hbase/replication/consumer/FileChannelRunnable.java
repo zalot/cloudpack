@@ -37,8 +37,9 @@ import org.sourceopen.hadoop.hbase.replication.protocol.ProtocolHead;
 import org.sourceopen.hadoop.hbase.replication.protocol.exception.FileParsingException;
 import org.sourceopen.hadoop.hbase.replication.protocol.exception.FileReadingException;
 import org.sourceopen.hadoop.hbase.replication.protocol.protobuf.SerBody.Edit;
-import org.sourceopen.hadoop.hbase.replication.utility.ConsumerConstants;
 import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
+import org.sourceopen.hadoop.zookeeper.core.ZNode;
+import org.sourceopen.hadoop.zookeeper.core.ZNodeFactory;
 
 /**
  * 类FileChannelRunnableRunnable.java的实现描述：执行文件同步的任务类
@@ -72,6 +73,7 @@ public class FileChannelRunnable implements Runnable {
     protected ProtocolAdapter     fileAdapter;
     protected List<ConsumerZNode> errorNodeList = new ArrayList<ConsumerZNode>();
     protected AtomicBoolean       stopflag;
+    protected ZNode               root;
 
     public FileChannelRunnable(Configuration conf, DataLoadingManager dataLoadingManager, ProtocolAdapter fileAdapter,
                                AtomicBoolean stopflag) throws IOException{
@@ -83,6 +85,8 @@ public class FileChannelRunnable implements Runnable {
 
     @Override
     public void run() {
+        root = ZNodeFactory.createZNode(zoo, conf.get(ConsumerConstants.CONFKEY_ROOT_ZOO, ConsumerConstants.ROOT_ZOO),
+                                        true);
         while (!stopflag.get()) {
             ConsumerZNode currentNode = tryToMakeACurrentNode();
             if (currentNode != null) {
@@ -115,8 +119,8 @@ public class FileChannelRunnable implements Runnable {
                             if (LOG.isErrorEnabled()) {
                                 LOG.error("reject file failed. file name" + currentNode.getFileName(), e);
                             }
-                            String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                               + ConsumerConstants.FILE_SEPERATOR + currentNode.getGroupName();
+                            String groupRoot = root.getPath() + ConsumerConstants.FILE_SEPERATOR
+                                               + currentNode.getGroupName();
                             String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                             try {
                                 // 清除zk上对此group的加锁
@@ -168,8 +172,7 @@ public class FileChannelRunnable implements Runnable {
                         }
                     }
                     // 清除zk上对此group的加锁
-                    String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                       + ConsumerConstants.FILE_SEPERATOR + currentNode.getGroupName();
+                    String groupRoot = root.getPath() + ConsumerConstants.FILE_SEPERATOR + currentNode.getGroupName();
                     String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                     try {
                         zoo.delete(cur, ConsumerConstants.ZK_ANY_VERSION);
@@ -204,8 +207,7 @@ public class FileChannelRunnable implements Runnable {
             ConsumerZNode orig = null;
             String retry = null;
             for (ConsumerZNode node : errorNodeList) {
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                   + ConsumerConstants.FILE_SEPERATOR + node.getGroupName();
+                String groupRoot = root.getPath() + ConsumerConstants.FILE_SEPERATOR + node.getGroupName();
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 try {
                     TreeSet<String> ftsSet = getQueueData(queue);
@@ -238,16 +240,15 @@ public class FileChannelRunnable implements Runnable {
         // 没有可重做的異常節點
         List<String> groupList = null;
         try {
-            groupList = zoo.getChildren(conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), false);
+            groupList = zoo.getChildren(root.getPath(), false);
         } catch (Exception e) {
             if (LOG.isWarnEnabled()) {
-                LOG.warn("no group found at zk. " + conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT), e);
+                LOG.warn("no group found at zk. " + root.getPath(), e);
             }
         }
         if (CollectionUtils.isNotEmpty(groupList)) {
             for (String group : groupList) {
-                String groupRoot = conf.get(ConsumerConstants.CONFKEY_REP_ZNODE_ROOT)
-                                   + ConsumerConstants.FILE_SEPERATOR + group;
+                String groupRoot = root.getPath() + ConsumerConstants.FILE_SEPERATOR + group;
                 String cur = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_CURRENT;
                 String queue = groupRoot + ConsumerConstants.FILE_SEPERATOR + ConsumerConstants.ZK_QUEUE;
                 Stat statZkCur;

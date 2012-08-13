@@ -7,7 +7,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.zookeeper.ZKConfig;
 import org.apache.zookeeper.Watcher;
-import org.sourceopen.hadoop.hbase.replication.utility.ProducerConstants;
+import org.sourceopen.hadoop.hbase.replication.producer.ProducerConstants;
 import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 import org.sourceopen.hadoop.zookeeper.connect.ZookeeperFactory;
 import org.sourceopen.hadoop.zookeeper.core.ZNode;
