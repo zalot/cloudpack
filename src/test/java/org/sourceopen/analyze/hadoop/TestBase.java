@@ -14,6 +14,8 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.client.HTablePool;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.MiniMRCluster;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
@@ -35,11 +37,13 @@ public class TestBase {
     protected static HBaseTestingUtility _utilA;
     protected static Configuration       _confA;
     protected static HTablePool          _poolA;
+    protected static MiniMRCluster       _mrA    = null;
     private static boolean               _startA = false;
 
     protected static HBaseTestingUtility _utilB;
     protected static Configuration       _confB;
     protected static HTablePool          _poolB;
+    protected static MiniMRCluster       _mrB    = null;
     private static boolean               _startB = false;
 
     @AfterClass
@@ -64,7 +68,7 @@ public class TestBase {
         _confA.setInt("hbase.master.info.port", 60010);
     }
 
-    public static void startHBaseClusterA(int hbaseNum, int zkNum) throws Exception {
+    public static void startHBaseClusterA(int hbaseNum, int mapr, int zkNum) throws Exception {
         if (!_startA) {
             initClusterA();
             _utilA = new HBaseTestingUtility(_confA);
@@ -72,7 +76,15 @@ public class TestBase {
             if (hbaseNum > 0) _utilA.startMiniCluster(1, hbaseNum);
             _poolA = new HTablePool(_confA, 20);
             _startA = true;
+            if (mapr > 0) {
+                _mrA = startMiniMapRServer(mapr, _confA);
+            }
+            printInfo("ClusterA", _confA);
         }
+    }
+
+    public static void startHBaseClusterA(int hbaseNum, int zkNum) throws Exception {
+        startHBaseClusterA(hbaseNum, 0, zkNum);
     }
 
     private static void initClusterB() {
@@ -85,12 +97,20 @@ public class TestBase {
     }
 
     public static void startHBaseClusterB(int hbaseNum, int zkNum) throws Exception {
+        startHBaseClusterB(hbaseNum, 0, zkNum);
+    }
+
+    public static void startHBaseClusterB(int hbaseNum, int mapr, int zkNum) throws Exception {
         if (!_startB) {
             initClusterB();
             _utilB = new HBaseTestingUtility(_confB);
             _utilB.startMiniZKCluster(zkNum);
             if (hbaseNum > 0) _utilB.startMiniCluster(1, hbaseNum);
             _poolB = new HTablePool(_confB, 20);
+            if (mapr > 0) {
+                _mrB = startMiniMapRServer(mapr, _confB);
+            }
+            printInfo("ClusterB", _confA);
         }
     }
 
@@ -122,5 +142,24 @@ public class TestBase {
         if (stat != null) zk.delete("/test1", stat.getVersion());
         Assert.assertEquals(zk.getChildren("/", false).size(), 1);
         return zk;
+    }
+
+    protected static MiniMRCluster startMiniMapRServer(int servers, Configuration conf) throws IOException {
+        conf.set("mapred.output.dir", conf.get("hadoop.tmp.dir"));
+        MiniMRCluster mrCluster = new MiniMRCluster(servers, FileSystem.get(conf).getUri().toString(), 1);
+        JobConf jobConf = mrCluster.createJobConf();
+        conf.set("mapred.job.tracker", jobConf.get("mapred.job.tracker"));
+        conf.set("mapreduce.framework.name", "yarn");
+        conf.set("mapred.job.tracker.http.address", jobConf.get("mapred.job.tracker.http.address"));
+        return mrCluster;
+    }
+
+    private static void printInfo(String base, Configuration conf) {
+        String nnHttp = "http://" + conf.get("dfs.http.address");
+        String snHttp = "http://" + conf.get("dfs.secondary.http.address");
+        String taskHttp = "http://" + conf.get("mapred.job.tracker.http.address");
+        System.out.println(base + "-NameNode : " + nnHttp);
+        System.out.println(base + "-SecondaryNameNode : " + snHttp);
+        System.out.println(base + "-JobTracker : " + taskHttp);
     }
 }
