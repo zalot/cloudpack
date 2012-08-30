@@ -77,6 +77,5 @@ public class AnalyzeProtocolBody {
                                    + datav2.length);
             }
         }
-
     }
 }

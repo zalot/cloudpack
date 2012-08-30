@@ -24,7 +24,7 @@ public class DWFunctionRegister {
         FunctionRegistry.registerTemporaryFunction("BingDecode", com.taobao.hive.udf.UDFBingUrlDecode.class);
         FunctionRegistry.registerTemporaryFunction("row_number", com.taobao.ad.data.search.udf.UDFrow_number.class);
         FunctionRegistry.registerTemporaryFunction("date_add_taobao", com.taobao.hive.udf.UDFDateAdd2.class);
-        FunctionRegistry.registerTemporaryFunction("getkeyvalue ", com.taobao.hive.udf.UDFKeyValue.class);
+        FunctionRegistry.registerTemporaryFunction("getkeyvalue", com.taobao.hive.udf.UDFKeyValue.class);
         FunctionRegistry.registerTemporaryFunction("getnamefromrefer",
                                                    com.taobao.hive.udf.search.GetNameFromRefer.class);
         FunctionRegistry.registerTemporaryFunction("getnamefromurl", com.taobao.hive.udf.search.GetNameFromUrl.class);
@@ -33,7 +33,7 @@ public class DWFunctionRegister {
                                                    com.taobao.hive.udf.search.GetValueFromSplit.class);
         FunctionRegistry.registerTemporaryFunction("ReplaceNullAndEmpty",
                                                    com.taobao.hive.udf.search.ReplaceNullAndEmpty.class);
-        FunctionRegistry.registerTemporaryFunction("getcity ", com.taobao.hive.udf.UDFGetCityByIp.class);
+        FunctionRegistry.registerTemporaryFunction("getcity", com.taobao.hive.udf.UDFGetCityByIp.class);
         FunctionRegistry.registerTemporaryFunction("trunc", com.taobao.hive.udf.UDFTrunc.class);
         FunctionRegistry.registerTemporaryFunction("explode_keyvalue", com.taobao.hive.udtf.UDTFExplodeKeyValue.class);
         FunctionRegistry.registerTemporaryFunction("date_sub_taobao", com.taobao.hive.udf.UDFDateSub2.class);
@@ -42,35 +42,35 @@ public class DWFunctionRegister {
         FunctionRegistry.registerTemporaryFunction("get_cityid_byip", com.taobao.hive.udf.UDFGetIPCity.class);
         FunctionRegistry.registerTemporaryFunction("get_htmqian_n", com.taobao.hive.udf.UDFGetHtmQianN.class);
         FunctionRegistry.registerTemporaryFunction("codechinese", com.taobao.hive.udf.UDFUrlDecodeChinese.class);
-        FunctionRegistry.registerTemporaryFunction("decodebase64 ", com.taobao.hive.udf.UDFDecodeBase64.class);
-        FunctionRegistry.registerTemporaryFunction("getbase64string ",
+        FunctionRegistry.registerTemporaryFunction("decodebase64", com.taobao.hive.udf.UDFDecodeBase64.class);
+        FunctionRegistry.registerTemporaryFunction("getbase64string",
                                                    com.taobao.hive.udf.notcommon.UDFGetBase64String.class);
-        FunctionRegistry.registerTemporaryFunction("udfstring ", com.taobao.hive.udf.UDFString.class);
+        FunctionRegistry.registerTemporaryFunction("udfstring", com.taobao.hive.udf.UDFString.class);
         FunctionRegistry.registerTemporaryFunction("encode", com.taobao.hive.udf.UDFEncode.class);
-        FunctionRegistry.registerTemporaryFunction("timeCompare ", com.taobao.hive.udf.UDFTimeCompare.class);
-        FunctionRegistry.registerTemporaryFunction("encodebase64 ", com.taobao.hive.udf.UDFEncodeBase64.class);
-        FunctionRegistry.registerTemporaryFunction("sysdate ", com.taobao.hive.udf.UDFDateSysdate.class);
-        FunctionRegistry.registerTemporaryFunction("idcard_info ", com.taobao.hive.udf.UDFIDCard.class);
-        FunctionRegistry.registerTemporaryFunction("get_keyvalue ", com.taobao.hive.udf.UDFKeyValue.class);
-        FunctionRegistry.registerTemporaryFunction("group_concat ", com.taobao.hive.udf.UDAFGroupConcat2.class);
-        FunctionRegistry.registerTemporaryFunction("getvaluefromurl ", com.taobao.hive.udf.UDFGetValueFromUrl.class);
-        FunctionRegistry.registerTemporaryFunction("getrealurl ", com.taobao.hive.udf.UDFGetRealUrl.class);
-        FunctionRegistry.registerTemporaryFunction("getpartition ", com.taobao.hive.udf.UDFGetPartition.class);
+        FunctionRegistry.registerTemporaryFunction("timeCompare", com.taobao.hive.udf.UDFTimeCompare.class);
+        FunctionRegistry.registerTemporaryFunction("encodebase64", com.taobao.hive.udf.UDFEncodeBase64.class);
+        FunctionRegistry.registerTemporaryFunction("sysdate", com.taobao.hive.udf.UDFDateSysdate.class);
+        FunctionRegistry.registerTemporaryFunction("idcard_info", com.taobao.hive.udf.UDFIDCard.class);
+        FunctionRegistry.registerTemporaryFunction("get_keyvalue", com.taobao.hive.udf.UDFKeyValue.class);
+        FunctionRegistry.registerTemporaryFunction("group_concat", com.taobao.hive.udf.UDAFGroupConcat2.class);
+        FunctionRegistry.registerTemporaryFunction("getvaluefromurl", com.taobao.hive.udf.UDFGetValueFromUrl.class);
+        FunctionRegistry.registerTemporaryFunction("getrealurl", com.taobao.hive.udf.UDFGetRealUrl.class);
+        FunctionRegistry.registerTemporaryFunction("getpartition", com.taobao.hive.udf.UDFGetPartition.class);
         FunctionRegistry.registerTemporaryFunction("get_auctionid", com.taobao.hive.udf.UDFGetAuctionID2.class);
-        FunctionRegistry.registerTemporaryFunction("num_format ", com.taobao.hive.udf.UDFFormat.class);
-        FunctionRegistry.registerTemporaryFunction("getDate ", com.taobao.hive.udf.UDFGetDate.class);
-        FunctionRegistry.registerTemporaryFunction("get_group_number ", com.taobao.hive.udf.UDFGetGroupNumber.class);
-        FunctionRegistry.registerTemporaryFunction("get_quarter_day ", com.taobao.hive.udf.UDFGetQuarterDay.class);
-        FunctionRegistry.registerTemporaryFunction("getweek ", com.taobao.hive.udf.UDFGetWeek.class);
-        FunctionRegistry.registerTemporaryFunction("getweekday ", com.taobao.hive.udf.UDFGetWeekDay.class);
-        FunctionRegistry.registerTemporaryFunction("ins ", com.taobao.hive.udf.UDFIn.class);
-        FunctionRegistry.registerTemporaryFunction("optionbit ", com.taobao.hive.udf.UDFOptionBit.class);
-        FunctionRegistry.registerTemporaryFunction("getReferHost ", com.taobao.hive.udf.UDFReferHost.class);
-        FunctionRegistry.registerTemporaryFunction("format_ip ", com.taobao.hive.udf.UDFUserTbLastips.class);
+        FunctionRegistry.registerTemporaryFunction("num_format", com.taobao.hive.udf.UDFFormat.class);
+        FunctionRegistry.registerTemporaryFunction("getDate", com.taobao.hive.udf.UDFGetDate.class);
+        FunctionRegistry.registerTemporaryFunction("get_group_number", com.taobao.hive.udf.UDFGetGroupNumber.class);
+        FunctionRegistry.registerTemporaryFunction("get_quarter_day", com.taobao.hive.udf.UDFGetQuarterDay.class);
+        FunctionRegistry.registerTemporaryFunction("getweek", com.taobao.hive.udf.UDFGetWeek.class);
+        FunctionRegistry.registerTemporaryFunction("getweekday", com.taobao.hive.udf.UDFGetWeekDay.class);
+        FunctionRegistry.registerTemporaryFunction("ins", com.taobao.hive.udf.UDFIn.class);
+        FunctionRegistry.registerTemporaryFunction("optionbit", com.taobao.hive.udf.UDFOptionBit.class);
+        FunctionRegistry.registerTemporaryFunction("getReferHost", com.taobao.hive.udf.UDFReferHost.class);
+        FunctionRegistry.registerTemporaryFunction("format_ip", com.taobao.hive.udf.UDFUserTbLastips.class);
         FunctionRegistry.registerTemporaryFunction("dateCompare", com.taobao.hive.udf.UDFDateCompare.class);
-        FunctionRegistry.registerTemporaryFunction("base32Decoder ", com.taobao.hive.udf.UDFBase32Decoder.class);
-        FunctionRegistry.registerTemporaryFunction("getDomainFromUrl ", com.taobao.hive.udf.UDFGetDomainFromUrl.class);
-        FunctionRegistry.registerTemporaryFunction("getP4Pkeywords ", com.taobao.hive.udf.UDFP4Pkeywords.class);
+        FunctionRegistry.registerTemporaryFunction("base32Decoder", com.taobao.hive.udf.UDFBase32Decoder.class);
+        FunctionRegistry.registerTemporaryFunction("getDomainFromUrl", com.taobao.hive.udf.UDFGetDomainFromUrl.class);
+        FunctionRegistry.registerTemporaryFunction("getP4Pkeywords", com.taobao.hive.udf.UDFP4Pkeywords.class);
         FunctionRegistry.registerTemporaryFunction("exst_pt", com.taobao.hive.udf.UDFExstPartition.class);
         FunctionRegistry.registerTemporaryFunction("splitvalue", com.taobao.hive.search.udtf.UDTFSplitValue.class);
         // FunctionRegistry.registerTemporaryFunction("uniform", com.taobao.dw.common.udf.UniformUdf.class);

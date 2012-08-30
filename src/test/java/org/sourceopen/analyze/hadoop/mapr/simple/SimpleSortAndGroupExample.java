@@ -200,7 +200,7 @@ public class SimpleSortAndGroupExample extends Configured implements Tool {
         // this.getConf().set("hadoop.job.ugi", "luo,luo");
         // this.getConf().set("mapred.system.dir",
         // "/home/luo/hadoop/tmp/mapred/system/");
-        job.getConfiguration().writeXml(new FileOutputStream(new File(System.currentTimeMillis() + "")));
+        // job.getConfiguration().writeXml(new FileOutputStream(new File("target/" + System.currentTimeMillis())));
         return job.waitForCompletion(true) ? 0 : 1;
     }
 }

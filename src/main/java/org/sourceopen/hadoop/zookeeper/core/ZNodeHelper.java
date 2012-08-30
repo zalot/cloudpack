@@ -3,6 +3,9 @@ package org.sourceopen.hadoop.zookeeper.core;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,14 +40,23 @@ public class ZNodeHelper {
     }
 
     public static boolean lock(AdvZooKeeper zk, ZNode zn, String lockName) {
+        return lock(zk, zn, lockName, false);
+    }
+
+    public static boolean lock(AdvZooKeeper zk, ZNode zn, String lockName, boolean enforce) {
         try {
             String lockPath = lockName == null ? getLockPath(zn) : zn.getPath() + ZNodeConstants.SPLIT + lockName;
             Stat stat = zk.exists(lockPath, false);
             if (stat != null) {
+                if (enforce) {
+                    zk.setData(lockPath, getLockData(), stat.getVersion());
+                    return true;
+                }
                 return false;
+            } else {
+                zk.create(lockPath, getLockData(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                return true;
             }
-            zk.create(lockPath, getLockData(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-            return true;
         } catch (Exception e) {
         }
         return false;
@@ -55,12 +67,16 @@ public class ZNodeHelper {
     }
 
     public static boolean unlock(AdvZooKeeper zk, ZNode zn, String lockName) {
+        return unlock(zk, zn, lockName, false);
+    }
+
+    public static boolean unlock(AdvZooKeeper zk, ZNode zn, String lockName, boolean enforce) {
         try {
             String lockPath = lockName == null ? getLockPath(zn) : zn.getPath() + ZNodeConstants.SPLIT + lockName;
             Stat stat = zk.exists(lockPath, false);
             if (stat != null) {
                 byte[] data = zk.getData(lockPath, false, stat);
-                if (Arrays.equals(getLockData(), data)) {
+                if (Arrays.equals(getLockData(), data) || enforce) {
                     zk.delete(lockPath, stat.getVersion());
                     return true;
                 }
@@ -82,7 +98,30 @@ public class ZNodeHelper {
         return threadLock.get();
     }
 
-    public static void main(String[] args) {
-        System.out.println(ManagementFactory.getRuntimeMXBean().getName());
+    public static void main(String[] args) throws InterruptedException {
+        class A {
+
+            Lock      l = new ReentrantLock();
+            Condition c = l.newCondition();
+
+            public void a() {
+                l.lock();
+
+                l.unlock();
+            }
+        }
+
+        class At extends Thread {
+
+            A a;
+
+            public At(A a){
+                this.a = a;
+            }
+
+            public void run() {
+                a.a();
+            }
+        }
     }
 }

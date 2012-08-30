@@ -42,7 +42,7 @@ public class TestSort extends TestHBase {
         long start = System.currentTimeMillis();
         SimpleDateFormat format = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         String date = format.format(new Date(System.currentTimeMillis()));
-        SimpleSortAndGroupExample.conf = _utilA.getConfiguration();
+        // SimpleSortAndGroupExample.conf = _utilA.getConfiguration();
         String[] conf = new String[] { indir, outdir + "/" + date + "/" };
         long end = System.currentTimeMillis();
         System.out.println(ToolRunner.run(new SimpleSortAndGroupExample(), conf));

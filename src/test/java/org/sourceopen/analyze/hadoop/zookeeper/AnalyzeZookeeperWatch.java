@@ -79,7 +79,8 @@ public class AnalyzeZookeeperWatch extends TestBase {
         ZooKeeper zk3 = new ZooKeeper(zkStr, 2000, new Watcher() {
 
             @Override
-            public void process(WatchedEvent arg0) {
+            public void process(WatchedEvent e) {
+                System.out.println(e.getPath() + "-" + e.getType());
                 ck.checks[2] = true;
             }
         });
