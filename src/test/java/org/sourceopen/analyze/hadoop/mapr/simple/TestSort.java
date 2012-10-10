@@ -22,13 +22,20 @@ public class TestSort extends TestHBase {
         startHBaseClusterA(3, 3, 3);
     }
 
+    /**
+     * @throws Exception
+     */
+    /**
+     * @throws Exception
+     */
     @Test
     public void testA() throws Exception {
         String host = _utilA.getConfiguration().get("fs.default.name");
         String indir = host + "/in";
         String outdir = host + "/out";
         String inf = indir + "/test1.txt";
-        HdfsFileUtil.genHdfsFile(new FileGenerator(1024, ',') {
+        String inf2 = indir + "/test2.txt";
+        FileGenerator rndFileG = new FileGenerator(1024, ',') {
 
             @Override
             public void gen() {
@@ -37,12 +44,24 @@ public class TestSort extends TestHBase {
                     endLine();
                 }
             }
-        }, inf);
+        };
+        HdfsFileUtil.genHdfsFile(rndFileG, inf);
+        HdfsFileUtil.genHdfsFile(rndFileG, inf2);
 
         long start = System.currentTimeMillis();
         SimpleDateFormat format = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         String date = format.format(new Date(System.currentTimeMillis()));
-        // SimpleSortAndGroupExample.conf = _utilA.getConfiguration();
+        
+        /*
+         * 
+         * use LocalJobSubmit
+         * 
+         */
+        boolean useLocalJob = false;
+        if(!useLocalJob)
+            SimpleSortAndGroupExample.conf = _utilA.getConfiguration();
+        
+        
         String[] conf = new String[] { indir, outdir + "/" + date + "/" };
         long end = System.currentTimeMillis();
         System.out.println(ToolRunner.run(new SimpleSortAndGroupExample(), conf));

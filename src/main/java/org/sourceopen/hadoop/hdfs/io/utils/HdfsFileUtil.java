@@ -37,7 +37,7 @@ public class HdfsFileUtil {
         private StringBuffer          buf                   = new StringBuffer();
         private String                FORMAT_STRING         = DEFAULT_FORMAT_STRING;
         private char                  FORMAT_CHAR           = DEFAULT_FORMAT_CHAR;
-        private int                   bufferSize            = 409600;
+        private int                   bufferSize            = 64 * 1024 * 1024;
         private FsPermission          fs;
 
         /**

@@ -16,9 +16,9 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.regionserver.HRegionServer;
 import org.apache.hadoop.hbase.util.JVMClusterUtil;
 import org.apache.hadoop.hbase.util.JVMClusterUtil.RegionServerThread;
-import org.sourceopen.analyze.hadoop.TestBase;
+import org.sourceopen.analyze.hadoop.TestBase1;
 
-public class TestHBase extends TestBase {
+public class TestHBase extends TestBase1 {
 
     public static void createDefTable(Configuration conf) throws IOException {
         createTable(conf, new String[] { "testA", "testB" }, new String[] { "colA", "colB" });

@@ -68,8 +68,8 @@ public class AnalyzeRPC extends TestHBase {
 
     @Test
     public void testSingleProxyAndMultThread() throws IOException {
-        AnalyzeServer s = new AnalyzeServer();
-        Server svr = RPC.getServer(s, "localhost", 3131, new Configuration());
+        AnalyzeServer server = new AnalyzeServer();
+        Server svr = RPC.getServer(server, "localhost", 3131, new Configuration());
         svr.start();
         final IAnalyzeServer sc = (IAnalyzeServer) RPC.getProxy(IAnalyzeServer.class, 0,
                                                                 NetUtils.createSocketAddr("localhost:3131"),

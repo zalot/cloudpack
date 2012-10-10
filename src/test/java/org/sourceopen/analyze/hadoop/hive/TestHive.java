@@ -15,9 +15,9 @@ import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.shims.ShimLoader;
 import org.junit.AfterClass;
-import org.sourceopen.analyze.hadoop.TestBase;
+import org.sourceopen.analyze.hadoop.TestBase1;
 
-public class TestHive extends TestBase {
+public class TestHive extends TestBase1 {
 
     protected static HiveConf         hiveConf     = null;
     protected static CliSessionState  sessionState = null;

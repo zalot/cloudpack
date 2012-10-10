@@ -14,6 +14,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.client.HTablePool;
+import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.MiniMRCluster;
 import org.apache.zookeeper.CreateMode;
@@ -31,7 +32,7 @@ import org.sourceopen.hadoop.zookeeper.connect.ZookeeperFactory;
  * 
  * @author zalot.zhaoh Mar 5, 2012 6:19:57 PM
  */
-public class TestBase {
+public class TestBase1 {
 
     protected static Random              rnd     = new Random();
     protected static HBaseTestingUtility _utilA;
@@ -79,7 +80,7 @@ public class TestBase {
             if (mapr > 0) {
                 _mrA = startMiniMapRServer(mapr, _confA);
             }
-            printInfo("ClusterA", _confA);
+            printInfo("ClusterA", _confA, _utilA, _mrA);
         }
     }
 
@@ -110,7 +111,7 @@ public class TestBase {
             if (mapr > 0) {
                 _mrB = startMiniMapRServer(mapr, _confB);
             }
-            printInfo("ClusterB", _confA);
+            printInfo("ClusterB", _confB, _utilB, _mrB);
         }
     }
 
@@ -154,12 +155,25 @@ public class TestBase {
         return mrCluster;
     }
 
-    private static void printInfo(String base, Configuration conf) {
+    private static void printInfo(String base, Configuration conf, HBaseTestingUtility util, MiniMRCluster mrc) {
         String nnHttp = "http://" + conf.get("dfs.http.address");
         String snHttp = "http://" + conf.get("dfs.secondary.http.address");
         String taskHttp = "http://" + conf.get("mapred.job.tracker.http.address");
-        System.out.println(base + "-NameNode : " + nnHttp);
-        System.out.println(base + "-SecondaryNameNode : " + snHttp);
-        System.out.println(base + "-JobTracker : " + taskHttp);
+        System.out.println("-------------------------------------------------------------------");
+        System.out.println(base + "-NameNode HttpServer: " + nnHttp);
+        System.out.println(base + "-SecondaryNameNode HttpServer: " + snHttp);
+        System.out.println(base + "-JobTracker HttpServer: " + taskHttp);
+        System.out.println(base + "-NN RPC" + util.getDFSCluster().getNameNode().getNameNodeAddress());
+        for(DataNode dn : util.getDFSCluster().getDataNodes()){
+            System.out.println(base + "-DN RPC : " + dn.getSelfAddr());
+        }
+        System.out.println("-------------------------------------------------------------------");
+    }
+
+    public static void serverWait(long waitTime) throws InterruptedException {
+        synchronized (Thread.currentThread()) {
+            if (waitTime <= 0) Thread.currentThread().wait();
+            else Thread.currentThread().wait(waitTime);
+        }
     }
 }

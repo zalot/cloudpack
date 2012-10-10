@@ -9,7 +9,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.TestBase;
+import org.sourceopen.analyze.hadoop.TestBase1;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogPersistence;
 import org.sourceopen.hadoop.hbase.replication.producer.ZkHLogPersistence;
 import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
@@ -21,7 +21,7 @@ import org.sourceopen.hadoop.zookeeper.connect.ZookeeperFactory;
  * 
  * @author zalot.zhaoh Apr 1, 2012 11:37:47 AM
  */
-public class TestMZookeeper extends TestBase {
+public class TestMZookeeper extends TestBase1 {
 
     protected static final int     tableSize = 10;
     protected static Configuration CONF      = HBaseConfiguration.create();

@@ -112,7 +112,8 @@ public class SimpleSortAndGroupExample extends Configured implements Tool {
 
         public void reduce(SimplePair key, Iterable<SimplePair> values, Context context) throws IOException,
                                                                                         InterruptedException {
-            context.write(line, null);
+
+            // context.write(line, null);
             for (SimplePair val : values) {
                 keyParam.set(val.long1 + "," + val.long2 + "," + val.long3);
                 context.write(keyParam, null);
