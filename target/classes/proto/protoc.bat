@@ -1,1 +1,0 @@
-protoc -I=. --java_out=. ./body.proto
