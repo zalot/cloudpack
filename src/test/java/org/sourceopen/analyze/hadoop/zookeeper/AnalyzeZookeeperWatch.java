@@ -14,7 +14,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.TestBase1;
+import org.sourceopen.base.HBaseBase;
 import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
 
 /**
@@ -22,7 +22,7 @@ import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
  * 
  * @author zalot.zhaoh Apr 1, 2012 11:37:47 AM
  */
-public class AnalyzeZookeeperWatch extends TestBase1 {
+public class AnalyzeZookeeperWatch extends HBaseBase {
 
     @BeforeClass
     public static void init() throws Exception {

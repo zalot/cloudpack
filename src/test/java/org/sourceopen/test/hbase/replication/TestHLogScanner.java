@@ -9,7 +9,7 @@ import junit.framework.Assert;
 import org.apache.zookeeper.KeeperException;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.hbase.TestHBase;
+import org.sourceopen.base.HBaseBase;
 import org.sourceopen.hadoop.hbase.replication.core.HBaseService;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogGroup;
 import org.sourceopen.hadoop.hbase.replication.producer.HLogScanner;
@@ -25,7 +25,7 @@ import org.sourceopen.hadoop.zookeeper.core.ZNode;
  * 
  * @author zalot.zhaoh Mar 22, 2012 1:50:42 PM
  */
-public class TestHLogScanner extends TestHBase {
+public class TestHLogScanner extends HBaseBase {
 
     static HBaseService hb;
 

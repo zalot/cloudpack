@@ -7,13 +7,13 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.TestBase1;
+import org.sourceopen.base.HadoopBase;
 
-public class AnalyzeClient extends TestBase1 {
+public class AnalyzeClient extends HadoopBase {
 
     @BeforeClass
     public static void init() throws Exception {
-        startHBaseClusterA(3, 3, 3);
+        startHadoopClusterA(3, 3);
     }
 
     @Test

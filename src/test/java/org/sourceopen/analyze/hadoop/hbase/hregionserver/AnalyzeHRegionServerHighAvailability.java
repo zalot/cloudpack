@@ -7,7 +7,7 @@ import org.apache.hadoop.hbase.util.JVMClusterUtil;
 import org.apache.hadoop.hbase.util.JVMClusterUtil.RegionServerThread;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.hbase.TestHBase;
+import org.sourceopen.base.HBaseBase;
 
 /**
  * HRegionServer High Availability Analyze <BR>
@@ -15,7 +15,7 @@ import org.sourceopen.analyze.hadoop.hbase.TestHBase;
  * 
  * @author zalot.zhaoh Mar 5, 2012 6:18:04 PM
  */
-public class AnalyzeHRegionServerHighAvailability extends TestHBase {
+public class AnalyzeHRegionServerHighAvailability extends HBaseBase {
 
     private static String[] Tables  = new String[] { "tableA", "tableB", "tableC", "tableD", "tableE", "tableF" };
     private static String[] Familys = new String[] { "colA", "colB" };

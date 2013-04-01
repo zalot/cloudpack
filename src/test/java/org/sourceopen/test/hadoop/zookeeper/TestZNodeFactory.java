@@ -2,7 +2,7 @@ package org.sourceopen.test.hadoop.zookeeper;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.hbase.TestHBase;
+import org.sourceopen.base.HBaseBase;
 import org.sourceopen.hadoop.hbase.utils.HRepConfigUtil;
 import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 
@@ -11,7 +11,7 @@ import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
  * 
  * @author zalot.zhaoh Aug 3, 2012 9:38:54 AM
  */
-public class TestZNodeFactory extends TestHBase {
+public class TestZNodeFactory extends HBaseBase {
 
     @BeforeClass
     public static void init() throws Exception {

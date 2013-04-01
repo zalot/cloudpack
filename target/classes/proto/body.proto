@@ -1,0 +1,21 @@
+package com.alibaba.hbase.replication.protocol.protobuf;
+
+option java_package = "com.alibaba.hbase.replication.protocol.protobuf";
+option java_outer_classname = "BodyBinObject";
+
+message bodyBinObject {
+repeated tableBinObject tableBinObjectList=1;
+}
+
+message tableBinObject {
+required string tableName = 1;
+repeated editBinObject editBinObjectList=2;
+}
+
+message editBinObject {
+  required int32 type = 1;
+  optional bytes rowKey = 2;
+  optional bytes family = 3;
+  optional bytes qualifier= 4 ;
+  optional bytes value= 5 ;
+}

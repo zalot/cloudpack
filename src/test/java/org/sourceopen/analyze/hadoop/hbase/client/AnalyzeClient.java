@@ -10,9 +10,9 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.hbase.TestHBase;
+import org.sourceopen.base.HBaseBase;
 
-public class AnalyzeClient extends TestHBase {
+public class AnalyzeClient extends HBaseBase {
 
     private static String[] Tables  = new String[] { "tableA", "tableB", "tableC", "tableD", "tableE", "tableF" };
     private static String[] Familys = new String[] { "colA", "colB" };

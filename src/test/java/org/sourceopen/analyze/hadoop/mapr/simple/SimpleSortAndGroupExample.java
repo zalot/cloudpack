@@ -2,8 +2,6 @@ package org.sourceopen.analyze.hadoop.mapr.simple;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.StringTokenizer;
 

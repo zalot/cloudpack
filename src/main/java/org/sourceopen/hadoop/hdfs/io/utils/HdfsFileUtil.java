@@ -1,22 +1,19 @@
 package org.sourceopen.hadoop.hdfs.io.utils;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.IOUtils;
 
@@ -34,80 +31,49 @@ public class HdfsFileUtil {
         protected static final String DEFAULT_FORMAT_STRING = "\t";
         protected static final char   DEFAULT_FORMAT_CHAR   = '\t';
         protected static final String DEFAULT_END_STRING    = "\r\n";
-        private StringBuffer          buf                   = new StringBuffer();
-        private String                FORMAT_STRING         = DEFAULT_FORMAT_STRING;
-        private char                  FORMAT_CHAR           = DEFAULT_FORMAT_CHAR;
-        private int                   bufferSize            = 64 * 1024 * 1024;
-        private FsPermission          fs;
+        private String                formatString          = DEFAULT_FORMAT_STRING;
+        private FsPermission          fsPer                 = FsPermission.getDefault();
+        private Writer                writer;
 
         /**
          * generator
          */
-        public abstract void gen();
+        public abstract void gen() throws IOException;
 
-        /**
-         * @param bufferSize NIO bufferSize;
-         */
-        public FileGenerator(int bufferSize){
-            this(bufferSize, null);
+        public void setWriter(Writer writer) {
+            this.writer = writer;
         }
 
         /**
          * @param format String example "<font color='red'>\t</font>" or "<font color='red'>,</font>"
          */
         public FileGenerator(String format){
-            this(-1, format);
+            this(format, FsPermission.getDefault());
         }
 
-        /**
-         * @param bufferSize NIO bufferSize;
-         * @param format String example "<font color='red'>\t</font>" or "<font color='red'>,</font>"
-         */
-        public FileGenerator(int bufferSize, String format){
-            if (format != null && format.trim().length() > 0) this.FORMAT_STRING = format;
-            if (bufferSize > 0) this.bufferSize = bufferSize;
+        public FileGenerator(String format, FsPermission fs){
+            this(null, format, fs);
         }
 
-        public FileGenerator(int bufferSize, char format){
-            this(bufferSize, format, new FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
+        public FileGenerator(Writer w, String format, FsPermission fs){
+            this.formatString = format;
+            this.fsPer = fs;
         }
 
-        public FileGenerator(int bufferSize, char format, FsPermission fs){
-            this.FORMAT_STRING = null;
-            this.FORMAT_CHAR = format;
-            if (bufferSize > 0) this.bufferSize = bufferSize;
-            this.fs = fs;
+        public void addline(String string) throws IOException {
+            writer.append(string).append(DEFAULT_END_STRING);
+            endLine();
         }
 
-        private int bufferSize() {
-            return this.bufferSize;
-        }
-
-        public void addline(String string) {
-            buf.append(string).append(DEFAULT_END_STRING);
-        }
-
-        public void addFormat(String... strings) {
+        public void addFormatLine(String... strings) throws IOException {
             for (String string : strings) {
-                if (FORMAT_STRING != null) buf.append(string).append(FORMAT_STRING);
-                else buf.append(string).append(FORMAT_CHAR);
+                writer.append(string).append(formatString);
             }
+            endLine();
         }
 
-        public void addFormat(long... longs) {
-            String[] strings = new String[longs.length];
-            for (int x = 0; x < strings.length; x++) {
-                strings[x] = String.valueOf(longs[x]);
-            }
-            addFormat(strings);
-        }
-
-        public void endLine() {
-            buf.append(DEFAULT_END_STRING);
-        }
-
-        private byte[] getBytesBuffer() {
-            return buf.toString().getBytes();
+        private void endLine() throws IOException {
+            writer.append(DEFAULT_END_STRING);
         }
     }
 
@@ -131,33 +97,21 @@ public class HdfsFileUtil {
     }
 
     private static boolean write2File(FileGenerator gen, File file) {
-        FileOutputStream output = null;
+        FileWriter w = null;
         try {
-            output = new FileOutputStream(file);
+            w = new FileWriter(file);
+            gen.setWriter(w);
             gen.gen();
-        } catch (FileNotFoundException e) {
-            return false;
-        }
-        FileChannel channel = output.getChannel();
-        ByteBuffer buffer = ByteBuffer.allocate(gen.bufferSize());
-        buffer.put(gen.getBytesBuffer());
-        buffer.flip();
-
-        try {
-            channel.write(buffer);
             return true;
         } catch (IOException e) {
             return false;
         } finally {
-            try {
-                buffer.clear();
-                channel.close();
-                output.close();
+            if (w != null) try {
+                w.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
-            buffer = null;
-            channel = null;
-            channel = null;
+            w = null;
         }
 
     }
@@ -180,14 +134,21 @@ public class HdfsFileUtil {
      * @param overwrite
      * @throws Exception
      */
-    public static void genHdfsFile(FileGenerator gen, String path, boolean overwrite) throws Exception {
+    public static void genHdfsFile(FileGenerator gen, Path path, boolean overwrite) throws Exception {
         genHdfsFile(gen, path, overwrite, false);
     }
 
-    public static void genHdfsFile(FileGenerator gen, String path, boolean overwrite, boolean fromlocal)
-                                                                                                        throws Exception {
-        FileSystem fs = getFileSystem(path);
-        if (!overwrite && exist(fs, path)) {
+    public static void genHdfsFile(FileSystem fs, FileGenerator gen, Path path, boolean overwrite) throws Exception {
+        genHdfsFile(fs, gen, path, overwrite, false);
+    }
+
+    public static void genHdfsFile(FileGenerator gen, Path path, boolean overwrite, boolean fromlocal) throws Exception {
+        genHdfsFile(null, gen, path, overwrite, fromlocal);
+    }
+
+    public static void genHdfsFile(FileSystem fs, FileGenerator gen, Path path, boolean overwrite, boolean fromlocal)
+                                                                                                                     throws Exception {
+        if (!overwrite && fs.exists(path)) {
             return;
         }
 
@@ -195,7 +156,7 @@ public class HdfsFileUtil {
             File tmpFile = genLocalFile(gen, null, false);
             try {
                 if (tmpFile != null) {
-                    file2Hdfs(tmpFile, path);
+                    file2Hdfs(fs, tmpFile, path);
                 }
             } finally {
                 if (tmpFile != null) {
@@ -205,13 +166,11 @@ public class HdfsFileUtil {
                 }
             }
         } else {
-            Path p = new Path(path);
+            FSDataOutputStream output = fs.create(path);
+            BufferedWriter w = new BufferedWriter(new OutputStreamWriter(output));
+            gen.setWriter(w);
             gen.gen();
-            FSDataOutputStream output = fs.create(p);
-            output.write(gen.getBytesBuffer());
-            output.flush();
-            output.close();
-            fs.setPermission(p, gen.fs);
+            fs.setPermission(path, gen.fsPer);
         }
     }
 
@@ -229,18 +188,11 @@ public class HdfsFileUtil {
         return null;
     }
 
-    public static void genHdfsFile(FileGenerator gen, String path) throws Exception {
-        genHdfsFile(gen, path, true, false);
-    }
-
-    public static boolean file2Hdfs(FileSystem fs, File file, String path) {
-        Path pathObj = new Path(path);
+    public static boolean file2Hdfs(FileSystem fs, File file, Path path) {
         FSDataOutputStream output = null;
         FileInputStream input = null;
         try {
-            if (fs == null) fs = getFileSystem(path);
-
-            output = fs.create(pathObj);
+            output = fs.create(path);
             input = new FileInputStream(file);
             IOUtils.copyBytes(input, output, fs.getConf());
             return true;
@@ -253,24 +205,7 @@ public class HdfsFileUtil {
         }
     }
 
-    public static boolean file2Hdfs(File file, String path) {
-        return file2Hdfs(null, file, path);
-    }
-
-    private static FileSystem getFileSystem(String path) {
-        URI uri = URI.create(path);
-        FileSystem fs = null;
-        try {
-            if (fs == null) fs = FileSystem.get(uri, new Configuration());
-            return fs;
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            return null;
-        }
-    }
-
     private static boolean exist(FileSystem fs, String path) throws IOException {
-        if (fs == null) fs = getFileSystem(path);
         return fs.exists(new Path(path));
     }
 }

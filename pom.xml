@@ -103,64 +103,11 @@
 			<artifactId>hive-exec</artifactId>
 			<version>0.9.0</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.alibaba.external</groupId> <artifactId>apache.hadoop</artifactId> 
-			<version>${hadoop.version}</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>apache.hadoop.hbase</artifactId> <version>${hbase.version}</version> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>apache.hadoop.zookeeper</artifactId> 
-			<version>${zookeeper.version}</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>google.protobuf</artifactId> <version>2.4.1</version> </dependency> 
-			<dependency> <groupId>com.alibaba.external</groupId> <artifactId>sourceforge.spring</artifactId> 
-			<version>${springframework_version}</version> <exclusions> <exclusion> <groupId>com.alibaba.external</groupId> 
-			<artifactId>jakarta.commons.logging</artifactId> </exclusion> </exclusions> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>sourceforge.spring.modules.test</artifactId> 
-			<version>${springframework_version}</version> <scope>test</scope> </dependency> 
-			<dependency> <groupId>com.alibaba.external</groupId> <artifactId>jakarta.commons.io</artifactId> 
-			<version>1.4</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>jakarta.commons.collections</artifactId> <version>3.2.1</version> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>org.slf4j.slf4j-api</artifactId> 
-			<version>${slf4j_version}</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>org.slf4j.slf4j-log4j12</artifactId> <version>${slf4j_version}</version> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>jakarta.log4j</artifactId> 
-			<version>${log4j_version}</version> <exclusions> <exclusion> <groupId>com.alibaba.external</groupId> 
-			<artifactId>jakarta.commons.logging</artifactId> </exclusion> </exclusions> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>jakarta.commons.logging</artifactId> 
-			<version>1.1.1</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>jakarta.commons.lang</artifactId> <version>2.5</version> </dependency> 
-			<dependency> <groupId>com.alibaba.external</groupId> <artifactId>jakarta.commons.configuration</artifactId> 
-			<version>1.7</version> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>sourceforge.cglib</artifactId> <version>2.2</version> </dependency> 
-			<dependency> <groupId>com.alibaba.external</groupId> <artifactId>apache.hadoop.test</artifactId> 
-			<version>${hadoop.version}</version> <scope>test</scope> </dependency> <dependency> 
-			<groupId>com.alibaba.external</groupId> <artifactId>apache.hadoop.hbase.test</artifactId> 
-			<version>${hbase.version}</version> <scope>test</scope> </dependency> <dependency> 
-			<groupId>com.alibaba.external</groupId> <artifactId>test.junit</artifactId> 
-			<version>4.8.1</version> <scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>test.unitils.unitils-core</artifactId> <version>${unitils_version}</version> 
-			<scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>test.unitils.unitils-inject</artifactId> <version>${unitils_version}</version> 
-			<scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>test.unitils.unitils-easymock</artifactId> <version>${unitils_version}</version> 
-			<scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>test.easymock</artifactId> <version>3.0</version> <scope>test</scope> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>test.easymockclassextension</artifactId> 
-			<version>2.4</version> <scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>test.unitils.unitils-spring</artifactId> <version>${unitils_version}</version> 
-			<scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>test.unitils.unitils-database</artifactId> <version>${unitils_version}</version> 
-			<scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>server.jetty</artifactId> <version>6.1.21</version> <scope>test</scope> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>java.servlet</artifactId> 
-			<version>2.5</version> <scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>java.jsr311</artifactId> <version>1.1</version> <scope>test</scope> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>codehaus.jackson.core</artifactId> 
-			<version>1.9.1</version> <scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>codehaus.jackson.mapper</artifactId> <version>1.9.1</version> 
-			<scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>google.guava</artifactId> <version>r09</version> <scope>test</scope> 
-			</dependency> <dependency> <groupId>com.alibaba.external</groupId> <artifactId>sourceforge.high-scale-lib</artifactId> 
-			<version>1.1.1</version> <scope>test</scope> </dependency> <dependency> <groupId>com.alibaba.external</groupId> 
-			<artifactId>commons.codec</artifactId> <version>1.6</version> <scope>test</scope> 
-			</dependency> -->
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.9.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>

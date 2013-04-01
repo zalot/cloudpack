@@ -2,9 +2,9 @@ package org.sourceopen.test.hadoop.zookeeper;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.hbase.TestHBase;
+import org.sourceopen.base.HBaseBase;
 
-public class TestZNodeProxy extends TestHBase {
+public class TestZNodeProxy extends HBaseBase {
 
     @BeforeClass
     public static void init() throws Exception {

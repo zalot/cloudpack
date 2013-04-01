@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.hbase.TestHBase;
+import org.sourceopen.base.HBaseBase;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogEntry;
 import org.sourceopen.hadoop.hbase.replication.core.hlog.domain.HLogGroup;
 import org.sourceopen.hadoop.hbase.replication.producer.ZkHLogPersistence;
@@ -17,7 +17,7 @@ import org.sourceopen.hadoop.zookeeper.connect.NothingZookeeperWatch;
  * 
  * @author zalot.zhaoh Mar 22, 2012 1:50:48 PM
  */
-public class TestZkHLogPersistence extends TestHBase {
+public class TestZkHLogPersistence extends HBaseBase {
 
     @BeforeClass
     public static void init() throws Exception {

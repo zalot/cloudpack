@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.hbase.TestHBase;
+import org.sourceopen.base.HBaseBase;
 import org.sourceopen.hadoop.hbase.replication.core.HBaseService;
 import org.sourceopen.hadoop.hbase.replication.producer.HLogScanner;
 import org.sourceopen.hadoop.hbase.replication.producer.RejectRecoverScanner;
@@ -21,7 +21,7 @@ import org.sourceopen.hadoop.zookeeper.core.ZNode;
  * 
  * @author zalot.zhaoh Mar 19, 2012 11:26:29 AM
  */
-public class TestMain extends TestHBase {
+public class TestMain extends HBaseBase {
 
     @BeforeClass
     public static void init() throws Exception {

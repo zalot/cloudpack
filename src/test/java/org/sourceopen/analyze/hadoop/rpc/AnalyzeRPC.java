@@ -8,14 +8,14 @@ import org.apache.hadoop.ipc.RPC.Server;
 import org.apache.hadoop.ipc.VersionedProtocol;
 import org.apache.hadoop.net.NetUtils;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.hbase.TestHBase;
+import org.sourceopen.base.HBaseBase;
 
 /**
  * 类AnalyzeRPC.java的实现描述：TODO 类实现描述
  * 
  * @author zalot.zhaoh Aug 16, 2012 11:13:30 AM
  */
-public class AnalyzeRPC extends TestHBase {
+public class AnalyzeRPC extends HBaseBase {
 
     public static interface IAnalyzeServer extends VersionedProtocol {
 
@@ -105,6 +105,6 @@ public class AnalyzeRPC extends TestHBase {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
+        
     }
 }

@@ -5,13 +5,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sourceopen.analyze.hadoop.TestBase1;
+import org.sourceopen.base.HBaseBase;
 import org.sourceopen.hadoop.zookeeper.concurrent.ZThreadPool;
 import org.sourceopen.hadoop.zookeeper.connect.AdvZooKeeper;
 import org.sourceopen.hadoop.zookeeper.core.ZNode;
 import org.sourceopen.hadoop.zookeeper.core.ZNodeFactory;
 
-public class TestZThreadPool extends TestBase1 {
+public class TestZThreadPool extends HBaseBase {
 
     @BeforeClass
     public static void init() throws Exception {
